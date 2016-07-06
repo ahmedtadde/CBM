@@ -816,9 +816,60 @@ versus.weekly.avg <- function(titles, df, List){
            ends_with("avg")) %>% 
     arrange(desc(combined_score))
   
-  # %>% select(c(3,4,5,7,12,13,9,10,11))
+  first <-  transpose(table[1] %>% select(3:dim(table)[2]))$V1
+  second <-  transpose(table[2] %>% select(3:dim(table)[2]))$V1
   
-  return(table)
+  # seq(1:length(first))
+  
+  first <- plot_ly( x = c(1:15),
+                    y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
+                    # type = "markers"
+                    # orientation = 'h',
+                    marker = list(color = "darkblue"),
+                    # colors = c("#66cccc"),
+                    name = table$title[1]
+                    )
+  
+  second <- add_trace(first,
+                      x = c(1:15),
+                      y = transpose(table[2] %>% select(3:dim(table)[2]))$V1,
+                      # type = "markers"
+                      # orientation = 'h',
+                      marker = list(color = "red"),
+                      # colors = c("#66cccc"),
+                      name = table$title[2]
+                      )
+  
+  
+  
+  chart <- layout(second,
+                  title = "Weekly Average per Theater (hover on point for info)",
+                  legend = list(font = list(size = 15, color = "white")),
+                  titlefont = list( color = "#0ce3ac"),
+                  # autosize = F, 
+                  # width = 400, 
+                  # height = 400,
+                  paper_bgcolor='rgba(0,0,0,0)',
+                  plot_bgcolor='rgba(0,0,0,0)',
+                  yaxis = list(title = "Value (in $)",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = T,
+                               tickfont = list(size = 15, color = "white"),
+                               titlefont= list(size = 15, color = "white")
+                               ),
+                  xaxis = list(title = "week Number",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = T,
+                               tickfont = list(size = 15, color = "white"),
+                               titlefont= list(size = 15, color = "white")
+                               )
+                  )
+  
+  return(chart)
 }
 
 

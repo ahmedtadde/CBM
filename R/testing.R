@@ -49,7 +49,7 @@ processed.data <- data$df
 
 titles <- c("Thor", "Man of Steel")
 test <- versus.weekly.avg(titles, processed.data, raw.data)
-View(test)
+show(test)
 
 
 rm(list = c("data",

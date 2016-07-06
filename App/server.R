@@ -97,6 +97,8 @@ shinyServer(function(input, output) {
   
   output$versus.weekly.avg <- renderPlotly({
     
+    versus.weekly.avg(c(input$firstmovie, input$secondmovie),processed.data,raw.data)
+    
   })
   
   
