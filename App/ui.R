@@ -193,91 +193,54 @@ shinyUI(
                                 )
                        
               ),
-                       
-              
-              #          
-              #          fluidRow(
-              #            column(4),
-              #            column(4,selectizeInput('rank.by', 
-              #                                    h4('Rank By'),
-              #                                    selected = "Rotten Tomatoes Critics Tomatometer",
-              #                                    choices = c("Overall Estimated Critical Reception",
-              #                                                "Box Office Performance index",
-              #                                                "Rotten Tomatoes Critics Tomatometer",
-              #                                                "Rotten Tomatoes Critics Rating",
-              #                                                "Custom Rotten Tomatoes Critics Score",
-              #                                                "Rotten Tomatoes Audience Tomatometer",
-              #                                                "Rotten Tomatoes Audience Rating",
-              #                                                "Custom Rotten Tomatoes Audience Score",
-              #                                                "Metascore","IMDB","Foreign BO", "Domestic BO",
-              #                                                "Foreign & Domestic BO - Weighted Mean (30/70)",
-              #                                                "Average per Theater",
-              #                                                "Weekly Relative Percent Gross (vs Opening Week)",
-              #                                                "Weekly Ranking Index"), 
-              #                                    multiple = F)),
-              #            column(4)
-              #            
-              #          ),
-              #          hr(),
-              #          fluidRow(
-              #                   # htmlOutput("report")
-              #                   # DT::dataTableOutput("report")
-              #                   column(4, align= "center", htmlOutput("poster")),
-              #                   column(6, align= "left", htmlOutput("report")),
-              #                   column(2)
-              #                   # column(10, DT::dataTableOutput("report"))
-              #                   )
-              #          
-              
-              
               navbarMenu("Versus",
                          tabPanel("Critical Reception",
-                                  # fluidRow(column(1),
-                                  #          column(3,
-                                  #                 align = 'center',
-                                  #                 selectizeInput("firstmovie",
-                                  #                                h4(''),
-                                  #                                selected = "The Dark Knight",
-                                  #                                choices = movie.titles,
-                                  #                                multiple =F )),
-                                  #          column(4),
-                                  #          column(3, 
-                                  #                 align = 'center',
-                                  #                 selectizeInput("secondmovie",
-                                  #                                h4(''),
-                                  #                                selected = "Marvel's The Avengers",
-                                  #                                choices = movie.titles,
-                                  #                                multiple = F)),
-                                  #          column(1)
-                                  # ),
-                                  # fluidRow(column(1),
-                                  #          column(3, align = 'center',htmlOutput("firstmovie.poster")),
-                                  #          column(4, align = 'center', htmlOutput("VERSUS")),
-                                  #          column(3, align = 'center',htmlOutput("secondmovie.poster")),
-                                  #          column(1)
-                                  # ),
-                                  # fluidRow(column(1),
-                                  #          column(3, align = 'center', htmlOutput("firstmovie.meta")),
-                                  #          column(4),
-                                  #          column(3, align = 'center',htmlOutput("secondmovie.meta")),
-                                  #          column(1)
-                                  # ),
-                                  # fluidRow(column(1),
-                                  #          column(3, htmlOutput("firstmovie.critics_consensus")),
-                                  #          column(4 ),
-                                  #          column(3, htmlOutput("secondmovie.critics_consensus")),
-                                  #          column(1)
-                                  # ),
-                                  # fluidRow(column(1),
-                                  #          column(10),
-                                  #          # column(10, align = "center", tags$a(h4('Critical Reception Comparison (hover on bars for info)'))),
-                                  #          column(1)
-                                  # ),
-                                  # fluidRow(
-                                  #   column(1),
-                                  #   column(10, align = "center", plotlyOutput("versus_critics_chart"))
-                                  #   # column(1)
-                                  # ),
+                                  fluidRow(column(1),
+                                           column(3,
+                                                  align = 'center',
+                                                  selectizeInput("firstmovie.CR",
+                                                                 h4(''),
+                                                                 selected = "The Dark Knight",
+                                                                 choices = movie.titles,
+                                                                 multiple =F )),
+                                           column(4),
+                                           column(3,
+                                                  align = 'center',
+                                                  selectizeInput("secondmovie.CR",
+                                                                 h4(''),
+                                                                 selected = "Marvel's The Avengers",
+                                                                 choices = movie.titles,
+                                                                 multiple = F)),
+                                           column(1)
+                                  ),
+                                  fluidRow(column(1),
+                                           column(3, align = 'center',htmlOutput("firstmovie.poster.CR")),
+                                           column(4, align = 'center', htmlOutput("VERSUS.CR")),
+                                           column(3, align = 'center',htmlOutput("secondmovie.poster.CR")),
+                                           column(1)
+                                  ),
+                                  fluidRow(column(1),
+                                           column(3, align = 'center', htmlOutput("firstmovie.meta.CR")),
+                                           column(4),
+                                           column(3, align = 'center',htmlOutput("secondmovie.meta.CR")),
+                                           column(1)
+                                  ),
+                                  fluidRow(column(1),
+                                           column(3, htmlOutput("firstmovie.critics_consensus")),
+                                           column(4 ),
+                                           column(3, htmlOutput("secondmovie.critics_consensus")),
+                                           column(1)
+                                  ),
+                                  fluidRow(column(1),
+                                           column(10),
+                                           # column(10, align = "center", tags$a(h4('Critical Reception Comparison (hover on bars for info)'))),
+                                           column(1)
+                                  ),
+                                  fluidRow(
+                                    column(1),
+                                    column(10, align = "center", plotlyOutput("versus_critics_chart"))
+                                    # column(1)
+                                  ),
                                   fluidRow(column(1),
                                            column(10),
                                            column(1)
@@ -289,7 +252,7 @@ shinyUI(
                                   fluidRow(column(1),
                                            column(3,
                                                   align = 'center',
-                                                  selectizeInput("firstmovie",
+                                                  selectizeInput("firstmovie.BOP",
                                                                  h4(''),
                                                                  selected = "The Dark Knight",
                                                                  choices = movie.titles,
@@ -297,7 +260,7 @@ shinyUI(
                                            column(4),
                                            column(3, 
                                                   align = 'center',
-                                                  selectizeInput("secondmovie",
+                                                  selectizeInput("secondmovie.BOP",
                                                                  h4(''),
                                                                  selected = "Marvel's The Avengers",
                                                                  choices = movie.titles,
@@ -305,15 +268,15 @@ shinyUI(
                                            column(1)
                                            ),
                                   fluidRow(column(1),
-                                           column(3, align = 'center',htmlOutput("firstmovie.poster")),
-                                           column(4, align = 'center', htmlOutput("VERSUS")),
-                                           column(3, align = 'center',htmlOutput("secondmovie.poster")),
+                                           column(3, align = 'center',htmlOutput("firstmovie.poster.BOP")),
+                                           column(4, align = 'center', htmlOutput("VERSUS.BOP")),
+                                           column(3, align = 'center',htmlOutput("secondmovie.poster.BOP")),
                                            column(1)
                                            ),
                                   fluidRow(column(1),
-                                           column(3, align = 'center', htmlOutput("firstmovie.meta")),
+                                           column(3, align = 'center', htmlOutput("firstmovie.meta.BOP")),
                                            column(4),
-                                           column(3, align = 'center',htmlOutput("secondmovie.meta")),
+                                           column(3, align = 'center',htmlOutput("secondmovie.meta.BOP")),
                                            column(1)
                                            ),
                                   fluidRow(column(4,align = "center",plotlyOutput("versus.weekly.avg")),
@@ -321,8 +284,12 @@ shinyUI(
                                            column(4,align = "center",plotlyOutput("versus.weekly.rank"))
                                            ),
                                   fluidRow(column(1),
-                                           column(10),
-                                           column(1)
+                                           column(10), column(1)
+                                           ),
+                                  fluidRow(
+                                           # column(6),
+                                           column(6, align = "center", plotlyOutput("versus_BO_chart")),
+                                           column(6)
                                            )
                                   )
                          ),

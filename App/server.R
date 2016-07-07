@@ -27,7 +27,7 @@ shinyServer(function(input, output) {
   #============================== VERSUS ===================================================
   
   
-  output$firstmovie.poster <- renderUI({
+  output$firstmovie.poster.CR <- renderUI({
     
     poster.pic.name <- function(title){
       name <- paste0(gsub(" ","", title),".png")
@@ -35,15 +35,34 @@ shinyServer(function(input, output) {
       return(name)
     }
     
-    tags$img(src = poster.pic.name(input$firstmovie))
-    })
   
-  output$VERSUS<- renderUI({
+    tags$img(src = poster.pic.name(input$firstmovie.CR))
+  })
+  
+  output$firstmovie.poster.BOP <- renderUI({
+    
+    poster.pic.name <- function(title){
+      name <- paste0(gsub(" ","", title),".png")
+      name <- gsub(":","", name)
+      return(name)
+    }
+    
+    
+    tags$img(src = poster.pic.name(input$firstmovie.BOP))
+  })
+  
+  output$VERSUS.BOP<- renderUI({
+    
+    tags$img(src = "versus.png", height =300, width = 300)
+  })
+  
+  
+  output$VERSUS.CR<- renderUI({
     
     tags$img(src = "versus.png", height =300, width = 300)
     })
   
-  output$secondmovie.poster <- renderUI({
+  output$secondmovie.poster.BOP <- renderUI({
     
     poster.pic.name <- function(title){
       name <- paste0(gsub(" ","", title),".png")
@@ -51,43 +70,66 @@ shinyServer(function(input, output) {
       return(name)
     }
     
-    tags$img(src = poster.pic.name(input$secondmovie))
+    tags$img(src = poster.pic.name(input$secondmovie.BOP))
     })
   
   
-  output$firstmovie.meta <- renderUI({
-    title <- input$firstmovie
+  
+  output$secondmovie.poster.CR <- renderUI({
+    
+    poster.pic.name <- function(title){
+      name <- paste0(gsub(" ","", title),".png")
+      name <- gsub(":","", name)
+      return(name)
+    }
+    
+    tags$img(src = poster.pic.name(input$secondmovie.CR))
+  })
+  
+  
+  output$firstmovie.meta.BOP <- renderUI({
+    title <- input$firstmovie.BOP
     HTML(versus_meta(title,processed.data, raw.data))
     })
   
-  output$secondmovie.meta <- renderUI({
-    title <- input$secondmovie
+  output$firstmovie.meta.CR <- renderUI({
+    title <- input$firstmovie.CR
+    HTML(versus_meta(title,processed.data, raw.data))
+    })
+  
+  output$secondmovie.meta.BOP <- renderUI({
+    title <- input$secondmovie.BOP
     HTML(versus_meta(title,processed.data ,raw.data))
     })
+  
+  output$secondmovie.meta.CR <- renderUI({
+    title <- input$secondmovie.CR
+    HTML(versus_meta(title,processed.data ,raw.data))
+  })
   
   
   
   output$firstmovie.critics_consensus <- renderUI({
-    consensus <- versus_critics(c(input$firstmovie, input$secondmovie),
+    consensus <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
                                    processed.data,
                                    raw.data)
 
     consensus <- consensus$consensus
 
-    HTML(consensus[[which(names(consensus) == input$firstmovie)]])
+    HTML(consensus[[which(names(consensus) == input$firstmovie.CR)]])
     })
 
 
   output$secondmovie.critics_consensus <- renderUI({
-    consensus <- versus_critics(c(input$firstmovie, input$secondmovie),
+    consensus <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
                                    processed.data,
                                    raw.data)
     consensus <- consensus$consensus
-    HTML(consensus[[which(names(consensus) == input$secondmovie)]])
+    HTML(consensus[[which(names(consensus) == input$secondmovie.CR)]])
     })
 
   output$versus_critics_chart <- renderPlotly({
-    consensus <- versus_critics(c(input$firstmovie, input$secondmovie),
+    consensus <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
                                 processed.data,
                                 raw.data)
 
@@ -97,20 +139,25 @@ shinyServer(function(input, output) {
   
   output$versus.weekly.avg <- renderPlotly({
     
-    versus.weekly.avg(c(input$firstmovie, input$secondmovie),processed.data,raw.data)
+    versus.weekly.avg(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data,raw.data)
     
   })
   
   output$versus.weekly.perc <- renderPlotly({
     
-    versus.weekly.perc(c(input$firstmovie, input$secondmovie),processed.data,raw.data)
+    versus.weekly.perc(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data,raw.data)
     
   })
   
   output$versus.weekly.rank <- renderPlotly({
     
-    versus.weekly.rank(c(input$firstmovie, input$secondmovie),processed.data,raw.data)
+    versus.weekly.rank(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data,raw.data)
     
+  })
+  
+  
+  output$versus_BO_chart <- renderPlotly({
+    versus.BO.chart(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data)
   })
   
   

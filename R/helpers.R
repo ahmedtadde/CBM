@@ -350,10 +350,16 @@ getData <- function(names){
 
   ff4.revised.plot <- c("Scientist Reed Richards (Loan Gruffudd) persuades his arrogant former classmate Victor von Doom (Julian McMahon), to fund his experiments with cosmic energy. On von Doom's space station, the crew - including astronaut Ben Grimm (Michael Chiklis), researcher Sue Storm (Jessica Alba) and pilot Johnny Storm (Chris Evans) - are exposed to a mysterious cosmic storm that bestows super powers upon them. As they cope with their transfortmations, von Doom vows his revenge.")
   thor2.revised.plot <- c("In ancient times, the gods of Asgard fought and won a war against an evil race known as the Dark Elves. The survivors were neutralized, and their ultimate weapon -- the Aether -- was buried in a secret location. Hundreds of years later, Jane Foster (Natalie Portman) finds the Aether and becomes its host, forcing Thor (Chris Hemsworth) to bring her to Asgard before Dark Elf Malekith (Christopher Eccleston) captures her and uses the weapon to destroy the Nine Realms -- including Earth.")
+  # xmen_dofp.revised.plot <- c("")
   
   movies[which(movies$title %in% "Fantastic Four(2005)"),]$plot <- ff4.revised.plot
   movies[which(movies$title %in% "Thor 2: The Dark World"),]$plot <- thor2.revised.plot
-  rm(list =c("ff4.revised.plot","thor2.revised.plot"))
+  # movies[which(movies$title %in% "X-men: Days of Future Past"),]$plot <- xmen_dofp.revised.plot 
+  
+  
+  rm(list =c("ff4.revised.plot","thor2.revised.plot"
+             # "xmen_dofp.revised.plot"
+             ))
 
   return(list("df" = movies, "BO" = BO, "Critics" = Critics))
   # return(list("dc" = dc, "marvel" = marvel))
@@ -845,7 +851,7 @@ versus.weekly.avg <- function(titles, df, List){
                   legend = list(font = list(size = 10, color = "white"),
                                 x = 0.25, 
                                 y = 0.75),
-                  titlefont = list(size = 10, color = "#0ce3ac"),
+                  titlefont = list(size = 12, color = "#0ce3ac"),
                   # autosize = F,
                   # width = 800,
                   # height = 500,
@@ -856,16 +862,16 @@ versus.weekly.avg <- function(titles, df, List){
                                zeroline = FALSE,
                                showline = FALSE,
                                showticklabels = T,
-                               tickfont = list(size = 10, color = "white"),
-                               titlefont= list(size = 10, color = "white")
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
                                ),
                   xaxis = list(title = "Week #",
                                showgrid = F,
                                zeroline = FALSE,
                                showline = FALSE,
                                showticklabels = T,
-                               tickfont = list(size = 10, color = "white"),
-                               titlefont= list(size = 10, color = "white")
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
                                )
                   )
   
@@ -920,7 +926,7 @@ versus.weekly.perc <- function(titles, df, List){
                   legend = list(font = list(size = 10, color = "white"),
                                 x = 0.25, 
                                 y = 0.75),
-                  titlefont = list(size = 10, color = "#0ce3ac"),
+                  titlefont = list(size = 12, color = "#0ce3ac"),
                   # autosize = F,
                   # width = 800,
                   # height = 500,
@@ -931,16 +937,16 @@ versus.weekly.perc <- function(titles, df, List){
                                zeroline = FALSE,
                                showline = FALSE,
                                showticklabels = T,
-                               tickfont = list(size = 10, color = "white"),
-                               titlefont= list(size = 10, color = "white")
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
                   ),
                   xaxis = list(title = "Week #",
                                showgrid = F,
                                zeroline = FALSE,
                                showline = FALSE,
                                showticklabels = T,
-                               tickfont = list(size = 10, color = "white"),
-                               titlefont= list(size = 10, color = "white")
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
                   )
   )
   
@@ -995,7 +1001,7 @@ versus.weekly.rank <- function(titles, df, List){
                   legend = list(font = list(size = 10, color = "white"),
                                 x = 0.1, 
                                 y = 0.1),
-                  titlefont = list(size = 10, color = "#0ce3ac"),
+                  titlefont = list(size = 12, color = "#0ce3ac"),
                   # autosize = F,
                   # width = 800,
                   # height = 500,
@@ -1007,21 +1013,131 @@ versus.weekly.rank <- function(titles, df, List){
                                zeroline = FALSE,
                                showline = FALSE,
                                showticklabels = T,
-                               tickfont = list(size = 10, color = "white"),
-                               titlefont= list(size = 10, color = "white")
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
                   ),
                   xaxis = list(title = "Week #",
                                showgrid = F,
                                zeroline = FALSE,
                                showline = FALSE,
                                showticklabels = T,
-                               tickfont = list(size = 10, color = "white"),
-                               titlefont= list(size = 10, color = "white")
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
                   )
   )
   
   return(chart)
 }
+
+
+
+
+
+
+versus.BO.chart <- function(titles, df){
+  plot.table <- data.table(df) %>% filter(title %in% titles) %>%
+    select( which(names(df) %in% c("title",
+                                   # "avg",
+                                   # "change",
+                                   # "rank",
+                                   # "combined_BO",
+                                   # "ow_score",
+                                   # "theater_run_score",
+                                   # "bo_score",
+                                   "foreign_BO",
+                                   "domestic_BO",
+                                   "ow_gross",
+                                   "combined_score"
+                                   )
+                  )
+            ) %>% select(c(4,5,3,2,1
+                           # 11,12,10,9,8,5,4,6,1,2,3,7
+                          )
+                        ) %>% arrange(desc(combined_score))
+  
+  # plot.table <- data.table(data)
+  
+  chart_step.1 <- plot_ly( 
+                           x = c("Opening Week Gross",
+                                 "Domestic Gross",
+                                 "Foreign Gross"
+                                 # "After Opening Week Gross (in %)",
+                                 # "Foreign & Domestic BO - Weighted Mean (30/70)",
+                                 # "Theater Run Coef (weeks in theaters/ standard 15 weeks)",
+                                 # "Weekly Average Gross per Theater Score",
+                                 # "Weekly Gross as % of Opening Week BO Score",
+                                 # "Weekly Rank Score",
+                                 # "Overall Box Office Performance Score"
+                                 ),
+                           # y = c( 10, 20, 50),
+                           y = transpose(data.table(plot.table)[1] %>% select(3:5))$V1,
+                           type = "bar",
+                           marker = list(color = "darkblue"),
+                           name = plot.table$title[1]
+                           )
+  
+  
+  chart_step.2 <- add_trace(chart_step.1,
+                            x = c("Opening Week Gross",
+                                  "Domestic Gross",
+                                  "Foreign Gross"
+                                  # "After Opening Week Gross (in %)",
+                                  # "Foreign & Domestic BO - Weighted Mean (30/70)",
+                                  # "Theater Run Coef (weeks in theaters/ standard 15 weeks)",
+                                  # "Weekly Average Gross per Theater Score",
+                                  # "Weekly Gross as % of Opening Week BO Score",
+                                  # "Weekly Rank Score",
+                                  # "Overall Box Office Performance Score"
+                            ),
+                            # y = c( 10, 20, 50),
+                            y = transpose(data.table(plot.table)[2] %>% select(3:5))$V1,
+                            type = "bar",
+                            marker = list(color = "red"),
+                            name = plot.table$title[2]
+                            )
+  
+  
+  chart <- layout(chart_step.2,
+                  title = "",
+                  legend = list(font = list(size = 10, color = "white"),
+                                x = 0.1, 
+                                y = 0.9
+                                ),
+                  titlefont = list(size = 12, color = "#0ce3ac"),
+                  # autosize = F,
+                  # width = 800,
+                  # height = 500,
+                  paper_bgcolor='rgba(0,0,0,0)',
+                  plot_bgcolor='rgba(0,0,0,0)',
+                  yaxis = list(title = "Value (in $)",
+                               # autorange = "reversed",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = T,
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
+                               ),
+                  xaxis = list(title = "",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = T,
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
+                               )
+                  )
+  
+  
+  # return(plot.table)
+  return(chart)
+}
+
+
+
+
+
+
 
 
 versus_critics <- function(titles, df, List){

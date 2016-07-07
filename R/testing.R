@@ -48,7 +48,7 @@ processed.data <- data$df
 
 
 titles <- c("Thor", "Man of Steel")
-test <- versus.weekly.avg(titles, processed.data, raw.data)
+test <- versus.BO.chart(titles, processed.data)
 show(test)
 
 
