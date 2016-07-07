@@ -231,7 +231,7 @@ shinyUI(
               
               
               navbarMenu("Versus",
-                         tabPanel("Compare Critical Reception",
+                         tabPanel("Critical Reception",
                                   # fluidRow(column(1),
                                   #          column(3,
                                   #                 align = 'center',
@@ -285,7 +285,7 @@ shinyUI(
                                   
                          ),
                          
-                         tabPanel("Compare Box Office Performance",
+                         tabPanel("Box Office Performance",
                                   fluidRow(column(1),
                                            column(3,
                                                   align = 'center',
@@ -314,13 +314,16 @@ shinyUI(
                                            column(3, align = 'center', htmlOutput("firstmovie.meta")),
                                            column(4),
                                            column(3, align = 'center',htmlOutput("secondmovie.meta")),
-                                             column(1)
+                                           column(1)
                                            ),
-                                  fluidRow(
-                                    column(4,align = "center",plotlyOutput("versus.weekly.avg")),
-                                    column(4,align = "center",plotlyOutput("versus.weekly.perc")),
-                                    column(4,align = "center",plotlyOutput("versus.weekly.rank"))
-                                    )
+                                  fluidRow(column(4,align = "center",plotlyOutput("versus.weekly.avg")),
+                                           column(4,align = "center",plotlyOutput("versus.weekly.perc")),
+                                           column(4,align = "center",plotlyOutput("versus.weekly.rank"))
+                                           ),
+                                  fluidRow(column(1),
+                                           column(10),
+                                           column(1)
+                                           )
                                   )
                          ),
               

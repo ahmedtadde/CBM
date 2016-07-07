@@ -816,10 +816,8 @@ versus.weekly.avg <- function(titles, df, List){
            ends_with("avg")) %>% 
     arrange(desc(combined_score))
   
-  first <-  transpose(table[1] %>% select(3:dim(table)[2]))$V1
-  second <-  transpose(table[2] %>% select(3:dim(table)[2]))$V1
-  
-  # seq(1:length(first))
+  table <- data.table(table)
+
   
   first <- plot_ly( x = c(1:15),
                     y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
@@ -844,11 +842,13 @@ versus.weekly.avg <- function(titles, df, List){
   
   chart <- layout(second,
                   title = "Weekly Average per Theater (hover on point for info)",
-                  legend = list(font = list(size = 15, color = "white")),
-                  titlefont = list( color = "#0ce3ac"),
-                  autosize = F,
-                  width = 500,
-                  height = 400,
+                  legend = list(font = list(size = 10, color = "white"),
+                                x = 0.25, 
+                                y = 0.75),
+                  titlefont = list(size = 10, color = "#0ce3ac"),
+                  # autosize = F,
+                  # width = 800,
+                  # height = 500,
                   paper_bgcolor='rgba(0,0,0,0)',
                   plot_bgcolor='rgba(0,0,0,0)',
                   yaxis = list(title = "Value (in $)",
@@ -856,16 +856,16 @@ versus.weekly.avg <- function(titles, df, List){
                                zeroline = FALSE,
                                showline = FALSE,
                                showticklabels = T,
-                               tickfont = list(size = 15, color = "white"),
-                               titlefont= list(size = 15, color = "white")
+                               tickfont = list(size = 10, color = "white"),
+                               titlefont= list(size = 10, color = "white")
                                ),
-                  xaxis = list(title = "week Number",
+                  xaxis = list(title = "Week #",
                                showgrid = F,
                                zeroline = FALSE,
                                showline = FALSE,
                                showticklabels = T,
-                               tickfont = list(size = 15, color = "white"),
-                               titlefont= list(size = 15, color = "white")
+                               tickfont = list(size = 10, color = "white"),
+                               titlefont= list(size = 10, color = "white")
                                )
                   )
   
@@ -875,6 +875,153 @@ versus.weekly.avg <- function(titles, df, List){
 
 
 
+
+
+versus.weekly.perc <- function(titles, df, List){
+  
+  processed <- data.table(df) %>% filter(title %in% titles)
+  processed <- processed %>% select(which(names(processed) %in% c("title","combined_score")))
+  
+  bo.raw <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw))
+  bo.raw <- bo.raw %>% filter(title %in% titles) 
+  
+  table <- data.table(merge(processed, bo.raw, by = "title")) %>%
+    select(contains("title"),
+           contains("combined_score"),
+           ends_with("change")) %>% 
+    arrange(desc(combined_score))
+  
+  table <- data.table(table)
+  
+  
+  first <- plot_ly( x = c(2:15),
+                    y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
+                    # type = "markers"
+                    # orientation = 'h',
+                    marker = list(color = "darkblue"),
+                    # colors = c("#66cccc"),
+                    name = table$title[1]
+  )
+  
+  second <- add_trace(first,
+                      x = c(2:15),
+                      y = transpose(table[2] %>% select(3:dim(table)[2]))$V1,
+                      # type = "markers"
+                      # orientation = 'h',
+                      marker = list(color = "red"),
+                      # colors = c("#66cccc"),
+                      name = table$title[2]
+  )
+  
+  
+  
+  chart <- layout(second,
+                  title = "Weekly gross as percent of Opening Week BO (hover on point for info)",
+                  legend = list(font = list(size = 10, color = "white"),
+                                x = 0.25, 
+                                y = 0.75),
+                  titlefont = list(size = 10, color = "#0ce3ac"),
+                  # autosize = F,
+                  # width = 800,
+                  # height = 500,
+                  paper_bgcolor='rgba(0,0,0,0)',
+                  plot_bgcolor='rgba(0,0,0,0)',
+                  yaxis = list(title = "Value (in %)",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = T,
+                               tickfont = list(size = 10, color = "white"),
+                               titlefont= list(size = 10, color = "white")
+                  ),
+                  xaxis = list(title = "Week #",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = T,
+                               tickfont = list(size = 10, color = "white"),
+                               titlefont= list(size = 10, color = "white")
+                  )
+  )
+  
+  return(chart)
+}
+
+
+
+
+
+
+versus.weekly.rank <- function(titles, df, List){
+  
+  processed <- data.table(df) %>% filter(title %in% titles)
+  processed <- processed %>% select(which(names(processed) %in% c("title","combined_score")))
+  
+  bo.raw <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw))
+  bo.raw <- bo.raw %>% filter(title %in% titles) 
+  
+  table <- data.table(merge(processed, bo.raw, by = "title")) %>%
+    select(contains("title"),
+           contains("combined_score"),
+           ends_with("rank")) %>% 
+    arrange(desc(combined_score))
+  
+  table <- data.table(table)
+  
+  
+  first <- plot_ly( x = c(1:15),
+                    y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
+                    # type = "markers"
+                    # orientation = 'h',
+                    marker = list(color = "darkblue"),
+                    # colors = c("#66cccc"),
+                    name = table$title[1]
+  )
+  
+  second <- add_trace(first,
+                      x = c(1:15),
+                      y = transpose(table[2] %>% select(3:dim(table)[2]))$V1,
+                      # type = "markers"
+                      # orientation = 'h',
+                      marker = list(color = "red"),
+                      # colors = c("#66cccc"),
+                      name = table$title[2]
+  )
+  
+  
+  
+  chart <- layout(second,
+                  title = "Weekly Rank (hover on point for info)",
+                  legend = list(font = list(size = 10, color = "white"),
+                                x = 0.1, 
+                                y = 0.1),
+                  titlefont = list(size = 10, color = "#0ce3ac"),
+                  # autosize = F,
+                  # width = 800,
+                  # height = 500,
+                  paper_bgcolor='rgba(0,0,0,0)',
+                  plot_bgcolor='rgba(0,0,0,0)',
+                  yaxis = list(title = "Value (in %)",
+                               autorange = "reversed",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = T,
+                               tickfont = list(size = 10, color = "white"),
+                               titlefont= list(size = 10, color = "white")
+                  ),
+                  xaxis = list(title = "Week #",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = T,
+                               tickfont = list(size = 10, color = "white"),
+                               titlefont= list(size = 10, color = "white")
+                  )
+  )
+  
+  return(chart)
+}
 
 
 versus_critics <- function(titles, df, List){

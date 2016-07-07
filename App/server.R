@@ -101,6 +101,18 @@ shinyServer(function(input, output) {
     
   })
   
+  output$versus.weekly.perc <- renderPlotly({
+    
+    versus.weekly.perc(c(input$firstmovie, input$secondmovie),processed.data,raw.data)
+    
+  })
+  
+  output$versus.weekly.rank <- renderPlotly({
+    
+    versus.weekly.rank(c(input$firstmovie, input$secondmovie),processed.data,raw.data)
+    
+  })
+  
   
   
    #============================== RANKING ===================================================
