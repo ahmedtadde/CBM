@@ -829,7 +829,7 @@ versus.weekly.avg <- function(titles, df, List){
                     y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
                     # type = "markers"
                     # orientation = 'h',
-                    marker = list(color = "darkblue"),
+                    marker = list(color = "#20B2AA"),
                     # colors = c("#66cccc"),
                     name = table$title[1]
                     )
@@ -848,9 +848,9 @@ versus.weekly.avg <- function(titles, df, List){
   
   chart <- layout(second,
                   title = "Weekly Average per Theater (hover on point for info)",
-                  legend = list(font = list(size = 10, color = "white"),
-                                x = 0.25, 
-                                y = 0.75),
+                  legend = list(font = list(size = 12, color = "white"),
+                                x = 0.2, 
+                                y = 0.8),
                   titlefont = list(size = 12, color = "#0ce3ac"),
                   # autosize = F,
                   # width = 800,
@@ -904,7 +904,7 @@ versus.weekly.perc <- function(titles, df, List){
                     y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
                     # type = "markers"
                     # orientation = 'h',
-                    marker = list(color = "darkblue"),
+                    marker = list(color = "#20B2AA"),
                     # colors = c("#66cccc"),
                     name = table$title[1]
   )
@@ -923,9 +923,10 @@ versus.weekly.perc <- function(titles, df, List){
   
   chart <- layout(second,
                   title = "Weekly gross as percent of Opening Week BO (hover on point for info)",
-                  legend = list(font = list(size = 10, color = "white"),
-                                x = 0.25, 
-                                y = 0.75),
+                  # legend = list(font = list(size = 10, color = "white"),
+                  #               x = 0.25, 
+                  #               y = 0.75),
+                  showlegend = F,
                   titlefont = list(size = 12, color = "#0ce3ac"),
                   # autosize = F,
                   # width = 800,
@@ -979,7 +980,7 @@ versus.weekly.rank <- function(titles, df, List){
                     y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
                     # type = "markers"
                     # orientation = 'h',
-                    marker = list(color = "darkblue"),
+                    marker = list(color = "#20B2AA"),
                     # colors = c("#66cccc"),
                     name = table$title[1]
   )
@@ -998,16 +999,17 @@ versus.weekly.rank <- function(titles, df, List){
   
   chart <- layout(second,
                   title = "Weekly Rank (hover on point for info)",
-                  legend = list(font = list(size = 10, color = "white"),
-                                x = 0.1, 
-                                y = 0.1),
+                  showlegend = F,
+                  # legend = list(font = list(size = 10, color = "white"),
+                  #               x = 0.1, 
+                  #               y = 0.1),
                   titlefont = list(size = 12, color = "#0ce3ac"),
                   # autosize = F,
                   # width = 800,
                   # height = 500,
                   paper_bgcolor='rgba(0,0,0,0)',
                   plot_bgcolor='rgba(0,0,0,0)',
-                  yaxis = list(title = "Value (in %)",
+                  yaxis = list(title = "Ranking #",
                                autorange = "reversed",
                                showgrid = F,
                                zeroline = FALSE,
@@ -1034,7 +1036,7 @@ versus.weekly.rank <- function(titles, df, List){
 
 
 
-versus.BO.chart <- function(titles, df){
+versus.BO.chart.1 <- function(titles, df){
   plot.table <- data.table(df) %>% filter(title %in% titles) %>%
     select( which(names(df) %in% c("title",
                                    # "avg",
@@ -1058,9 +1060,9 @@ versus.BO.chart <- function(titles, df){
   # plot.table <- data.table(data)
   
   chart_step.1 <- plot_ly( 
-                           x = c("Opening Week Gross",
-                                 "Domestic Gross",
-                                 "Foreign Gross"
+                           x = c("Opening Week",
+                                 "Domestic",
+                                 "Foreign"
                                  # "After Opening Week Gross (in %)",
                                  # "Foreign & Domestic BO - Weighted Mean (30/70)",
                                  # "Theater Run Coef (weeks in theaters/ standard 15 weeks)",
@@ -1072,15 +1074,15 @@ versus.BO.chart <- function(titles, df){
                            # y = c( 10, 20, 50),
                            y = transpose(data.table(plot.table)[1] %>% select(3:5))$V1,
                            type = "bar",
-                           marker = list(color = "darkblue"),
+                           marker = list(color = "#20B2AA"),
                            name = plot.table$title[1]
                            )
   
   
   chart_step.2 <- add_trace(chart_step.1,
-                            x = c("Opening Week Gross",
-                                  "Domestic Gross",
-                                  "Foreign Gross"
+                            x = c("Opening Week",
+                                  "Domestic",
+                                  "Foreign"
                                   # "After Opening Week Gross (in %)",
                                   # "Foreign & Domestic BO - Weighted Mean (30/70)",
                                   # "Theater Run Coef (weeks in theaters/ standard 15 weeks)",
@@ -1099,10 +1101,11 @@ versus.BO.chart <- function(titles, df){
   
   chart <- layout(chart_step.2,
                   title = "",
-                  legend = list(font = list(size = 10, color = "white"),
-                                x = 0.1, 
-                                y = 0.9
-                                ),
+                  showlegend = F,
+                  # legend = list(font = list(size = 10, color = "white"),
+                  #               x = 0.05, 
+                  #               y = 1
+                  # ),
                   titlefont = list(size = 12, color = "#0ce3ac"),
                   # autosize = F,
                   # width = 800,
@@ -1118,11 +1121,11 @@ versus.BO.chart <- function(titles, df){
                                tickfont = list(size = 12, color = "white"),
                                titlefont= list(size = 12, color = "white")
                                ),
-                  xaxis = list(title = "",
+                  xaxis = list(title = "Gross Sales (hover on bars for info)",
                                showgrid = F,
                                zeroline = FALSE,
                                showline = FALSE,
-                               showticklabels = T,
+                               showticklabels = F,
                                tickfont = list(size = 12, color = "white"),
                                titlefont= list(size = 12, color = "white")
                                )
@@ -1133,6 +1136,91 @@ versus.BO.chart <- function(titles, df){
   return(chart)
 }
 
+
+
+
+
+versus.BO.chart.2 <- function(titles, df){
+  plot.table <- data.table(df) %>% filter(title %in% titles) %>%
+    select( which(names(df) %in% c("title",
+                                   "avg",
+                                   "change",
+                                   "rank",
+                                   "combined_BO",
+                                   "bo_score",
+                                   "combined_score"
+                                  )
+                  )
+            )%>% select(c(6,7,1:5)) %>% arrange(desc(combined_score))
+  
+  # plot.table <- data.table(data)
+  
+  chart_step.1 <- plot_ly( 
+                           x = c("Score for Weekly Average Gross per Theater",
+                                 "Score for Weekly Gross as % of Opening Week BO",
+                                 "Score for Weekly Rank",
+                                 "Foreign & Domestic BO Weighted Mean (30/70)",
+                                 # "After Opening Week Gross (in %)",
+                                 "Overall Box Office Performance Index"
+                           ),
+                           y = c(20,200,2,2,10)*transpose(data.table(plot.table)[1] %>% select(3:7))$V1,
+                           type = "bar",
+                           marker = list(color = "#20B2AA"),
+                           name = plot.table$title[1]
+                          )
+  
+  
+  chart_step.2 <- add_trace(chart_step.1,
+                            x = c("Score for Weekly Average Gross per Theater",
+                                  "Score for Weekly Gross as % of Opening Week BO",
+                                  "Score for Weekly Rank",
+                                  "Foreign & Domestic BO Weighted Mean (30/70)",
+                                  # "After Opening Week Gross (in %)",
+                                  "Overall Box Office Performance Index"
+                                  ),
+                            y = c(20, 200,2,2,10)*transpose(data.table(plot.table)[2] %>% select(3:7))$V1,
+                            type = "bar",
+                            marker = list(color = "red"),
+                            name = plot.table$title[2]
+                            )
+  
+  
+  chart <- layout(chart_step.2,
+                  title = "",
+                  showlegend = F,
+                  # legend = list(font = list(size = 10, color = "white"),
+                  #               x = 0.05, 
+                  #               y = 1
+                  #               ),
+                  titlefont = list(size = 12, color = "#0ce3ac"),
+                  # autosize = F,
+                  # width = 800,
+                  # height = 500,
+                  paper_bgcolor='rgba(0,0,0,0)',
+                  plot_bgcolor='rgba(0,0,0,0)',
+                  yaxis = list(title = "Value (higher is better)",
+                               # autorange = "reversed",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = T,
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
+                  ),
+                  xaxis = list(title = "BO Metrics (hover on bars for info)",
+                               showgrid = F,
+                               zeroline = FALSE,
+                               showline = FALSE,
+                               showticklabels = F,
+                               tickfont = list(size = 12, color = "white"),
+                               titlefont= list(size = 12, color = "white")
+                  )
+  )
+  
+  
+  # return(plot.table)
+  return(chart)
+}
 
 
 
@@ -1177,7 +1265,7 @@ versus_critics <- function(titles, df, List){
                             y = transpose(plot.table[1] %>% select(2:10))$V1,
                             type = "bar",
                             # orientation = 'h',
-                            marker = list(color = "darkblue"),
+                            marker = list(color = "#20B2AA"),
                             # colors = c("#66cccc"),
                             name = plot.table$title[1]
                             )

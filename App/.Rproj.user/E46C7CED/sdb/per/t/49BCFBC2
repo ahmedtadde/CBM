@@ -12,14 +12,14 @@
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "cacheKey" : "yr3xwfh0m6",
+        "cacheKey" : "lt1l54wx8e",
         "caption" : "test",
-        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=test&cache_key=yr3xwfh0m6",
+        "contentUrl" : "grid_resource/gridviewer.html?env=&obj=test&cache_key=lt1l54wx8e",
         "displayedObservations" : "2",
         "environment" : "",
         "object" : "test",
         "totalObservations" : "2",
-        "variables" : "5"
+        "variables" : "7"
     },
     "relative_order" : 5,
     "source_on_save" : false,

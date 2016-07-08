@@ -156,10 +156,13 @@ shinyServer(function(input, output) {
   })
   
   
-  output$versus_BO_chart <- renderPlotly({
-    versus.BO.chart(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data)
+  output$versus_BO_chart.1 <- renderPlotly({
+    versus.BO.chart.1(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data)
   })
   
+  output$versus_BO_chart.2 <- renderPlotly({
+    versus.BO.chart.2(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data)
+  })
   
   
    #============================== RANKING ===================================================

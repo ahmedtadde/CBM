@@ -48,8 +48,8 @@ processed.data <- data$df
 
 
 titles <- c("Thor", "Man of Steel")
-test <- versus.BO.chart(titles, processed.data)
-show(test)
+test <- versus.BO.chart.2(titles, processed.data)
+View(test)
 
 
 rm(list = c("data",

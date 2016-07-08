@@ -288,8 +288,8 @@ shinyUI(
                                            ),
                                   fluidRow(
                                            # column(6),
-                                           column(6, align = "center", plotlyOutput("versus_BO_chart")),
-                                           column(6)
+                                           column(4, align = "center", plotlyOutput("versus_BO_chart.1")),
+                                           column(8, align = "center", plotlyOutput("versus_BO_chart.2"))
                                            )
                                   )
                          ),
