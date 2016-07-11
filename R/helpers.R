@@ -235,11 +235,14 @@ getCriticsData <- function(names){
     names(omdb_score) <- cols; rm(cols)
     omdb_score$title <- titles
     omdb_score <- data.table(omdb_score)
-    return(omdb_score)
-    omdb_score$RT_audience_perc[which(is.na(omdb_score$RT_audience_perc))] <- 26
-    omdb_score$RT_audience_rating[which(is.na(omdb_score$RT_audience_rating))] <- 2.3
-    omdb_score$RT_perc[which(is.na(omdb_score$RT_perc))] <- 7
-    omdb_score$RT_rating[which(is.na(omdb_score$RT_rating))] <- 3.2
+      
+    omdb_score$metascore[which(is.na(omdb_score$metascore))] <- c(70,45)
+    omdb_score$RT_audience_perc[which(is.na(omdb_score$RT_audience_perc))] <- c(92,51)
+    omdb_score$RT_audience_rating[which(is.na(omdb_score$RT_audience_rating))] <- c(4.3,3.1)
+    omdb_score$RT_perc[which(is.na(omdb_score$RT_perc))] <- c(89,37)
+    omdb_score$RT_rating[which(is.na(omdb_score$RT_rating))] <- c(7.5,4.8)
+    
+    omdb_score$title <- NULL
     
     omdb_score[, RT_score := 100*(RT_rating*RT_perc/1000)]
     omdb_score[, imdb_rating := 10*(imdb_rating)]

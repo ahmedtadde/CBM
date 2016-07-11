@@ -2,12 +2,12 @@ source('../R/helpers.R')
 libraries()
  
 names <- c("dc","marvel")
-df <- getCriticsData(names)
-# data <- getData(names)
-# raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
-# raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
-# raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
-# processed.data <- data$df
+# test <- getCriticsData(names)
+data <- getData(names)
+raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
+raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
+raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
+processed.data <- data$df
 
 # test <- versus_meta("The Punisher",raw.data)
 
