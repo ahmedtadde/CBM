@@ -281,19 +281,20 @@ shinyServer(function(input, output) {
   
   
   
-    rank.options1 <- c("Overall Estimated Critical Reception",
-                       "Box Office Performance index",
+    rank.options1 <- c("Overall Critical Reception",
+                       "Overall Box Office Performance",
                        "Rotten Tomatoes Critics Tomatometer",
                        "Rotten Tomatoes Critics Rating",
                        "Custom Rotten Tomatoes Critics Score",
                        "Rotten Tomatoes Audience Tomatometer",
                        "Rotten Tomatoes Audience Rating",
                        "Custom Rotten Tomatoes Audience Score",
-                       "Metascore","IMDB","Foreign BO", "Domestic BO",
+                       "Metascore","IMDB","Foreign Box Office Gross", 
+                       "Domestic Box Office Gross",
                        "Foreign & Domestic BO - Weighted Mean (30/70)",
-                       "Average per Theater",
-                       "Weekly Relative Percent Gross (vs Opening Week)",
-                       "Weekly Ranking Index")
+                       "Weekly Average per Theater",
+                       "Weekly Grosses as % of Opening Week",
+                       "Weekly Ranking")
   
     rank.options2 <- c(
                         "critics_score",
@@ -385,19 +386,20 @@ shinyServer(function(input, output) {
   
   
   
-    rank.options1 <- c("Overall Estimated Critical Reception",
-                       "Box Office Performance index",
+    rank.options1 <- c("Overall Critical Reception",
+                       "Overall Box Office Performance",
                        "Rotten Tomatoes Critics Tomatometer",
                        "Rotten Tomatoes Critics Rating",
                        "Custom Rotten Tomatoes Critics Score",
                        "Rotten Tomatoes Audience Tomatometer",
                        "Rotten Tomatoes Audience Rating",
                        "Custom Rotten Tomatoes Audience Score",
-                       "Metascore","IMDB","Foreign BO", "Domestic BO",
+                       "Metascore","IMDB","Foreign Box Office Gross", 
+                       "Domestic Box Office Gross",
                        "Foreign & Domestic BO - Weighted Mean (30/70)",
-                       "Average per Theater",
-                       "Weekly Relative Percent Gross (vs Opening Week)",
-                       "Weekly Ranking Index")
+                       "Weekly Average per Theater",
+                       "Weekly Grosses as % of Opening Week",
+                       "Weekly Ranking")
   
     rank.options2 <- c(
       "critics_score",

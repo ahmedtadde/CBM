@@ -26,10 +26,10 @@ getBoxOfficeData <- function(names){
     
     bom = data.table(bom,keep.rownames = FALSE)
     
-    
     colum.group.1 <- c("director",
                        "distributor",
                        "week_1_gross",
+                       "budget",
                        "domestic_BO",
                        "foreign_BO",
                        "genre",
@@ -39,25 +39,25 @@ getBoxOfficeData <- function(names){
     df.1 <- data.table(data.frame(df.1)[ , order(names(df.1),decreasing = TRUE)])
     setnames(df.1, c("Title","week_1_gross"),c("title","ow_gross"))
     df.info <- df.1
-    
+
     colum.group.2.1 <- paste("week",seq(1,9),"avg", sep="_")
     colum.group.2.2 <- paste("week",seq(10,15),"avg", sep="_")
     df.2.1 <- select(bom, which(names(bom)%in% colum.group.2.1))
     df.2.2 <- select(bom, which(names(bom)%in% colum.group.2.2))
     df.avg <- data.table(cbind(df.2.1,df.2.2))
-    
+
     df.avg <- data.frame(apply(data.frame(df.avg),2,as.numeric,na.rm = T))
     df.avg <- data.table(cbind("title"=bom$Title, df.avg))
     df.avg[, score := apply(select(df.avg,c(2:16)),1, weighted.mean, seq(1,15), na.rm = T)]
     df.avg[, score := score/10000]
-    
+
     colum.group.2.1 <- paste("week",seq(1,9),"change", sep="_")
     colum.group.2.2 <- paste("week",seq(10,15),"change", sep="_")
     df.2.1 <- select(bom, which(names(bom)%in% colum.group.2.1))
     df.2.2 <- select(bom, which(names(bom)%in% colum.group.2.2))
     df.change <- data.table(cbind(df.2.1,df.2.2))
     df.change <- data.frame(apply(data.frame(df.change),2,as.numeric,na.rm = T))
-    
+
     normalize.change <- function(vector) {
 
       negative <- vector[which(vector<0)]
@@ -65,7 +65,7 @@ getBoxOfficeData <- function(names){
       vector[which(vector<0)] <- negative
       return(vector)
     }
-    
+
     df.change <- data.frame(apply(data.frame(df.change),2,normalize.change))
 
     cumulative.change <- function(vector){
@@ -75,7 +75,7 @@ getBoxOfficeData <- function(names){
 
       return(vector)
     }
-    
+
     columns <- names(df.change)
     df.change <- transpose(data.frame(apply(data.frame(df.change),1,cumulative.change)))
     names(df.change) <- columns
@@ -99,8 +99,10 @@ getBoxOfficeData <- function(names){
     bom_score <- data.table("avg" = df.avg$score,
                             "change" = df.change$score,
                             "rank" = df.rank$score)
-
-    info <- df.info %>% select(c(1,3,4,6,7))
+    
+    
+    info <- df.info %>% select(c(2,1,3,4,6,7,10))
+    
     info$runtime[which(info$runtime < 90)] <- 1
     info$runtime[which(info$runtime >= 90 & info$runtime < 120 )] <- 2
     info$runtime[which(info$runtime >= 120 & info$runtime < 150 )] <- 3
@@ -112,29 +114,63 @@ getBoxOfficeData <- function(names){
     info$rating[which(info$rating== "PG-13")] <- 2
     info$rating[which(info$rating== "R")] <- 3
     info$rating <- as.numeric(info$rating)
-
-    info$combined_BO <- apply(select(info, which(names(info) %in% c("foreign_BO","domestic_BO"))),
-                              1, weighted.mean,c(0.3,0.7) ,na.rm = T)
-    info$combined_BO <- (info$combined_BO)/(10^8)
-    info$ow_score <- 1 - (info$ow_gross/info$domestic_BO)
     
-    info$foreign_BO -> x
-    info$domestic_BO -> y
-    info$ow_gross -> z
+    info$budget[which(info$title %in% c("The Amazing Spider-Man 2"))] <- 255*10^6
+    info$budget[which(info$title %in% c("Batman: Mask of the Phantasm"))] <- 6*10^6
+    info$budget[which(info$title %in% c("Blade"))] <- 45*10^6
+    info$budget[which(info$title %in% c("Superman III"))] <- 39*10^6
+    info$budget[which(info$title %in% c("Supergirl"))] <- 35*10^6
+    info$title <- NULL
+    
+
+    # info$combined_BO <- apply(select(info, which(names(info) %in% c("foreign_BO","domestic_BO"))),
+    #                           1, weighted.mean,c(0.3,0.7) ,na.rm = T)
+    # info$combined_BO <- (info$combined_BO)/(10^8)
+    # info$ow_score.1 <- 1 - (info$ow_gross/info$domestic_BO)
+    # info$ow_score.2 <- info$ow_gross/info$budget
+    # info$investment_return <- info$domestic_BO/info$budget
+
+    
+    v <- apply(select(info, which(names(info) %in% c("foreign_BO","domestic_BO"))),
+               1, weighted.mean,c(0.3,0.7) ,na.rm = T)
+
+    w <- 1 - (info$ow_gross/info$domestic_BO)
+    x <- info$ow_gross/info$budget
+    y <- w/info$budget
+    
+    weeks_in_theater <- function(vector){length(na.omit(vector))}
+    z <- apply(select(df.rank, c(2:16)),1,weeks_in_theater)/15
+
+    table <- data.table(v,w,x,y,z)
+
+    info$other <- apply(table,1, geometric.mean,na.rm = T) 
+    # info$theater_run.score <- z
+    
+    info$budget -> v
+    info$foreign_BO -> w
+    info$domestic_BO -> x
+    info$ow_gross -> y
+    
+    info$budget <- NULL
     info$foreign_BO <- NULL
     info$domestic_BO <- NULL
     info$ow_gross <- NULL
+    
+    
+    # weeks_in_theater <- function(vector){length(na.omit(vector))}
+    # theater_run <- apply(select(df.rank, c(2:16)),1,weeks_in_theater)
 
-    weeks_in_theater <- function(vector){length(na.omit(vector))}
-    theater_run <- apply(select(df.rank, c(2:16)),1,weeks_in_theater)
-
-
-    bom <- data.table(bom_score, info, "theater_run_score" = theater_run/15)
-    bom$bo_score <- apply(bom,1, weighted.mean,c(0.2,0.2,0.2,0.05,0.05,0.1,0.1,0.1), na.rm = T)
-    bom$foreign_BO <- x
-    bom$domestic_BO <- y
-    bom$ow_gross <- z
-
+    # bom <- data.table(bom_score, info, "theater_run_score" = theater_run/15)
+    bom <- data.table(bom_score, info)
+    
+    # bom$bo_score <- apply(bom,1, weighted.mean,c(0.15,0.15,0.15,0.05,0.05,0.1,0.1,0.1,0.15,1), na.rm = T)
+    bom$bo_score <- apply(bom,1, weighted.mean,c(0.2,0.2,0.2,0.1,0.1,0.2), na.rm = T)
+    
+    
+    bom$budget <- v
+    bom$foreign_BO <- w
+    bom$domestic_BO <- x
+    bom$ow_gross <- y
 
     bom$studio <- df.info$distributor
     bom$director <- df.info$director
@@ -151,7 +187,8 @@ getBoxOfficeData <- function(names){
     rm(list = c("df.avg", "df.change",
                 "df.rank","x","y",
                 "info","bom_score",
-                "df.info","weeks_in_theater","theater_run",
+                "df.info","weeks_in_theater",
+                # "theater_run",
                 "df.2.1","df.2.2","df.1","colum.group.1","df.rank.bis","rank.score",
                 "colum.group.2.1","colum.group.2.2","cumulative.change",
                 "normalize.rank","normalize.change","columns"))
@@ -189,13 +226,16 @@ getCriticsData <- function(names){
     omdb = data.table(omdb,keep.rownames = FALSE)
     setnames(omdb, "Title", "title")
     
+    omdb$title -> titles
     omdb_score <- omdb %>% select(c(3,4,9,10,12,13))
     cols <- names(omdb_score)
     omdb_score <- transpose(data.frame(apply(omdb_score, 1, as.character, na.rm = T)))
     omdb_score <- data.frame(apply(omdb_score, 1, as.numeric, na.rm = T))
     omdb_score <- transpose(omdb_score)
     names(omdb_score) <- cols; rm(cols)
+    omdb_score$title <- titles
     omdb_score <- data.table(omdb_score)
+    return(omdb_score)
     omdb_score$RT_audience_perc[which(is.na(omdb_score$RT_audience_perc))] <- 26
     omdb_score$RT_audience_rating[which(is.na(omdb_score$RT_audience_rating))] <- 2.3
     omdb_score$RT_perc[which(is.na(omdb_score$RT_perc))] <- 7
@@ -239,12 +279,17 @@ getData <- function(names){
   BO <- getBoxOfficeData(names)
   Critics <- getCriticsData(names)
   dc <- data.table(BO$dc$processed, Critics$dc$processed)
-  dc$combined_score <- apply(select(dc,c(9,19)),1,weighted.mean, c(0.4,0.6),na.rm =T)
+  # return(dc)
+  # dc$combined_score <- apply(select(dc,c(11,22)),1,weighted.mean, c(0.4,0.6),na.rm =T)
+  dc$combined_score <- apply(select(dc,which(names(dc)%in% c("bo_score","critics_score"))),
+                             1,weighted.mean, c(0.4,0.6),na.rm =T)
   dc$IP <- rep("DC", dim(dc)[1])
   
   
   marvel <- data.table(BO$marvel$processed, Critics$marvel$processed)
-  marvel$combined_score <- apply(select(marvel,c(9,19)),1,weighted.mean, c(0.4,0.6), na.rm =T)
+  # marvel$combined_score <- apply(select(marvel,c(11,22)),1,weighted.mean, c(0.4,0.6), na.rm =T)
+  marvel$combined_score <- apply(select(marvel,which(names(marvel)%in% c("bo_score","critics_score"))),
+                                 1,weighted.mean, c(0.4,0.6),na.rm =T)
   marvel$IP <- rep("Marvel", dim(marvel)[1])
 
   movies <- data.table(rbind(dc,marvel))
@@ -384,7 +429,7 @@ Viz <- function(df){
                          opacity = mapping_size,
                          text = paste(toupper(title),"<br>",
                                       "Grade: ", toupper(class), "<br>",
-                                      "Critical Reception: ", round(critics_score,2),"%" ,"<br>",
+                                      "Overall Critical Reception: ", round(critics_score,2),"%" ,"<br>",
                                       "Box Office Performance Index: ", round(bo_score,2),"<br>",
                                       "All-time Ranking: ", overall_rank),
                          hoverinfo = "text")
@@ -396,18 +441,20 @@ Viz <- function(df){
   plot <- layout(plot,
                  title = "Ranking Visulation (hover on bubble for movie info)",
                  titlefont = list(size = 15, color = "white"),
-                 legend = list(font = list(size = 15, color = "white")),
+                 legend = list(font = list(size = 15, color = "white"),
+                               x = 0.9,y = 0.1
+                               ),
                  autosize = F, 
                  width = 1400, 
                  height = 650, 
                  paper_bgcolor='rgba(0,0,0,0)',
                  plot_bgcolor='rgba(0,0,0,0)',
                  # margin = m,
-                 xaxis = list(title = "Box Office Performance (higher is better)",
+                 xaxis = list(title = "Overall Box Office Performance Index (higher is better)",
                               showgrid = F,
                               zeroline = FALSE,
                               showline = FALSE,
-                              showticklabels = T,
+                              showticklabels = F,
                               tickfont = list(size = 15, color = "white"),
                               titlefont = list(size = 15, color = "white")
                               # showgrid = F,
@@ -417,11 +464,11 @@ Viz <- function(df){
                               # showline = FALSE,
                               # showticklabels = T
                               ),
-                 yaxis = list(title = "Critical Reception (in %)",
+                 yaxis = list(title = "Overall Critical Reception (in %)",
                               showgrid = F,
                               zeroline = FALSE,
                               showline = FALSE,
-                              showticklabels = T,
+                              showticklabels = F,
                               tickfont = list(size = 15, color = "white"),
                               titlefont= list(size = 15, color = "white")
                               # showgrid = F,
@@ -495,7 +542,7 @@ rank.by <- function(vector, List){
     else {table <- table %>%arrange(-table[[1]]) %>% select(2,1)}
     
     
-    table[, rank:= seq(1,dim(table)[1])]
+    table$rank <- seq(1,dim(table)[1])
     table <- table %>%select(3,1,2)
     x <- df %>% select(which(names(df)%in% c("title",vector,"movie_report","poster")))
     table <- merge(table, x, by.y = "title", by.x= "title")
@@ -635,7 +682,7 @@ report.text <- function(List){
             "<a>Rating: </a> ", df2.1$rating.y[i],'<br/>',
             "<a>Opening Domestic BO: </a> $",formatC(as.numeric(df$ow_gross[i]), format="f", digits=2, big.mark=","),'<br/>',
             "<a>Domestic BO: </a> $",  formatC(as.numeric(df$domestic_BO[i]), format="f", digits=2, big.mark=","),'<br/>',
-            "<a>World Wide BO: </a> $",formatC(as.numeric(df$domestic_BO[i]+df$foreign_BO[i]), format="f", digits=2, big.mark=","),'<br/>',
+            "<a>Foreign BO: </a> $",formatC(as.numeric(df$foreign_BO[i]), format="f", digits=2, big.mark=","),'<br/>',
             "<a>Rotten Tomatoes Critics Tomatometer: </a>", df2.2$RT_perc[i],"%",'<br/>',
             "<a>Rotten Tomatoes Critics Rating: </a>", paste0(df2.2$RT_rating[i],"/10"),'<br/>',
             "<a>Rotten Tomatoes Audience Tomatometer: </a>", df2.2$RT_audience_perc[i],"%",'<br/>',
@@ -898,6 +945,7 @@ versus.weekly.perc <- function(titles, df, List){
     arrange(desc(combined_score))
   
   table <- data.table(table)
+  
   
   
   first <- plot_ly( x = c(2:15),

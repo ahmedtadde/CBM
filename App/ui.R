@@ -53,8 +53,8 @@ shinyUI(
                          column(2,selectizeInput('ip',
                                                  h4('Comic Book Company'),
                                                  choices = c("All","DC","Marvel"),
-                                                 multiple = TRUE,
-                                                 selected = "Marvel"
+                                                 multiple = F,
+                                                 selected = "All"
                                                  )),
 
                          column(2,selectizeInput('studio',
@@ -72,14 +72,14 @@ shinyUI(
                                                              "TriStar"
                                                              ),
                                                  multiple = TRUE,
-                                                 selected = "Disney"
+                                                 selected = "All"
                                                  )),
 
                          column(2, sliderInput("years",
                                                label = h4("Years"),
                                                min = 1978,
                                                max = 2016,
-                                               value = c(2005, 2015))),
+                                               value = c(2006, 2016))),
 
                          column(2,selectizeInput('months',
                                                  h4('Months'),
@@ -164,19 +164,20 @@ shinyUI(
                          column(4,selectizeInput('rank.by',
                                                  h4('Rank By'),
                                                  selected = "Rotten Tomatoes Critics Tomatometer",
-                                                 choices = c("Overall Estimated Critical Reception",
-                                                             "Box Office Performance index",
+                                                 choices = c("Overall Critical Reception",
+                                                             "Overall Box Office Performance",
                                                              "Rotten Tomatoes Critics Tomatometer",
                                                              "Rotten Tomatoes Critics Rating",
                                                              "Custom Rotten Tomatoes Critics Score",
                                                              "Rotten Tomatoes Audience Tomatometer",
                                                              "Rotten Tomatoes Audience Rating",
                                                              "Custom Rotten Tomatoes Audience Score",
-                                                             "Metascore","IMDB","Foreign BO", "Domestic BO",
+                                                             "Metascore","IMDB","Foreign Box Office Gross", 
+                                                             "Domestic Box Office Gross",
                                                              "Foreign & Domestic BO - Weighted Mean (30/70)",
-                                                             "Average per Theater",
-                                                             "Weekly Relative Percent Gross (vs Opening Week)",
-                                                             "Weekly Ranking Index"),
+                                                             "Weekly Average per Theater",
+                                                             "Weekly Grosses as % of Opening Week",
+                                                             "Weekly Ranking"),
                                                  multiple = F)
                                 ),
                          column(4)
@@ -297,6 +298,14 @@ shinyUI(
               navbarMenu("All-time Ranking",
                          tabPanel("Visual Classification",plotlyOutput("Viz")),
                          tabPanel("Ranking Table",tableOutput("combined.ranking.table"))
+                         ),
+              
+              
+              
+              navbarMenu("Documentation",
+                         tabPanel("About",textOutput("about")),
+                         tabPanel("Methodology",textOutput("methodology")),
+                         tabPanel("Contact",textOutput("contact"))
                          )
             )
   )

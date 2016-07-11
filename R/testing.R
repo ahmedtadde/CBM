@@ -2,11 +2,12 @@ source('../R/helpers.R')
 libraries()
  
 names <- c("dc","marvel")
-data <- getData(names)
-raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
-raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
-raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
-processed.data <- data$df
+df <- getCriticsData(names)
+# data <- getData(names)
+# raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
+# raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
+# raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
+# processed.data <- data$df
 
 # test <- versus_meta("The Punisher",raw.data)
 
@@ -47,17 +48,17 @@ processed.data <- data$df
 # View(rank)
 
 
-titles <- c("Thor", "Man of Steel")
-test <- versus.BO.chart.2(titles, processed.data)
-View(test)
+# titles <- c("Thor", "Man of Steel")
+# test <- versus.BO.chart.2(titles, processed.data)
+# View(test)
 
 
-rm(list = c("data",
-            "names",
-            # "filter.examples",
-            # "rank.options",
-            # "filtering",
-            "titles"
-            # "rank.options"
-            )
-   )
+# rm(list = c("data",
+#             "names"
+#             # "filter.examples",
+#             # "rank.options",
+#             # "filtering",
+#             # "titles"
+#             # "rank.options"
+#             )
+#    )
