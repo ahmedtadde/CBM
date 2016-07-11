@@ -9,11 +9,9 @@ raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
 raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
 processed.data <- data$df
 
-# test <- versus_meta("The Punisher",raw.data)
-
-# main.viz <- Viz(processed.data)
-# show(main.viz$viz)
-# View(main.viz$table)
+# test <- Viz(processed.data)
+# show(test$viz)
+# View(test$table)
 
 # filter.examples <- list(c("Marvel","DC"), # IP
 #                         c("Disney","Fox","Warner Bros."), # Studio/Distributor

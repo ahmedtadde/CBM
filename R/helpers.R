@@ -136,20 +136,21 @@ getBoxOfficeData <- function(names){
 
     w <- 1 - (info$ow_gross/info$domestic_BO)
     x <- info$ow_gross/info$budget
-    y <- w/info$budget
+    y <- v/info$budget
     
     weeks_in_theater <- function(vector){length(na.omit(vector))}
     z <- apply(select(df.rank, c(2:16)),1,weeks_in_theater)/15
 
     table <- data.table(v,w,x,y,z)
 
-    info$other <- apply(table,1, geometric.mean,na.rm = T) 
+    info$investment_index <- apply(table,1, geometric.mean,na.rm = T) 
     # info$theater_run.score <- z
     
-    info$budget -> v
-    info$foreign_BO -> w
-    info$domestic_BO -> x
-    info$ow_gross -> y
+    info$budget -> a
+    info$foreign_BO -> b
+    info$domestic_BO -> c
+    info$ow_gross -> d
+    
     
     info$budget <- NULL
     info$foreign_BO <- NULL
@@ -167,10 +168,18 @@ getBoxOfficeData <- function(names){
     bom$bo_score <- apply(bom,1, weighted.mean,c(0.2,0.2,0.2,0.1,0.1,0.2), na.rm = T)
     
     
-    bom$budget <- v
-    bom$foreign_BO <- w
-    bom$domestic_BO <- x
-    bom$ow_gross <- y
+    bom$combined_BO <- v
+    bom$word_to_mouth <- w
+    bom$ow_investment_return <- x
+    bom$ww_investment_return <- y
+    bom$theater_run_coef <- z
+    
+    bom$budget <- a
+    bom$foreign_BO <- b
+    bom$domestic_BO <- c
+    bom$ow_gross <- d
+    
+    
 
     bom$studio <- df.info$distributor
     bom$director <- df.info$director
@@ -235,12 +244,14 @@ getCriticsData <- function(names){
     names(omdb_score) <- cols; rm(cols)
     omdb_score$title <- titles
     omdb_score <- data.table(omdb_score)
-      
-    omdb_score$metascore[which(is.na(omdb_score$metascore))] <- c(70,45)
-    omdb_score$RT_audience_perc[which(is.na(omdb_score$RT_audience_perc))] <- c(92,51)
-    omdb_score$RT_audience_rating[which(is.na(omdb_score$RT_audience_rating))] <- c(4.3,3.1)
-    omdb_score$RT_perc[which(is.na(omdb_score$RT_perc))] <- c(89,37)
-    omdb_score$RT_rating[which(is.na(omdb_score$RT_rating))] <- c(7.5,4.8)
+    
+    
+    omdb_score$metascore[which(is.na(omdb_score$metascore) & (omdb_score$title %in% c("Fantastic Four: Rise of the Silver Surfer")))] <- 45
+    omdb_score$RT_audience_perc[which(is.na(omdb_score$RT_audience_perc))] <- 51
+    omdb_score$RT_audience_rating[which(is.na(omdb_score$RT_audience_rating))] <- 3.1
+    omdb_score$RT_perc[which(is.na(omdb_score$RT_perc))] <- 37
+    omdb_score$RT_rating[which(is.na(omdb_score$RT_rating))] <- 4.8
+    # return(omdb_score)
     
     omdb_score$title <- NULL
     
@@ -409,7 +420,7 @@ getData <- function(names){
              # "xmen_dofp.revised.plot"
              ))
 
-  return(list("df" = movies, "BO" = BO, "Critics" = Critics))
+  return(list("df" = movies%>%arrange(desc(combined_score)), "BO" = BO, "Critics" = Critics))
   # return(list("dc" = dc, "marvel" = marvel))
 }
 
