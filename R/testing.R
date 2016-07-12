@@ -13,6 +13,20 @@ processed.data <- data$df
 # show(test$viz)
 # View(test$table)
 
+
+titles <- c("Thor", "Man of Steel")
+test <- versus.BO.chart.1(titles, processed.data)
+show(test)
+
+
+# titles <- c("Thor", "Man of Steel")
+# test <- versus.BO.chart.2(titles, processed.data)
+# show(test)
+
+# titles <- c("Thor", "Man of Steel")
+# test <- versus_critics(titles, processed.data, raw.data)
+# show(test$chart)
+
 # filter.examples <- list(c("Marvel","DC"), # IP
 #                         c("Disney","Fox","Warner Bros."), # Studio/Distributor
 #                         c(2005,2015), # Year range
@@ -51,12 +65,12 @@ processed.data <- data$df
 # View(test)
 
 
-# rm(list = c("data",
-#             "names"
-#             # "filter.examples",
-#             # "rank.options",
-#             # "filtering",
-#             # "titles"
-#             # "rank.options"
-#             )
-#    )
+rm(list = c("data",
+            "names"
+            # "filter.examples",
+            # "rank.options",
+            # "filtering",
+            # "titles"
+            # "rank.options"
+            )
+   )

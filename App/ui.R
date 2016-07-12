@@ -226,7 +226,8 @@ shinyUI(
                                            column(3, align = 'center',htmlOutput("secondmovie.meta.CR")),
                                            column(1)
                                   ),
-                                  fluidRow(column(1),
+                                  fluidRow(
+                                           column(1),
                                            column(3, htmlOutput("firstmovie.critics_consensus")),
                                            column(4 ),
                                            column(3, htmlOutput("secondmovie.critics_consensus")),
@@ -238,8 +239,8 @@ shinyUI(
                                            column(1)
                                   ),
                                   fluidRow(
-                                    column(1),
-                                    column(10, align = "center", plotlyOutput("versus_critics_chart"))
+                                    # column(1),
+                                    column(12, align = "center", plotlyOutput("versus_critics_chart"))
                                     # column(1)
                                   ),
                                   fluidRow(column(1),

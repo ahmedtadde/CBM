@@ -129,11 +129,11 @@ shinyServer(function(input, output) {
     })
 
   output$versus_critics_chart <- renderPlotly({
-    consensus <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
+    chart <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
                                 processed.data,
                                 raw.data)
 
-    consensus$chart
+    chart$chart
     })
   
   

@@ -1099,42 +1099,29 @@ versus.weekly.rank <- function(titles, df, List){
 
 
 versus.BO.chart.1 <- function(titles, df){
-  plot.table <- data.table(df) %>% filter(title %in% titles) %>%
+  plot.table <- data.table(df) %>% filter(title %in% titles)%>%
     select( which(names(df) %in% c("title",
-                                   # "avg",
-                                   # "change",
-                                   # "rank",
-                                   # "combined_BO",
-                                   # "ow_score",
-                                   # "theater_run_score",
-                                   # "bo_score",
                                    "foreign_BO",
                                    "domestic_BO",
                                    "ow_gross",
+                                   "combined_BO",
                                    "combined_score"
                                    )
                   )
-            ) %>% select(c(4,5,3,2,1
-                           # 11,12,10,9,8,5,4,6,1,2,3,7
-                          )
-                        ) %>% arrange(desc(combined_score))
+            ) 
+  plot.table$world_wide <- plot.table$domestic_BO + plot.table$foreign_BO
+  plot.table <- plot.table %>% select(c(5,4,3,2,7,1,6))%>% arrange(desc(combined_score))
   
-  # plot.table <- data.table(data)
+  # return(plot.table)
   
   chart_step.1 <- plot_ly( 
                            x = c("Opening Week",
                                  "Domestic",
-                                 "Foreign"
-                                 # "After Opening Week Gross (in %)",
-                                 # "Foreign & Domestic BO - Weighted Mean (30/70)",
-                                 # "Theater Run Coef (weeks in theaters/ standard 15 weeks)",
-                                 # "Weekly Average Gross per Theater Score",
-                                 # "Weekly Gross as % of Opening Week BO Score",
-                                 # "Weekly Rank Score",
-                                 # "Overall Box Office Performance Score"
+                                 "Foreign",
+                                 "World Wide",
+                                 "Foreign & Domestic Weighted Mean (30/70)"
                                  ),
-                           # y = c( 10, 20, 50),
-                           y = transpose(data.table(plot.table)[1] %>% select(3:5))$V1,
+                           y = transpose(data.table(plot.table)[1] %>% select(2:6))$V1,
                            type = "bar",
                            marker = list(color = "#20B2AA"),
                            name = plot.table$title[1]
@@ -1144,17 +1131,11 @@ versus.BO.chart.1 <- function(titles, df){
   chart_step.2 <- add_trace(chart_step.1,
                             x = c("Opening Week",
                                   "Domestic",
-                                  "Foreign"
-                                  # "After Opening Week Gross (in %)",
-                                  # "Foreign & Domestic BO - Weighted Mean (30/70)",
-                                  # "Theater Run Coef (weeks in theaters/ standard 15 weeks)",
-                                  # "Weekly Average Gross per Theater Score",
-                                  # "Weekly Gross as % of Opening Week BO Score",
-                                  # "Weekly Rank Score",
-                                  # "Overall Box Office Performance Score"
+                                  "Foreign",
+                                  "World Wide",
+                                  "Foreign & Domestic Weighted Mean (30/70)"
                             ),
-                            # y = c( 10, 20, 50),
-                            y = transpose(data.table(plot.table)[2] %>% select(3:5))$V1,
+                            y = transpose(data.table(plot.table)[2] %>% select(2:6))$V1,
                             type = "bar",
                             marker = list(color = "red"),
                             name = plot.table$title[2]
@@ -1208,24 +1189,30 @@ versus.BO.chart.2 <- function(titles, df){
                                    "avg",
                                    "change",
                                    "rank",
-                                   "combined_BO",
+                                   "word_to_mouth",
+                                   "ow_investment_return",
+                                   "ww_investment_return",
+                                   "investment_index",
                                    "bo_score",
                                    "combined_score"
                                   )
                   )
-            )%>% select(c(6,7,1:5)) %>% arrange(desc(combined_score))
+            ) 
   
-  # plot.table <- data.table(data)
+  
+  # %>% select(c(9,1:3,6:8,4:5,10)) %>% arrange(desc(combined_score))
+  
   
   chart_step.1 <- plot_ly( 
-                           x = c("Score for Weekly Average Gross per Theater",
-                                 "Score for Weekly Gross as % of Opening Week BO",
-                                 "Score for Weekly Rank",
-                                 "Foreign & Domestic BO Weighted Mean (30/70)",
-                                 # "After Opening Week Gross (in %)",
+                           x = c("Weekly Average Gross per Theater Index",
+                                 "Weekly Gross as % of Opening Week Index",
+                                 "Weekly Rank Index",
+                                 "Word to Mouth Index",
+                                 "Ratio: Opening Week/Budget",
+                                 "Ratio: Foreign & Domestic Weighted Mean/Budget",
                                  "Overall Box Office Performance Index"
                            ),
-                           y = c(20,200,2,2,10)*transpose(data.table(plot.table)[1] %>% select(3:7))$V1,
+                           y = c(1,10,1,1,1,0.1,0.01,0.1)*transpose(data.table(plot.table)[1] %>% select(2:9))$V1,
                            type = "bar",
                            marker = list(color = "#20B2AA"),
                            name = plot.table$title[1]
@@ -1233,14 +1220,15 @@ versus.BO.chart.2 <- function(titles, df){
   
   
   chart_step.2 <- add_trace(chart_step.1,
-                            x = c("Score for Weekly Average Gross per Theater",
-                                  "Score for Weekly Gross as % of Opening Week BO",
-                                  "Score for Weekly Rank",
-                                  "Foreign & Domestic BO Weighted Mean (30/70)",
-                                  # "After Opening Week Gross (in %)",
+                            x = c("Weekly Average Gross per Theater Index",
+                                  "Weekly Gross as % of Opening Week Index",
+                                  "Weekly Rank Index",
+                                  "Word to Mouth Index",
+                                  "Ratio: Opening Week/Budget",
+                                  "Ratio: Foreign & Domestic Weighted Mean/Budget",
                                   "Overall Box Office Performance Index"
                                   ),
-                            y = c(20, 200,2,2,10)*transpose(data.table(plot.table)[2] %>% select(3:7))$V1,
+                            y = c(1,10,1,1,1,0.1,0.01,0.1)*transpose(data.table(plot.table)[2] %>% select(2:9))$V1,
                             type = "bar",
                             marker = list(color = "red"),
                             name = plot.table$title[2]
@@ -1302,14 +1290,21 @@ versus_critics <- function(titles, df, List){
   
   raw <- data.table(bo.raw,critics.raw)
   
-  table.1 <- raw %>% select(c(1,58,59,60,61,55,54))
-  table.2 <- processed %>% select(c(23,17:19))
+  table.1 <- raw %>% select(which(names(raw) %in% c("title","RT_rating","RT_audience_rating",
+                                                    "RT_perc","RT_audience_perc","RT_consensus")))
+  table.2 <- processed %>% select(which(names(processed) %in% c("title",
+                                                                "imdb_rating",
+                                                                "metascore",
+                                                                "RT_score",
+                                                                "RT_audience_score",
+                                                                "critics_score")))
   
-  plot.table <- data.table(merge(table.1,table.2, by = "title"))%>% arrange(desc(critics_score))
-  plot.table$imdb_rating <- 10*plot.table$imdb_rating 
+  plot.table <- data.table(merge(table.1,table.2, by = "title"))
+  # plot.table$imdb_rating <- 10*plot.table$imdb_rating 
   plot.table$RT_rating <-  100*(plot.table$RT_rating/10)
   plot.table$RT_audience_rating <-  100*(plot.table$RT_audience_rating/5)
   
+  plot.table <- plot.table %>% select(c(1:5,7:11,6))%>% arrange(desc(critics_score))
   plot.table <- data.table(plot.table)
   
   chart_step.1 <- plot_ly(
@@ -1318,8 +1313,8 @@ versus_critics <- function(titles, df, List){
                               "Rotten Tomates Critics Rating",
                               "Rotten Tomatoes Audience Tometometer",
                               "Rotten Tomatoes Audience Rating",
-                              "Metascore",
                               "IMDB",
+                              "Metascore",
                               "Custom Rotten Tomatoes Critics Score",
                               "Custom Rotten Tomatoes Audience Score",
                               "Overall Estimated Critical Reception"
@@ -1332,14 +1327,15 @@ versus_critics <- function(titles, df, List){
                             name = plot.table$title[1]
                             )
   
+  
   chart_step.2 <- add_trace(chart_step.1,
                               x = c( 
                                 "Rotten Tomatoes Critics Tometometer",
                                 "Rotten Tomates Critics Rating",
                                 "Rotten Tomatoes Audience Tometometer",
                                 "Rotten Tomatoes Audience Rating",
-                                "Metascore",
                                 "IMDB",
+                                "Metascore",
                                 "Custom Rotten Tomatoes Critics Score",
                                 "Custom Rotten Tomatoes Audience Score",
                                 "Overall Estimated Critical Reception"
@@ -1384,19 +1380,19 @@ versus_critics <- function(titles, df, List){
                   )
   
   
-  rt_consensus <- raw %>% select(c(1,dim(raw)[2]))
-  rt_consensus <- data.table(merge(rt_consensus, plot.table, by = "title")) %>% select(c(1,2))
+  # rt_consensus <- plot.table$RT_consensus
+  # rt_consensus <- data.table(merge(rt_consensus, plot.table, by = "title")) %>% select(c(1,2))
   
   foreach( i =1:2) %do% {
     paste(
       "</br>","</br>","</br>",
       paste0("<a><h4>"," Rotten Tomatoes Consensus: ","</h4></a>"),
       "</br>",
-      paste0("<p>",rt_consensus$RT_consensus[i],"</p>"), 
+      paste0("<p>",plot.table$RT_consensus[i],"</p>"), 
       "</br>","</br>","</br>"
       )
   } -> consensus ; rm(i)
-  names(consensus) <- rt_consensus$title
+  names(consensus) <- plot.table$title
   return(list("chart" = chart, "consensus" = consensus))
   
 }
