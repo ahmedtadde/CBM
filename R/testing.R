@@ -14,14 +14,14 @@ processed.data <- data$df
 # View(test$table)
 
 
-titles <- c("Thor", "Man of Steel")
-test <- versus.BO.chart.1(titles, processed.data)
-show(test)
-
-
 # titles <- c("Thor", "Man of Steel")
-# test <- versus.BO.chart.2(titles, processed.data)
+# test <- versus.BO.chart.1(titles, processed.data)
 # show(test)
+
+
+titles <- c("Thor", "Man of Steel")
+test <- versus.BO.chart.2(titles, processed.data)
+show(test)
 
 # titles <- c("Thor", "Man of Steel")
 # test <- versus_critics(titles, processed.data, raw.data)

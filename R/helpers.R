@@ -140,8 +140,19 @@ getBoxOfficeData <- function(names){
     
     weeks_in_theater <- function(vector){length(na.omit(vector))}
     z <- apply(select(df.rank, c(2:16)),1,weeks_in_theater)/15
+    
+    table <- data.table(v,w,x,y,z,
+                        info$budget/10^8,
+                        info$ow_gross/10^8,
+                        info$domestic_BO/10^8,
+                        info$domestic_BO/info$budget,
+                        info$foreign_BO/10^8,
+                        info$foreign_BO/info$budget,
+                        (info$domestic_BO/10^8 + info$foreign_BO/10^8),
+                        (info$domestic_BO + info$foreign_BO)/info$budget
+                        )
 
-    table <- data.table(v,w,x,y,z)
+    # table <- data.table(v,w,x,y,z,info$ow_gross/10^8)
 
     info$investment_index <- apply(table,1, geometric.mean,na.rm = T) 
     # info$theater_run.score <- z
@@ -165,7 +176,7 @@ getBoxOfficeData <- function(names){
     bom <- data.table(bom_score, info)
     
     # bom$bo_score <- apply(bom,1, weighted.mean,c(0.15,0.15,0.15,0.05,0.05,0.1,0.1,0.1,0.15,1), na.rm = T)
-    bom$bo_score <- apply(bom,1, weighted.mean,c(0.2,0.2,0.2,0.1,0.1,0.2), na.rm = T)
+    bom$bo_score <- apply(bom,1, weighted.mean,c(0.1,0.1,0.1,0.1,0.1,0.5), na.rm = T)
     
     
     bom$combined_BO <- v
@@ -824,12 +835,6 @@ filter.by <- function(filters,df,List){
 
 
 versus_meta <- function(name, df, List){
-  # if (name != "The Punisher"){
-  #   data <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw)) %>% filter(title == name)
-  # } else {
-  #   data <- data.frame(rbind(List$BO$dc$raw, List$BO$marvel$raw))
-  #   data <- data.table(data[58,])
-  # }
   
   data <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw)) %>% filter(title == name)
   data <- data %>% select(which(names(data) %in% c("title","director","genre","rating","runtime","distributor")))
@@ -1119,7 +1124,7 @@ versus.BO.chart.1 <- function(titles, df){
                                  "Domestic",
                                  "Foreign",
                                  "World Wide",
-                                 "Foreign & Domestic Weighted Mean (30/70)"
+                                 "Foreign&Domestic W.M"
                                  ),
                            y = transpose(data.table(plot.table)[1] %>% select(2:6))$V1,
                            type = "bar",
@@ -1133,7 +1138,7 @@ versus.BO.chart.1 <- function(titles, df){
                                   "Domestic",
                                   "Foreign",
                                   "World Wide",
-                                  "Foreign & Domestic Weighted Mean (30/70)"
+                                  "Foreign&Domestic W.M"
                             ),
                             y = transpose(data.table(plot.table)[2] %>% select(2:6))$V1,
                             type = "bar",
@@ -1199,20 +1204,27 @@ versus.BO.chart.2 <- function(titles, df){
                   )
             ) 
   
-  
-  # %>% select(c(9,1:3,6:8,4:5,10)) %>% arrange(desc(combined_score))
-  
+
+  plot.table$domestic_investment_return <- ( filter(df,title %in% titles)$domestic_BO)/ filter(df,title %in% titles)$budget
+  plot.table$foreign_investment_return <- ( filter(df,title %in% titles)$foreign_BO)/ filter(df,title %in% titles)$budget
+  plot.table$ww_investment_return.2 <- (filter(df,title %in% titles)$foreign_BO + filter(df,title %in% titles)$domestic_BO) / filter(df,title %in% titles)$budget
+  plot.table <- plot.table%>% select(c(9,1:3,6:7,11:13,8,4:5,10)) %>% arrange(desc(combined_score))
+  # return(plot.table)
   
   chart_step.1 <- plot_ly( 
                            x = c("Weekly Average Gross per Theater Index",
                                  "Weekly Gross as % of Opening Week Index",
                                  "Weekly Rank Index",
                                  "Word to Mouth Index",
-                                 "Ratio: Opening Week/Budget",
-                                 "Ratio: Foreign & Domestic Weighted Mean/Budget",
-                                 "Overall Box Office Performance Index"
+                                 "Opening Week/Budget",
+                                 "Domestic/Budget",
+                                 "Foreign/Budget",
+                                 "World Wide/Budget",
+                                 "Weighted Foreign & Domestic/Budget",
+                                 "Investment Index",
+                                 "Overall BO Index"
                            ),
-                           y = c(1,10,1,1,1,0.1,0.01,0.1)*transpose(data.table(plot.table)[1] %>% select(2:9))$V1,
+                           y = c(10,100,10,10,1,1,1,1,1,0.1,1)*transpose(data.table(plot.table)[1] %>% select(2:12))$V1,
                            type = "bar",
                            marker = list(color = "#20B2AA"),
                            name = plot.table$title[1]
@@ -1224,11 +1236,15 @@ versus.BO.chart.2 <- function(titles, df){
                                   "Weekly Gross as % of Opening Week Index",
                                   "Weekly Rank Index",
                                   "Word to Mouth Index",
-                                  "Ratio: Opening Week/Budget",
-                                  "Ratio: Foreign & Domestic Weighted Mean/Budget",
-                                  "Overall Box Office Performance Index"
+                                  "Opening Week/Budget",
+                                  "Domestic/Budget",
+                                  "Foreign/Budget",
+                                  "World Wide/Budget",
+                                  "Weighted Foreign & Domestic/Budget",
+                                  "Investment Index",
+                                  "Overall BO Index"
                                   ),
-                            y = c(1,10,1,1,1,0.1,0.01,0.1)*transpose(data.table(plot.table)[2] %>% select(2:9))$V1,
+                            y = c(10,100,10,10,1,1,1,1,1,0.1,1)*transpose(data.table(plot.table)[2] %>% select(2:12))$V1,
                             type = "bar",
                             marker = list(color = "red"),
                             name = plot.table$title[2]
