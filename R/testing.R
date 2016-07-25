@@ -1,6 +1,8 @@
 source('../R/helpers.R')
 libraries()
- 
+
+
+# xmen_dofp.revised.plot <- c("Convinced that mutants pose a threat to humanity, Dr. Bolivar Trask (Peter Dinklage) develops the Sentinels, enormous robotic weapons that can detect a mutant gene and zero in on that person. In the 21st century, the Sentinels have evolved into highly efficient killing machines. With mutants now facing extinction, Wolverine (Hugh Jackman) volunteers to go back in time and rally the X-Men of the past to help change a pivotal moment in history and thereby save their future.")
 names <- c("dc","marvel")
 # test <- getCriticsData(names)
 data <- getData(names)
@@ -17,6 +19,7 @@ processed.data <- data$df
 # titles <- c("Thor", "Man of Steel")
 # test <- versus.BO.chart.1(titles, processed.data)
 # show(test)
+# rm(list = c("titles"))
 
 
 titles <- c("Thor", "Man of Steel")

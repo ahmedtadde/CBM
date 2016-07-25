@@ -53,7 +53,7 @@ shinyUI(
                          column(2,selectizeInput('ip',
                                                  h4('Comic Book Company'),
                                                  choices = c("All","DC","Marvel"),
-                                                 multiple = F,
+                                                 multiple = T,
                                                  selected = "All"
                                                  )),
 

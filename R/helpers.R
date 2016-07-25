@@ -33,7 +33,9 @@ getBoxOfficeData <- function(names){
                        "domestic_BO",
                        "foreign_BO",
                        "genre",
-                       "rating","runtime","Title")
+                       "rating",
+                       "runtime",
+                       "Title")
 
     df.1 <- select(bom, which(names(bom)%in% colum.group.1))
     df.1 <- data.table(data.frame(df.1)[ , order(names(df.1),decreasing = TRUE)])
@@ -101,6 +103,8 @@ getBoxOfficeData <- function(names){
                             "rank" = df.rank$score)
     
     
+    
+    
     info <- df.info %>% select(c(2,1,3,4,6,7,10))
     
     info$runtime[which(info$runtime < 90)] <- 1
@@ -155,12 +159,14 @@ getBoxOfficeData <- function(names){
     # table <- data.table(v,w,x,y,z,info$ow_gross/10^8)
 
     info$investment_index <- apply(table,1, geometric.mean,na.rm = T) 
-    # info$theater_run.score <- z
+    
+    
     
     info$budget -> a
     info$foreign_BO -> b
     info$domestic_BO -> c
     info$ow_gross -> d
+    
     
     
     info$budget <- NULL
@@ -181,14 +187,18 @@ getBoxOfficeData <- function(names){
     
     bom$combined_BO <- v
     bom$word_to_mouth <- w
-    bom$ow_investment_return <- x
-    bom$ww_investment_return <- y
-    bom$theater_run_coef <- z
+    bom$ratio.ow_budget <- x
+    bom$ratio.www_budget <- y
+    bom$theater_run_score <- z
     
     bom$budget <- a
     bom$foreign_BO <- b
     bom$domestic_BO <- c
     bom$ow_gross <- d
+    
+    bom$ratio.domestic_budget <- bom$domestic_BO/bom$budget
+    bom$ratio.foreign_budget <- bom$foreign_BO/bom$budget
+    bom$ratio.worldwide_budget <- (bom$domestic_BO + bom$foreign_BO)/bom$budget
     
     
 
@@ -303,6 +313,7 @@ getData <- function(names){
   
   BO <- getBoxOfficeData(names)
   Critics <- getCriticsData(names)
+ 
   dc <- data.table(BO$dc$processed, Critics$dc$processed)
   # return(dc)
   # dc$combined_score <- apply(select(dc,c(11,22)),1,weighted.mean, c(0.4,0.6),na.rm =T)
@@ -316,8 +327,14 @@ getData <- function(names){
   marvel$combined_score <- apply(select(marvel,which(names(marvel)%in% c("bo_score","critics_score"))),
                                  1,weighted.mean, c(0.4,0.6),na.rm =T)
   marvel$IP <- rep("Marvel", dim(marvel)[1])
+  
+  others <- data.table(BO$others$processed, Critics$others$processed)
+  # marvel$combined_score <- apply(select(marvel,c(11,22)),1,weighted.mean, c(0.4,0.6), na.rm =T)
+  others$combined_score <- apply(select(others,which(names(others)%in% c("bo_score","critics_score"))),
+                                 1,weighted.mean, c(0.4,0.6),na.rm =T)
+  others$IP <- rep("Other", dim(others)[1])
 
-  movies <- data.table(rbind(dc,marvel))
+  movies <- data.table(rbind(dc,marvel,others))
   movies$plot <- as.character(movies$plot)
   movies$release_date <- as.character(movies$release_date)
   movies$poster <- as.character(movies$poster)
@@ -378,7 +395,7 @@ getData <- function(names){
 
   movies$class <- cut(movies$combined_score,
                       breaks = 10,
-                      labels = c(
+                      labels = c("WTF???",
                                  "F",
                                  "E",
                                  "D-",
@@ -404,7 +421,7 @@ getData <- function(names){
 
   movies <- movies%>%arrange(desc(combined_score))
   movies$overall_rank <- seq(1,dim(movies)[1])
-  # movies[, overall_rank:= seq(1,dim(movies)[1])]
+  
 
   fix.director.names <- function(vector){
     x <- na.omit(vector)
@@ -420,16 +437,18 @@ getData <- function(names){
 
   ff4.revised.plot <- c("Scientist Reed Richards (Loan Gruffudd) persuades his arrogant former classmate Victor von Doom (Julian McMahon), to fund his experiments with cosmic energy. On von Doom's space station, the crew - including astronaut Ben Grimm (Michael Chiklis), researcher Sue Storm (Jessica Alba) and pilot Johnny Storm (Chris Evans) - are exposed to a mysterious cosmic storm that bestows super powers upon them. As they cope with their transfortmations, von Doom vows his revenge.")
   thor2.revised.plot <- c("In ancient times, the gods of Asgard fought and won a war against an evil race known as the Dark Elves. The survivors were neutralized, and their ultimate weapon -- the Aether -- was buried in a secret location. Hundreds of years later, Jane Foster (Natalie Portman) finds the Aether and becomes its host, forcing Thor (Chris Hemsworth) to bring her to Asgard before Dark Elf Malekith (Christopher Eccleston) captures her and uses the weapon to destroy the Nine Realms -- including Earth.")
-  # xmen_dofp.revised.plot <- c("")
+  xmen_dofp.revised.plot <- c("Convinced that mutants pose a threat to humanity, Dr. Bolivar Trask (Peter Dinklage) develops the Sentinels, enormous robotic weapons that can detect a mutant gene and zero in on that person. In the 21st century, the Sentinels have evolved into highly efficient killing machines. With mutants now facing extinction, Wolverine (Hugh Jackman) volunteers to go back in time and rally the X-Men of the past to help change a pivotal moment in history and thereby save their future.")
   
-  movies[which(movies$title %in% "Fantastic Four(2005)"),]$plot <- ff4.revised.plot
-  movies[which(movies$title %in% "Thor 2: The Dark World"),]$plot <- thor2.revised.plot
-  # movies[which(movies$title %in% "X-men: Days of Future Past"),]$plot <- xmen_dofp.revised.plot 
+  movies <- data.table(movies)
+  movies[which(movies$title %in% "Fantastic Four(2005)")]$plot <- ff4.revised.plot
+  movies[which(movies$title %in% "Thor 2: The Dark World")]$plot <- thor2.revised.plot
+  movies[which(movies$title %in% "X-Men: Days of Future Past")]$plot <- xmen_dofp.revised.plot
   
   
-  rm(list =c("ff4.revised.plot","thor2.revised.plot"
-             # "xmen_dofp.revised.plot"
-             ))
+  rm(list =c("ff4.revised.plot","thor2.revised.plot",
+             "xmen_dofp.revised.plot"
+             )
+     )
 
   return(list("df" = movies%>%arrange(desc(combined_score)), "BO" = BO, "Critics" = Critics))
   # return(list("dc" = dc, "marvel" = marvel))
@@ -799,7 +818,7 @@ filter.by <- function(filters,df,List){
   data <- data%>%filter(imdb_rating >= Imdbs[1] & imdb_rating <= Imdbs[2])
 
   # RT_perc, RT_rating, RT_audience_perc, RT_audience_rating
-  critics.raw <- data.table(rbind(List$Critics$dc$raw, List$Critics$marvel$raw))
+  critics.raw <- data.table(rbind(List$Critics$dc$raw, List$Critics$marvel$raw,List$Critics$others$raw))
   critics.raw <- critics.raw%>%filter(title %in% data$title)
 
   #Rotten tomatoes critics percent filtering
@@ -819,7 +838,7 @@ filter.by <- function(filters,df,List){
   critics.raw <- critics.raw%>%filter(RT_audience_rating >= RT_audience_ratings[1] & RT_audience_rating <= RT_audience_ratings[2])
 
   ### finally
-  bo.raw <- data.frame(rbind(List$BO$dc$raw, List$BO$marvel$raw))
+  bo.raw <- data.frame(rbind(List$BO$dc$raw, List$BO$marvel$raw,List$BO$others$raw))
   bo.raw <- bo.raw %>% filter(title %in% critics.raw$title)
 
   data <- data.table(data) %>% filter(title %in% critics.raw$title)
@@ -836,7 +855,7 @@ filter.by <- function(filters,df,List){
 
 versus_meta <- function(name, df, List){
   
-  data <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw)) %>% filter(title == name)
+  data <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw, List$BO$others$raw)) %>% filter(title == name)
   data <- data %>% select(which(names(data) %in% c("title","director","genre","rating","runtime","distributor")))
   release.date <- data.table(df) %>% filter(title == name) %>% select(c(23,21))
   
@@ -879,7 +898,7 @@ versus.weekly.avg <- function(titles, df, List){
   processed <- data.table(df) %>% filter(title %in% titles)
   processed <- processed %>% select(which(names(processed) %in% c("title","combined_score")))
   
-  bo.raw <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw))
+  bo.raw <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw, List$BO$others$raw))
   bo.raw <- bo.raw %>% filter(title %in% titles) 
   
   table <- data.table(merge(processed, bo.raw, by = "title")) %>%
@@ -954,7 +973,7 @@ versus.weekly.perc <- function(titles, df, List){
   processed <- data.table(df) %>% filter(title %in% titles)
   processed <- processed %>% select(which(names(processed) %in% c("title","combined_score")))
   
-  bo.raw <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw))
+  bo.raw <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw),List$BO$others$raw)
   bo.raw <- bo.raw %>% filter(title %in% titles) 
   
   table <- data.table(merge(processed, bo.raw, by = "title")) %>%
@@ -1031,7 +1050,7 @@ versus.weekly.rank <- function(titles, df, List){
   processed <- data.table(df) %>% filter(title %in% titles)
   processed <- processed %>% select(which(names(processed) %in% c("title","combined_score")))
   
-  bo.raw <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw))
+  bo.raw <- data.table(rbind(List$BO$dc$raw, List$BO$marvel$raw,List$BO$others$raw))
   bo.raw <- bo.raw %>% filter(title %in% titles) 
   
   table <- data.table(merge(processed, bo.raw, by = "title")) %>%
@@ -1109,13 +1128,13 @@ versus.BO.chart.1 <- function(titles, df){
                                    "foreign_BO",
                                    "domestic_BO",
                                    "ow_gross",
-                                   "combined_BO",
+                                   # "combined_BO",
                                    "combined_score"
                                    )
                   )
             ) 
   plot.table$world_wide <- plot.table$domestic_BO + plot.table$foreign_BO
-  plot.table <- plot.table %>% select(c(5,4,3,2,7,1,6))%>% arrange(desc(combined_score))
+  plot.table <- plot.table %>% select(c(4,3,2,1,6,5))%>% arrange(desc(combined_score))
   
   # return(plot.table)
   
@@ -1123,10 +1142,10 @@ versus.BO.chart.1 <- function(titles, df){
                            x = c("Opening Week",
                                  "Domestic",
                                  "Foreign",
-                                 "World Wide",
-                                 "Foreign&Domestic W.M"
+                                 "World Wide"
+                                 # "D&F Weighted Avg"
                                  ),
-                           y = transpose(data.table(plot.table)[1] %>% select(2:6))$V1,
+                           y = transpose(data.table(plot.table)[1] %>% select(2:5))$V1,
                            type = "bar",
                            marker = list(color = "#20B2AA"),
                            name = plot.table$title[1]
@@ -1137,10 +1156,10 @@ versus.BO.chart.1 <- function(titles, df){
                             x = c("Opening Week",
                                   "Domestic",
                                   "Foreign",
-                                  "World Wide",
-                                  "Foreign&Domestic W.M"
+                                  "World Wide"
+                                  # "D&F Weighted Avg"
                             ),
-                            y = transpose(data.table(plot.table)[2] %>% select(2:6))$V1,
+                            y = transpose(data.table(plot.table)[2] %>% select(2:5))$V1,
                             type = "bar",
                             marker = list(color = "red"),
                             name = plot.table$title[2]
@@ -1195,8 +1214,11 @@ versus.BO.chart.2 <- function(titles, df){
                                    "change",
                                    "rank",
                                    "word_to_mouth",
-                                   "ow_investment_return",
-                                   "ww_investment_return",
+                                   "ratio.ow_budget",
+                                   # "ratio.www_budget",
+                                   "ratio.domestic_budget",
+                                   "ratio.foreign_budget",
+                                   "ratio.worldwide_budget",
                                    "investment_index",
                                    "bo_score",
                                    "combined_score"
@@ -1205,26 +1227,25 @@ versus.BO.chart.2 <- function(titles, df){
             ) 
   
 
-  plot.table$domestic_investment_return <- ( filter(df,title %in% titles)$domestic_BO)/ filter(df,title %in% titles)$budget
-  plot.table$foreign_investment_return <- ( filter(df,title %in% titles)$foreign_BO)/ filter(df,title %in% titles)$budget
-  plot.table$ww_investment_return.2 <- (filter(df,title %in% titles)$foreign_BO + filter(df,title %in% titles)$domestic_BO) / filter(df,title %in% titles)$budget
-  plot.table <- plot.table%>% select(c(9,1:3,6:7,11:13,8,4:5,10)) %>% arrange(desc(combined_score))
+ 
+  plot.table <- plot.table%>% select(c(11,6,7,8,9,10,1,2,3,4,5,12)) %>% arrange(desc(combined_score))
   # return(plot.table)
   
   chart_step.1 <- plot_ly( 
-                           x = c("Weekly Average Gross per Theater Index",
-                                 "Weekly Gross as % of Opening Week Index",
-                                 "Weekly Rank Index",
+                           x = c(
+                                 
                                  "Word to Mouth Index",
                                  "Opening Week/Budget",
                                  "Domestic/Budget",
                                  "Foreign/Budget",
                                  "World Wide/Budget",
-                                 "Weighted Foreign & Domestic/Budget",
+                                 "Weekly Avg. Gross Index",
+                                 "Weekly Drops Index",
+                                 "Weekly Rank Index",
                                  "Investment Index",
                                  "Overall BO Index"
                            ),
-                           y = c(10,100,10,10,1,1,1,1,1,0.1,1)*transpose(data.table(plot.table)[1] %>% select(2:12))$V1,
+                           y = c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[1] %>% select(2:11))$V1,
                            type = "bar",
                            marker = list(color = "#20B2AA"),
                            name = plot.table$title[1]
@@ -1232,19 +1253,20 @@ versus.BO.chart.2 <- function(titles, df){
   
   
   chart_step.2 <- add_trace(chart_step.1,
-                            x = c("Weekly Average Gross per Theater Index",
-                                  "Weekly Gross as % of Opening Week Index",
-                                  "Weekly Rank Index",
-                                  "Word to Mouth Index",
-                                  "Opening Week/Budget",
-                                  "Domestic/Budget",
-                                  "Foreign/Budget",
-                                  "World Wide/Budget",
-                                  "Weighted Foreign & Domestic/Budget",
-                                  "Investment Index",
-                                  "Overall BO Index"
-                                  ),
-                            y = c(10,100,10,10,1,1,1,1,1,0.1,1)*transpose(data.table(plot.table)[2] %>% select(2:12))$V1,
+                            x = c(
+                              
+                              "Word to Mouth Index",
+                              "Opening Week/Budget",
+                              "Domestic/Budget",
+                              "Foreign/Budget",
+                              "World Wide/Budget",
+                              "Weekly Avg. Gross Index",
+                              "Weekly Drops Index",
+                              "Weekly Rank Index",
+                              "Investment Index",
+                              "Overall BO Index"
+                            ),
+                            y = c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[2] %>% select(2:11))$V1,
                             type = "bar",
                             marker = list(color = "red"),
                             name = plot.table$title[2]
@@ -1298,10 +1320,10 @@ versus_critics <- function(titles, df, List){
   
   processed <- data.table(df) %>% filter(title %in% titles)
   
-  critics.raw <- data.table(rbind(List$Critics$dc$raw, List$Critics$marvel$raw))
+  critics.raw <- data.table(rbind(List$Critics$dc$raw, List$Critics$marvel$raw,List$Critics$others$raw))
   critics.raw <- critics.raw %>% filter(title %in% titles) %>% select(c(3,4,5,7,12,13,9,10,11))
   
-  bo.raw <- data.frame(rbind(List$BO$dc$raw, List$BO$marvel$raw))
+  bo.raw <- data.frame(rbind(List$BO$dc$raw, List$BO$marvel$raw,List$BO$others$raw))
   bo.raw <- bo.raw %>% filter(title %in% titles)
   
   raw <- data.table(bo.raw,critics.raw)

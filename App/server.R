@@ -2,11 +2,13 @@ source('../R/helpers.R')
 libraries()
 
 names <- c("dc","marvel")
+# names <- c("dc","marvel","others")
 data <- getData(names)
 
 raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
 raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
 raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
+raw.data$BO$others$raw$title <- raw.data$Critics$others$raw$title
 processed.data <- data$df
 
 rm(list = c("data","names"))
@@ -289,9 +291,10 @@ shinyServer(function(input, output) {
                        "Rotten Tomatoes Audience Tomatometer",
                        "Rotten Tomatoes Audience Rating",
                        "Custom Rotten Tomatoes Audience Score",
-                       "Metascore","IMDB","Foreign Box Office Gross", 
+                       "Metascore","IMDB",
+                       "Foreign Box Office Gross", 
                        "Domestic Box Office Gross",
-                       "Foreign & Domestic BO - Weighted Mean (30/70)",
+                       "Foreign & Domestic BO - Weighted Mean (0.3 & 0.7)",
                        "Weekly Average per Theater",
                        "Weekly Grosses as % of Opening Week",
                        "Weekly Ranking")
@@ -396,7 +399,7 @@ shinyServer(function(input, output) {
                        "Custom Rotten Tomatoes Audience Score",
                        "Metascore","IMDB","Foreign Box Office Gross", 
                        "Domestic Box Office Gross",
-                       "Foreign & Domestic BO - Weighted Mean (30/70)",
+                       "Foreign & Domestic BO - Weighted Mean (0.3 & 0.7)",
                        "Weekly Average per Theater",
                        "Weekly Grosses as % of Opening Week",
                        "Weekly Ranking")
