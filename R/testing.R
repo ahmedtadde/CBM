@@ -1,34 +1,45 @@
 source('../R/helpers.R')
 libraries()
 
+names <- c("dc","marvel","others")
 
-# xmen_dofp.revised.plot <- c("Convinced that mutants pose a threat to humanity, Dr. Bolivar Trask (Peter Dinklage) develops the Sentinels, enormous robotic weapons that can detect a mutant gene and zero in on that person. In the 21st century, the Sentinels have evolved into highly efficient killing machines. With mutants now facing extinction, Wolverine (Hugh Jackman) volunteers to go back in time and rally the X-Men of the past to help change a pivotal moment in history and thereby save their future.")
-names <- c("dc","marvel")
-# test <- getCriticsData(names)
-data <- getData(names)
-raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
-raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
-raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
-processed.data <- data$df
+test <- getBoxOfficeData(names)
+# data <- getData(names)
+# raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
+# raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
+# raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
+# raw.data$BO$others$raw$title <- raw.data$Critics$others$raw$title
+# processed.data <- data$df
+
+
+# posters <- poster.pic.name(processed.data$title)
+# wd <- getwd()
+# setwd("./www")
+# foreach(i=1:length(posters)) %do% {
+#   GET(processed.data$poster[i], write_disk(posters[i]))
+# };rm(i)
+# setwd(wd)
 
 # test <- Viz(processed.data)
 # show(test$viz)
 # View(test$table)
 
 
-# titles <- c("Thor", "Man of Steel")
+# titles <- c("Sin City: A Dame to Kill For", "Sin City")
 # test <- versus.BO.chart.1(titles, processed.data)
 # show(test)
 # rm(list = c("titles"))
 
 
-titles <- c("Thor", "Man of Steel")
-test <- versus.BO.chart.2(titles, processed.data)
-show(test)
+# titles <- c("Sin City: A Dame to Kill For", "Sin City")
+# test <- versus.BO.chart.2(titles, processed.data)
+# show(test)
+# rm(list = c("titles"))
 
-# titles <- c("Thor", "Man of Steel")
+# titles <- c("Sin City: A Dame to Kill For", "Sin City")
 # test <- versus_critics(titles, processed.data, raw.data)
 # show(test$chart)
+# rm(list = c("titles"))
 
 # filter.examples <- list(c("Marvel","DC"), # IP
 #                         c("Disney","Fox","Warner Bros."), # Studio/Distributor
@@ -63,13 +74,10 @@ show(test)
 # View(rank)
 
 
-# titles <- c("Thor", "Man of Steel")
-# test <- versus.BO.chart.2(titles, processed.data)
-# View(test)
 
-
-rm(list = c("data",
+rm(list = c(
             "names"
+            # "data"
             # "filter.examples",
             # "rank.options",
             # "filtering",

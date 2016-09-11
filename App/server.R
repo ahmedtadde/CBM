@@ -1,8 +1,7 @@
 source('../R/helpers.R')
 libraries()
 
-names <- c("dc","marvel")
-# names <- c("dc","marvel","others")
+names <- c("dc","marvel","others")
 data <- getData(names)
 
 raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
@@ -37,8 +36,12 @@ shinyServer(function(input, output) {
       return(name)
     }
     
-  
-    tags$img(src = poster.pic.name(input$firstmovie.CR))
+    
+    if((input$firstmovie.CR %in% c("") | length(input$firstmovie.CR) == 0)){
+      tags$br()
+    }else{
+      tags$img(src = poster.pic.name(input$firstmovie.CR))
+    }
   })
   
   output$firstmovie.poster.BOP <- renderUI({
@@ -49,31 +52,48 @@ shinyServer(function(input, output) {
       return(name)
     }
     
+    if((input$firstmovie.BOP %in% c("") | length(input$firstmovie.BOP) == 0)){
+      tags$br()
+    }else{
+      tags$img(src = poster.pic.name(input$firstmovie.BOP))
+    }
     
-    tags$img(src = poster.pic.name(input$firstmovie.BOP))
   })
   
   output$VERSUS.BOP<- renderUI({
     
-    tags$img(src = "versus.png", height =300, width = 300)
+    if((input$firstmovie.BOP %in% c("") | length(input$firstmovie.BOP) == 0) |
+       (input$secondmovie.BOP %in% c("") | length(input$secondmovie.BOP) == 0)){
+      tags$br()
+    }else{
+      tags$img(src = "versus.png", height =300, width = 300)
+    }
+    
   })
   
   
   output$VERSUS.CR<- renderUI({
-    
-    tags$img(src = "versus.png", height =300, width = 300)
-    })
+    if((input$firstmovie.CR %in% c("") | length(input$firstmovie.CR) == 0) |
+       (input$secondmovie.CR %in% c("") | length(input$secondmovie.CR) == 0)){
+      tags$br()
+    }else{
+      tags$img(src = "versus.png", height =300, width = 300)
+    }
+  })
   
   output$secondmovie.poster.BOP <- renderUI({
-    
     poster.pic.name <- function(title){
       name <- paste0(gsub(" ","", title),".png")
       name <- gsub(":","", name)
       return(name)
     }
     
-    tags$img(src = poster.pic.name(input$secondmovie.BOP))
-    })
+    if((input$secondmovie.BOP %in% c("") | length(input$secondmovie.BOP) == 0)){
+      tags$br()
+    }else{
+      tags$img(src = poster.pic.name(input$secondmovie.BOP))
+    }
+  })
   
   
   
@@ -85,75 +105,147 @@ shinyServer(function(input, output) {
       return(name)
     }
     
-    tags$img(src = poster.pic.name(input$secondmovie.CR))
+    if((input$secondmovie.CR %in% c("") | length(input$secondmovie.CR) == 0)){
+      tags$br()
+    }else{
+      tags$img(src = poster.pic.name(input$secondmovie.CR))
+    }
   })
   
   
   output$firstmovie.meta.BOP <- renderUI({
     title <- input$firstmovie.BOP
-    HTML(versus_meta(title,processed.data, raw.data))
+    if((input$firstmovie.BOP %in% c("") | length(input$firstmovie.BOP) == 0)){
+      tags$br()
+    }else{
+      HTML(versus_meta(title,processed.data, raw.data,"BOP"))
+    }
+    
     })
   
   output$firstmovie.meta.CR <- renderUI({
     title <- input$firstmovie.CR
-    HTML(versus_meta(title,processed.data, raw.data))
-    })
+    if((input$firstmovie.CR %in% c("") | length(input$firstmovie.CR) == 0)){
+      tags$br()
+    }else{
+      HTML(versus_meta(title,processed.data, raw.data,"CR"))
+    }
+  })
   
   output$secondmovie.meta.BOP <- renderUI({
     title <- input$secondmovie.BOP
-    HTML(versus_meta(title,processed.data ,raw.data))
-    })
+    if((input$secondmovie.BOP %in% c("") | length(input$secondmovie.BOP) == 0)){
+      tags$br()
+    }else{
+      HTML(versus_meta(title,processed.data, raw.data,"BOP"))
+    }
+  })
   
   output$secondmovie.meta.CR <- renderUI({
     title <- input$secondmovie.CR
-    HTML(versus_meta(title,processed.data ,raw.data))
+    if((input$secondmovie.CR %in% c("") | length(input$secondmovie.CR) == 0)){
+      tags$br()
+    }else{
+      HTML(versus_meta(title,processed.data, raw.data,"CR"))
+    }
   })
   
   
   
   output$firstmovie.critics_consensus <- renderUI({
-    consensus <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
-                                   processed.data,
-                                   raw.data)
-
-    consensus <- consensus$consensus
-
-    HTML(consensus[[which(names(consensus) == input$firstmovie.CR)]])
+    
+    if((input$firstmovie.CR %in% c("") | length(input$firstmovie.CR) == 0)){
+      tags$br()
+    }else{
+      consensus <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
+                                  processed.data,
+                                  raw.data)
+      
+      consensus <- consensus$consensus
+      
+      HTML(consensus[[which(names(consensus) == input$firstmovie.CR)]])
+    }
+    
+    
     })
 
 
   output$secondmovie.critics_consensus <- renderUI({
-    consensus <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
-                                   processed.data,
-                                   raw.data)
-    consensus <- consensus$consensus
-    HTML(consensus[[which(names(consensus) == input$secondmovie.CR)]])
-    })
+    
+    if((input$secondmovie.CR %in% c("") | length(input$secondmovie.CR) == 0)){
+      tags$br()
+    }else{
+      consensus <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
+                                  processed.data,
+                                  raw.data)
+      consensus <- consensus$consensus
+      HTML(consensus[[which(names(consensus) == input$secondmovie.CR)]])
+    }
+  })
 
   output$versus_critics_chart <- renderPlotly({
-    chart <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
+    
+    if((input$secondmovie.CR %in% c("") | length(input$secondmovie.CR) == 0) &
+       (input$firstmovie.CR %in% c("") | length(input$firstmovie.CR) == 0)){
+      
+      chart <- versus_critics(c("",""),
+                              processed.data,
+                              raw.data)
+      chart$chart
+    }else{
+      chart <- versus_critics(c(input$firstmovie.CR, input$secondmovie.CR),
                                 processed.data,
                                 raw.data)
+      chart$chart
+    }
+    
 
-    chart$chart
-    })
+    
+  })
   
   
   output$versus.weekly.avg <- renderPlotly({
     
-    versus.weekly.avg(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data,raw.data)
+    if((input$secondmovie.BOP %in% c("") | length(input$secondmovie.BOP) == 0) &
+       (input$firstmovie.BOP %in% c("") | length(input$firstmovie.BOP) == 0)){
+      
+      versus.weekly.avg(c("",""),processed.data,raw.data)
+      
+    }else{
+      versus.weekly.avg(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data,raw.data)
+    }
+    
+    
     
   })
   
   output$versus.weekly.perc <- renderPlotly({
     
-    versus.weekly.perc(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data,raw.data)
+    if((input$secondmovie.BOP %in% c("") | length(input$secondmovie.BOP) == 0) &
+       (input$firstmovie.BOP %in% c("") | length(input$firstmovie.BOP) == 0)){
+      
+      versus.weekly.perc(c("",""),processed.data,raw.data)
+      
+    }else{
+      versus.weekly.perc(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data,raw.data)
+    }
+    
+    
     
   })
   
   output$versus.weekly.rank <- renderPlotly({
     
-    versus.weekly.rank(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data,raw.data)
+    if((input$secondmovie.BOP %in% c("") | length(input$secondmovie.BOP) == 0) &
+       (input$firstmovie.BOP %in% c("") | length(input$firstmovie.BOP) == 0)){
+      
+      versus.weekly.rank(c("",""),processed.data,raw.data)
+      
+    }else{
+      versus.weekly.rank(c(input$firstmovie.BOP, input$secondmovie.BOP),processed.data,raw.data)
+    }
+    
+    
     
   })
   
@@ -219,7 +311,7 @@ shinyServer(function(input, output) {
       paste(
         tags$table(style="width:100%;border-spacing:15px;padding:5px",
                    tags$tr(
-                     tags$td(height="600", tags$a(as.character(i)))
+                     tags$td(height="700", tags$a(as.character(i)))
                    )
         ),
         tags$br(),
@@ -312,33 +404,49 @@ shinyServer(function(input, output) {
                         "foreign_BO","domestic_BO","combined_BO",
                         "avg","change","rank"
                         )
+    
     input$rank.by -> criterion
-  
-    foreach(i = 1:length(rank.options2), .combine = c) %do% {
-      if (criterion == rank.options1[i]){
-        return(rank.options2[i])
+    
+    if (criterion %in% "" | length(which(criterion %in% rank.options1 )) == 0){
+      criterion <- c("")
+    }else{
+      
+      foreach(i = 1:length(rank.options2), .combine = c) %do% {
+        if (criterion == rank.options1[i]){
+          return(rank.options2[i])
         }
-    } -> criterion; rm(i)
-  
-    criterion
+        # else{
+        #   return(criterion)
+        # }
+      } -> criterion; rm(i)
+      
+    }
+    
     rank <- rank.by(criterion,filtering)
     rm(list = c("rank.options1","rank.options2", "filters"))
-  
-    foreach(i=1:dim(rank)[1]) %do% {
-      paste(
-        tags$table(style="width:100%;border-spacing:15px;padding:5px",
-                   tags$tr(
-                     tags$td(height="600",HTML(paste(rank$movie_report[i])))
-                   )
-        ),
-        tags$br(),
-        tags$br(),
-        tags$br()
-      )
-    } -> text.reports; rm(i)
-  
-    HTML(
-      paste(text.reports[1:length(text.reports)],sep='<br/>'))
+    
+    if (names(rank)[1] %in% "Empty"){
+      display <- paste(tags$br(),tags$br(),tags$br())
+    }else{
+      
+      foreach(i=1:dim(rank)[1], .combine = c) %do% {
+        paste(
+          tags$table(style="width:100%;border-spacing:15px;padding:5px",
+                     tags$tr(
+                       tags$td(height="700",HTML(paste(rank$movie_report[i])))
+                     )
+          ),
+          tags$br(),
+          tags$br(),
+          tags$br()
+        )
+      } -> reports; rm(i)
+      
+      display <-  paste(reports[1:length(reports)],sep='<br/>')
+      
+    }
+    
+    HTML(display)
   })
   
   
@@ -417,35 +525,113 @@ shinyServer(function(input, output) {
       "foreign_BO","domestic_BO","combined_BO",
       "avg","change","rank"
     )
+    
     input$rank.by -> criterion
-  
-    foreach(i = 1:length(rank.options2), .combine = c) %do% {
-      if (criterion == rank.options1[i]){
-        return(rank.options2[i])
-      }
-    } -> criterion; rm(i)
-  
-    criterion
+    
+    if (criterion %in% "" | length(which(criterion %in% rank.options1 )) == 0){
+      criterion <- c("")
+    }else{
+      
+      foreach(i = 1:length(rank.options2), .combine = c) %do% {
+        if (criterion == rank.options1[i]){
+          return(rank.options2[i])
+        }
+        # else{
+        #   return(criterion)
+        # }
+      } -> criterion; rm(i)
+      
+    }
+    
     rank <- rank.by(criterion,filtering)
     rm(list = c("rank.options1","rank.options2", "filters"))
-  
-    foreach(i=1:dim(rank)[1]) %do% {
-      paste(
-        tags$table(style="width:100%;border-spacing:15px;padding:5px",
-          tags$tr(
-            tags$td(height="600",tags$img(src = rank$poster[i]))
-            )
-        ),
-        tags$br(),
-        tags$br(),
-        tags$br()
-      )
-    } -> posters; rm(i)
-  
-     HTML(
-      paste(posters[1:length(posters)],sep='<br/>'))
+    
+    if (names(rank)[1] %in% "Empty"){
+      display <- paste(tags$br(),tags$br(),tags$br())
+    }else{
+      
+      foreach(i=1:dim(rank)[1], .combine = c) %do% {
+        paste(
+          tags$table(style="width:100%;border-spacing:15px;padding:5px",
+                     tags$tr(
+                       tags$td(height="700",tags$img(src = rank$poster[i]))
+                     )
+          ),
+          tags$br(),
+          tags$br(),
+          tags$br()
+        )
+      } -> posters; rm(i)
+      
+      display <-  paste(posters[1:length(posters)],sep='<br/>')
+      
+    }
+    
+    HTML(display)
   
    
+  })
+  
+  
+  output$find.movie.poster <- renderUI({
+    
+    dt <- find_movie(input$find.movie, processed.data, raw.data)
+    
+    if (names(dt)[1] %in% "Empty"){
+      display <- paste(tags$br(),
+                       tags$br(),
+                       tags$br()
+      )
+    }else{
+      foreach(i=1:dim(dt)[1], .combine = c) %do% {
+        paste(
+          tags$table(style="width:100%;border-spacing:15px;padding:5px",
+                     tags$tr(tags$td(height="700",tags$img(src = dt$poster[i])))
+          ),
+          tags$br(),
+          tags$br(),
+          tags$br()
+        )
+      } -> posters; rm(i)
+      
+      display <- paste(posters[1:length(posters)],sep='<br/>')
+    }
+    
+    
+    HTML(display)
+    
+    
+  })
+  
+  
+  output$find.movie.report <- renderUI({
+    
+    dt <- find_movie(input$find.movie, processed.data, raw.data)
+    
+    if (names(dt)[1] %in% "Empty"){
+      display <- paste(tags$br(),
+                       tags$br(),
+                       tags$br()
+                      )
+    }else{
+      foreach(i=1:dim(dt)[1], .combine = c) %do% {
+        paste(
+          tags$table(style="width:100%;border-spacing:15px;padding:5px",
+                     tags$tr(tags$td(height="700",HTML(paste(dt$movie_report[i]))))
+                     ),
+          tags$br(),
+          tags$br(),
+          tags$br()
+          )
+      } -> text.reports; rm(i)
+      
+      display <- paste(text.reports[1:length(text.reports)],sep='<br/>')
+    }
+    
+    
+    HTML(display)
+    
+    
   })
   
   

@@ -1,11 +1,11 @@
 source('../R/helpers.R')
 libraries()
 library(shinythemes)
-movie.titles <- c("Howard The Duck",
-                  "Blade",
+movie.titles <- c(#### MARVEL TITLES
+                  "Howard The Duck", "Blade",
                   "X-Men","Blade II",
                   "Spider-Man","Daredevil",
-                  "X-men 2","Hulk",
+                  "X2: X-Men United","Hulk",
                   "The Punisher","Spider-Man 2",
                   "Blade: Trinity", "Elektra",
                   "Fantastic Four(2005)","X-Men: The Last Stand",
@@ -18,59 +18,158 @@ movie.titles <- c("Howard The Duck",
                   "Ghost Rider: Spirit of Vengeance",
                   "Marvel's The Avengers","The Amazing Spider-Man",
                   "Iron Man 3","The Wolverine",
-                  "Thor 2: The Dark World","Captain America: The Winter Soldier",
+                  "Thor: The Dark World","Captain America: The Winter Soldier",
                   "The Amazing Spider-Man 2","X-Men: Days of Future Past",
                   "Guardians of the Galaxy","Big Hero 6",
                   "Avengers: Age of Ultron", "Ant-Man",
                   "Fantastic Four(2015)", "Deadpool",
-                  "Captain America: Civil War","Superman","Superman II",
+                  "Captain America: Civil War",
+                  
+                  #### DC TITLES
+                  "Superman","Superman II",
                   "Superman III", "Supergirl",
                   "Superman IV: The Quest for Peace","Batman",
                   "Batman Returns","Batman: Mask of the Phantasm",
-                  "Batman Forever", "Batman Robin",
-                  "Steel", "Catwoman",
+                  "Batman Forever", "Batman Robin", 
+                  "Steel", "Catwoman", 
                   "Constantine", "Batman Begins",
-                  "V for Vendetta", "Superman Returns",
+                  "V for Vendetta", "Superman Returns", 
                   "The Dark Knight", "Watchmen",
                   "The Losers","Jonah Hex","Red",
                   "Green Lantern", "The Dark Knight Rises",
-                  "Man of Steel","Red 2",
-                  "Batman v Superman: Dawn of Justice")
+                  "Man of Steel",
+                  "Batman v Superman: Dawn of Justice","Red 2",
+                  
+                  #### OTHERS TITLES
+                  
+                  "2 Guns",
+                  "30 Days of Night",
+                  "300",
+                  "300: Rise of an Empire",
+                  "American Splendor",
+                  "Alien vs Predator",
+                  "Alien vs Predator Requiem",
+                  "Black Mask",
+                  "Buffy the Vampire Slayer",
+                  "Bulletproof Monk",
+                  "Bullet to the Head",
+                  "Casper",
+                  "Chronicle",
+                  "Cowboys & Aliens",
+                  "The Crow",
+                  "The Crow:City of Angels",
+                  "Darkman",
+                  "The Diary of a Teenage Girl", "Dick Tracy",
+                  "Dredd",
+                  "From Hell",
+                  "Ghost world",
+                  "The Green Hornet",
+                  "Hancock",
+                  "Hellboy",
+                  "Hellboy II: The Golden Army",
+                  "Hercules",
+                  "A history of violence",
+                  "I, Frankenstein",
+                  "The Incredibles",
+                  "Iron Monkey",
+                  "Josie and the Pussycats",
+                  "Judge Dredd",
+                  "Kick-Ass",
+                  "Kick-Ass 2",
+                  "The League of Extraordinary Gentlemen",
+                  "The Mask",
+                  "The Mask of Zorro",
+                  "Megamind",
+                  "Men in Black",
+                  "Men in Black II",
+                  "Men in Black III",
+                  "Monkeybone",
+                  "Mystery Men",
+                  "Oblivion",
+                  "The Phantom",
+                  "The Powerpuff Girls Movie",
+                  "Mighty Morphin' Power Rangers",
+                  "Priest",
+                  "Richie Rich",    
+                  "RIPD",
+                  "Road to Perdition",
+                  "The Rocketeer",
+                  "Scott Pilgrim vs the World",
+                  "Kingsman: The Secret Service",
+                  "The Shadow",
+                  "Sin City",
+                  "Sin City: A Dame to Kill For",
+                  "Sky High",
+                  "Spawn",
+                  "The Spirit",
+                  "Snowpiercer",
+                  "Super",
+                  "My Super Ex-Girlfriend",
+                  "Superhero Movie",
+                  "Surrogates",
+                  "Tank Girl ",
+                  "Teenage Mutant Ninja Turtles",
+                  "Timecop",
+                  "The Adventures of Tintin",
+                  "TMNT",
+                  "Teenage Mutant Ninja Turtles II: The Secret of the Ooze",
+                  "Teenage Mutant Ninja Turtles (2014)",
+                  "Teenage Mutant Ninja Turtles: Out of the Shadows",
+                  "Teenage Mutant Ninja Turtles III",
+                  "Virus",
+                  "Wanted",
+                  "Whiteout",
+                  "The X-Files: I Want to Believe",
+                  "Zoom",
+                  "The Legend of Zorro")
 
 movie.titles <- sort(movie.titles)
 
-
+studios <- c("All","Dimension Films","Disney","DreamWorks","Fine Line","Fox",
+             "Lionsgate","MGM","Miramax","New Line","Paramount","Sony",
+             "Summit Entertainment","TriStar","Universal","Warner Bros.","Weinstein" )
 
 
 shinyUI(
   navbarPage( 
               theme = "bootstrap.css",
-              "Comic Book Movies Explorer",
+              # tags$head(tags$style(type="text/css", "#find.movie {width: 600px}")),
+              "Comicbook Adaptations & Super-Hero Movie Explorer",
+              tabPanel("Search Movie",
+                       tags$br(),tags$br(),tags$br(),
+                       fluidRow(
+                                column(4),
+                                column(4,
+                                       # align= 'center',
+                                       selectizeInput('find.movie', 
+                                                        h3('Search Movie'),
+                                                        choices = movie.titles,
+                                                        multiple = T,
+                                                        selected = ""
+                                                        )
+                                       ),
+                                column(4)
+                                ),
+                       fluidRow(column(1),
+                                column(4, align= 'center', htmlOutput("find.movie.poster")),
+                                column(6, htmlOutput("find.movie.report")),
+                                column(1)
+                                )
+                       ),
               
               tabPanel("Filter and Rank",
                        fluidRow(
 
                          column(2,selectizeInput('ip',
                                                  h4('Comic Book Company'),
-                                                 choices = c("All","DC","Marvel"),
+                                                 choices = c("All","DC","Marvel","Other"),
                                                  multiple = T,
                                                  selected = "All"
                                                  )),
 
                          column(2,selectizeInput('studio',
                                                  h4('Studio'),
-                                                 choices = c("All",
-                                                             "Warner Bros.",
-                                                             "Sony",
-                                                             "Disney",
-                                                             "Paramount",
-                                                             "Fox",
-                                                             "Summit Entertainment",
-                                                             "Universal",
-                                                             "New Line",
-                                                             "Lionsgate",
-                                                             "TriStar"
-                                                             ),
+                                                 choices = studios,
                                                  multiple = TRUE,
                                                  selected = "All"
                                                  )),
@@ -163,7 +262,7 @@ shinyUI(
                          column(4),
                          column(4,selectizeInput('rank.by',
                                                  h4('Rank By'),
-                                                 selected = "Rotten Tomatoes Critics Tomatometer",
+                                                 selected = "",
                                                  choices = c("Overall Critical Reception",
                                                              "Overall Box Office Performance",
                                                              "Rotten Tomatoes Critics Tomatometer",
@@ -177,7 +276,7 @@ shinyUI(
                                                              "Foreign & Domestic BO - Weighted Mean (30/70)",
                                                              "Weekly Average per Theater",
                                                              "Weekly Grosses as % of Opening Week",
-                                                             "Weekly Ranking"),
+                                                             "Weekly Ranking",""),
                                                  multiple = F)
                                 ),
                          column(4)
@@ -194,23 +293,23 @@ shinyUI(
                                 )
                        
               ),
-              navbarMenu("Versus",
+              navbarMenu("Movie Fight",
                          tabPanel("Critical Reception",
                                   fluidRow(column(1),
                                            column(3,
                                                   align = 'center',
                                                   selectizeInput("firstmovie.CR",
-                                                                 h4(''),
-                                                                 selected = "The Dark Knight",
-                                                                 choices = movie.titles,
+                                                                 h4('Select'),
+                                                                 selected = "",
+                                                                 choices = c("",movie.titles),
                                                                  multiple =F )),
                                            column(4),
                                            column(3,
                                                   align = 'center',
                                                   selectizeInput("secondmovie.CR",
-                                                                 h4(''),
-                                                                 selected = "Marvel's The Avengers",
-                                                                 choices = movie.titles,
+                                                                 h4('Select'),
+                                                                 selected = "",
+                                                                 choices = c("",movie.titles),
                                                                  multiple = F)),
                                            column(1)
                                   ),
@@ -255,17 +354,17 @@ shinyUI(
                                            column(3,
                                                   align = 'center',
                                                   selectizeInput("firstmovie.BOP",
-                                                                 h4(''),
-                                                                 selected = "The Dark Knight",
-                                                                 choices = movie.titles,
+                                                                 h4('Select'),
+                                                                 selected = "",
+                                                                 choices =  c("",movie.titles),
                                                                  multiple =F )),
                                            column(4),
                                            column(3, 
                                                   align = 'center',
                                                   selectizeInput("secondmovie.BOP",
-                                                                 h4(''),
-                                                                 selected = "Marvel's The Avengers",
-                                                                 choices = movie.titles,
+                                                                 h4('Select'),
+                                                                 selected = "",
+                                                                 choices =  c("",movie.titles),
                                                                  multiple = F)),
                                            column(1)
                                            ),
@@ -299,14 +398,39 @@ shinyUI(
               navbarMenu("All-time Ranking",
                          tabPanel("Visual Classification",plotlyOutput("Viz")),
                          tabPanel("Ranking Table",tableOutput("combined.ranking.table"))
-                         ),
-              
-              
-              
-              navbarMenu("Documentation",
-                         tabPanel("About",textOutput("about")),
-                         tabPanel("Methodology",textOutput("methodology")),
-                         tabPanel("Contact",textOutput("contact"))
                          )
+              
+              
+              
+            #   navbarMenu("Info",
+            #              tabPanel("About",
+            #                       fluidRow(column(3), 
+            #                                column(6, align= 'center',
+            #                                       tags$h3("As Mr. John Shnepp would say... this isessentially a movie database for us that are Sweaty Nerds & Cinephiles"),
+            #                                       tags$br()
+            #                                       ),
+            #                                column(3)
+            #                                ),
+            #                       
+            #                       fluidRow(column(2),
+            #                                column(8, align = 'center',
+            #                                       tags$br(),
+            #                                       tags$p(
+            #                                         "The personal motivation for building this App is simple: 
+            #                                         I love movies, I love comics, and I love when those two mediums are combined to produce something that is fun, enjoyable,
+            #                                         and entertaining. This app serves as a repository for practically all comic book adaptations ever made. It enables the user 
+            #                                         to get a sufficiently detailed look at the critical and financial reception of comic book movies. Furthermore, a user can query 
+            #                                         the available list of movies using relevant filtering and ranking parameters. It is my hope that this work
+            #                                         terms. Finally, this work arguably provides the most comprehensive and objective all-time ranking of Comic book adaptations. 
+            #                                         Constructive criticism and notes are welcomed to benefit the ongoing improvement of this app.")
+            #                                       ),
+            #                                column(2)
+            #                                )
+            #                       ),
+            #              tabPanel("Methodology",
+            #                       tags$h3("TO BE COMPLETED"),
+            #                       tags$br()
+            #                       )
+            #              )
             )
   )
