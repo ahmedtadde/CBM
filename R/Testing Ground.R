@@ -1,9 +1,9 @@
-source('../R/helpers.R')
-libraries()
-
-names <- c("dc","marvel","others")
-
-test <- getBoxOfficeData(names)
+# source('../R/helpers.R')
+# libraries()
+# 
+# names <- c("dc","marvel","others")
+# 
+# test <- getBoxOfficeData(names)
 # data <- getData(names)
 # raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
 # raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
@@ -72,16 +72,16 @@ test <- getBoxOfficeData(names)
 # 
 # rank <- rank.by(rank.options[3],filtering)
 # View(rank)
-
-
-
-rm(list = c(
-            "names"
-            # "data"
-            # "filter.examples",
-            # "rank.options",
-            # "filtering",
-            # "titles"
-            # "rank.options"
-            )
-   )
+# 
+# 
+# 
+# rm(list = c(
+#             "names"
+#             # "data"
+#             # "filter.examples",
+#             # "rank.options",
+#             # "filtering",
+#             # "titles"
+#             # "rank.options"
+#             )
+#    )

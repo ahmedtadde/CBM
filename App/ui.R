@@ -133,14 +133,12 @@ studios <- c("All","Dimension Films","Disney","DreamWorks","Fine Line","Fox",
 shinyUI(
   navbarPage( 
               theme = "bootstrap.css",
-              # tags$head(tags$style(type="text/css", "#find.movie {width: 600px}")),
-              "Comicbook Adaptations & Super-Hero Movie Explorer",
+              "Movie Explorer",
               tabPanel("Search Movie",
                        tags$br(),tags$br(),tags$br(),
                        fluidRow(
                                 column(4),
                                 column(4,
-                                       # align= 'center',
                                        selectizeInput('find.movie', 
                                                         h3('Search Movie'),
                                                         choices = movie.titles,
@@ -399,38 +397,5 @@ shinyUI(
                          tabPanel("Visual Classification",plotlyOutput("Viz")),
                          tabPanel("Ranking Table",tableOutput("combined.ranking.table"))
                          )
-              
-              
-              
-            #   navbarMenu("Info",
-            #              tabPanel("About",
-            #                       fluidRow(column(3), 
-            #                                column(6, align= 'center',
-            #                                       tags$h3("As Mr. John Shnepp would say... this isessentially a movie database for us that are Sweaty Nerds & Cinephiles"),
-            #                                       tags$br()
-            #                                       ),
-            #                                column(3)
-            #                                ),
-            #                       
-            #                       fluidRow(column(2),
-            #                                column(8, align = 'center',
-            #                                       tags$br(),
-            #                                       tags$p(
-            #                                         "The personal motivation for building this App is simple: 
-            #                                         I love movies, I love comics, and I love when those two mediums are combined to produce something that is fun, enjoyable,
-            #                                         and entertaining. This app serves as a repository for practically all comic book adaptations ever made. It enables the user 
-            #                                         to get a sufficiently detailed look at the critical and financial reception of comic book movies. Furthermore, a user can query 
-            #                                         the available list of movies using relevant filtering and ranking parameters. It is my hope that this work
-            #                                         terms. Finally, this work arguably provides the most comprehensive and objective all-time ranking of Comic book adaptations. 
-            #                                         Constructive criticism and notes are welcomed to benefit the ongoing improvement of this app.")
-            #                                       ),
-            #                                column(2)
-            #                                )
-            #                       ),
-            #              tabPanel("Methodology",
-            #                       tags$h3("TO BE COMPLETED"),
-            #                       tags$br()
-            #                       )
-            #              )
             )
   )
