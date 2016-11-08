@@ -1,16 +1,17 @@
 
 libraries <- function(){
-  library(shiny)
-  library(shinyapps)
-  library(shinythemes)
-  library(data.table)
-  library(dplyr)
-  library(httr)
-  library(plotly)
-  library(foreach)
-  library(arules)
-  library(psych)
-  library(DataCombine)
+  if(!require(pacman)) install.packages('pacman', dependencies = T)
+  library(pacman)
+  p_load(shiny)
+  p_load(shinythemes)
+  p_load(data.table)
+  p_load(dplyr)
+  p_load(httr)
+  p_load(plotly)
+  p_load(foreach)
+  p_load(arules)
+  p_load(psych)
+  p_load(DataCombine)
   
 }
 
@@ -18,10 +19,11 @@ getBoxOfficeData <- function(names){
   
   setwd('../R')
   foreach( i = 1:length(names)) %do% {
-    bom = read.csv(paste0(names[i],"_bom.csv"),
-                   na.strings = "NA",
-                   stringsAsFactors = F,
-                   header = TRUE)
+    bom = fread(paste0(names[i],"_bom.csv"),
+                na.strings = c("NA",""),
+                stringsAsFactors = F, 
+                strip.white = T,
+                data.table = F)
     
     bom = bom[ , order(names(bom))]
     

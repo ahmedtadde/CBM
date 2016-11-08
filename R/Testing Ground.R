@@ -1,3 +1,23 @@
+
+
+# wd <- getwd()
+# source('../R/helpers.R')
+# libraries()
+# fread("../R/dc_bom.csv",
+#          na.strings = c("NA",""),
+#          stringsAsFactors = F, 
+#       strip.white = T,
+#       data.table = F) -> bom
+# 
+# bom = bom[ , order(names(bom))]
+# 
+# bom = data.table(bom,keep.rownames = FALSE)
+# 
+# setwd(wd)
+
+
+
+
 # source('../R/helpers.R')
 # libraries()
 # 
