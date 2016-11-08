@@ -1,11 +1,12 @@
-
+source('../R/helpers.R')
+libraries()
+names <- c("marvel")
+tables <- getBoxOfficeData(names)$marvel
 
 # wd <- getwd()
-# source('../R/helpers.R')
-# libraries()
-# fread("../R/dc_bom.csv",
+# fread("../R/others_bom.csv",
 #          na.strings = c("NA",""),
-#          stringsAsFactors = F, 
+#          stringsAsFactors = F,
 #       strip.white = T,
 #       data.table = F) -> bom
 # 

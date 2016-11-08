@@ -23,7 +23,7 @@ movie.titles <- c(#### MARVEL TITLES
                   "Guardians of the Galaxy","Big Hero 6",
                   "Avengers: Age of Ultron", "Ant-Man",
                   "Fantastic Four(2015)", "Deadpool",
-                  "Captain America: Civil War",
+                  "Captain America: Civil War", "X-Men: Apocalypse"
                   
                   #### DC TITLES
                   "Superman","Superman II",
@@ -38,7 +38,7 @@ movie.titles <- c(#### MARVEL TITLES
                   "The Losers","Jonah Hex","Red",
                   "Green Lantern", "The Dark Knight Rises",
                   "Man of Steel",
-                  "Batman v Superman: Dawn of Justice","Red 2",
+                  "Batman v Superman: Dawn of Justice","Red 2", "Suicide Squad"
                   
                   #### OTHERS TITLES
                   

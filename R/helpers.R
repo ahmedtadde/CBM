@@ -127,45 +127,44 @@ getBoxOfficeData <- function(names){
     info$rating <- as.numeric(info$rating)
     
     
-    
-    info$budget[which(info$title %in% c("The Amazing Spider-Man 2") & is.na(info$budget))] <- 2.55e+08
-    info$budget[which(info$title %in% c("Batman: Mask of the Phantasm") & is.na(info$budget))] <- 6e+06
-    info$budget[which(info$title %in% c("Blade") & is.na(info$budget))] <- 4.5e+07
-    info$budget[which(info$title %in% c("Superman III") & is.na(info$budget))] <- 3.9e+07
-    info$budget[which(info$title %in% c("Supergirl") & is.na(info$budget))] <- 3.5e+07
-    
-    info$budget[which(info$title %in% c("americansplendor"))] <- 2e+07
-    info$budget[which(info$title %in% c("avp2") & is.na(info$budget))] <- 4e+07
-    info$budget[which(info$title %in% c("buffythevampireslayer") & is.na(info$budget))] <- 7e+06
-    info$budget[which(info$title %in% c("bulletproofmonk") & is.na(info$budget))] <- 5.2e+07
-    info$budget[which(info$title %in% c("bullettothehead") & is.na(info$budget))] <- 5.5e+07
-    info$budget[which(info$title %in% c("chronicle2012") & is.na(info$budget))] <- 1.2e+07
-    info$budget[which(info$title %in% c("crowcityofangels") & is.na(info$budget))] <- 6.5e+07
-    info$budget[which(info$title %in% c("leagueofextraordinarygentlemen") & is.na(info$budget))] <- 7.8e+07
-    info$budget[which(info$title %in% c("maskofzorro") & is.na(info$budget))] <- 9.5e+07
-    info$budget[which(info$title %in% c("powerpuffgirls") & is.na(info$budget))] <- 1.1e+07
-    info$budget[which(info$title %in% c("priest07") & is.na(info$budget))] <- 6.0e+07
-    info$budget[which(info$title %in% c("roadtoperdition") & is.na(info$budget))] <- 8.0e+07
-    info$budget[which(info$title %in% c("spawn") & is.na(info$budget))] <- 4.0e+07
-    info$budget[which(info$title %in% c("super2011") & is.na(info$budget))] <- 2.0e+06
-    info$budget[which(info$title %in% c("superexgirlfriend") & is.na(info$budget))] <- 3.0e+07
-    info$budget[which(info$title %in% c("wanted") & is.na(info$budget))] <- 7.5e+07
-    info$budget[which(info$title %in% c("spirit09") & is.na(info$budget))] <- 6.0e+07
-    info$budget[which(info$title %in% c("zorro2") & is.na(info$budget))] <- 8.0e+07
-    info$budget[which(info$title %in% c("tmntcg") & is.na(info$budget))] <- 3.4e+07
-    info$budget[which(info$title %in% c("tmnt2013") & is.na(info$budget))] <- 1.25e+08
-    info$budget[which(info$title %in% c("tmnt3") & is.na(info$budget))] <- 2.1e+07
-    info$budget[which(info$title %in% c("tnmt2") & is.na(info$budget))] <- 2.5e+07
-    
-    # return(info)
-    # fill.budgets_1 <- which(is.na(info$budget))
-    # fill.budgets_2 <- c( 255*10^6,)
-    # 
-    # foreach( i = 1: length(fill.budgets_2)) %do%{
-    #   
-    #   info$budget[fill.budgets_1[i],] <- fill.budgets_2[i]
-    #   
-    # }
+    if(names[i] %in% "dc"){
+      
+      info$budget[which(info$title %in% c("Batman: Mask of the Phantasm") & is.na(info$budget))] <- 6e+06
+      info$budget[which(info$title %in% c("Superman III") & is.na(info$budget))] <- 3.9e+07
+      info$budget[which(info$title %in% c("Supergirl") & is.na(info$budget))] <- 3.5e+07
+      
+    }else if(names[i] %in% "marvel"){
+      info$budget[which(info$title %in% c("Blade") & is.na(info$budget))] <- 4.5e+07
+      info$budget[which(info$title %in% c("The Amazing Spider-Man 2") & is.na(info$budget))] <- 2.55e+08
+      
+    }else{
+      
+      info$budget[which(info$title %in% c("American Splendor"))] <- 2e+07
+      info$budget[which(info$title %in% c("Alien vs Predator Requiem") & is.na(info$budget))] <- 4e+07
+      info$budget[which(info$title %in% c("Buffy the Vampire Slayer") & is.na(info$budget))] <- 7e+06
+      info$budget[which(info$title %in% c("Bulletproof Monk") & is.na(info$budget))] <- 5.2e+07
+      info$budget[which(info$title %in% c("Bullet to the Head") & is.na(info$budget))] <- 5.5e+07
+      info$budget[which(info$title %in% c("Chronicle (2012)") & is.na(info$budget))] <- 1.2e+07
+      info$budget[which(info$title %in% c("Casper") & is.na(info$budget))] <- 5.5e+07
+      info$budget[which(info$title %in% c("The Crow") & is.na(info$budget))] <- 1.5e+07
+      info$budget[which(info$title %in% c("The Crow:City of Angels") & is.na(info$budget))] <- 6.5e+07
+      info$budget[which(info$title %in% c("Darkman") & is.na(info$budget))] <- 1.6e+07 
+      info$budget[which(info$title %in% c("The Diary of a Teenage Girl") & is.na(info$budget))] <- 2e+06
+      info$budget[which(info$title %in% c("The Phantom") & is.na(info$budget))] <- 4.5e+07  
+      info$budget[which(info$title %in% c("The League of Extraordinary Gentlemen") & is.na(info$budget))] <- 7.8e+07
+      info$budget[which(info$title %in% c("The Mask of Zorro") & is.na(info$budget))] <- 9.5e+07
+      info$budget[which(info$title %in% c("Mighty Morphin' Power Rangers") & is.na(info$budget))] <- 1.5e+07
+      info$budget[which(info$title %in% c("The Powerpuff Girls Movie") & is.na(info$budget))] <- 1.1e+07
+      info$budget[which(info$title %in% c("The Shadow") & is.na(info$budget))] <- 4.0e+07 
+      info$budget[which(info$title %in% c("Sin City: A Dame to Kill For") & is.na(info$budget))] <- 6.5e+07
+      info$budget[which(info$title %in% c("Snowpiercer") & is.na(info$budget))] <- 4.0e+07
+      info$budget[which(info$title %in% c("My Super Ex-Girlfriend") & is.na(info$budget))] <- 6.5e+07
+      info$budget[which(info$title %in% c("Superhero Movie") & is.na(info$budget))] <- 3.5e+07
+      info$budget[which(info$title %in% c("The Spirit") & is.na(info$budget))] <- 6.0e+07
+      info$budget[which(info$title %in% c("Timecop") & is.na(info$budget))] <- 2.7e+07
+      info$budget[which(info$title %in% c("The Adventures of Tintin") & is.na(info$budget))] <- 1.35e+08
+      info$budget[which(info$title %in% c("Zoom") & is.na(info$budget))] <- 3.5e+07
+    }
     
     info <- data.table(info)
     info[,title := NULL]
