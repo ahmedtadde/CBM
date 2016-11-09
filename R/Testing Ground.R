@@ -1,47 +1,31 @@
-source('../R/helpers.R')
-libraries()
-names <- c("marvel")
-tables <- getBoxOfficeData(names)$marvel
-
-# wd <- getwd()
-# fread("../R/others_bom.csv",
-#          na.strings = c("NA",""),
-#          stringsAsFactors = F,
-#       strip.white = T,
-#       data.table = F) -> bom
-# 
-# bom = bom[ , order(names(bom))]
-# 
-# bom = data.table(bom,keep.rownames = FALSE)
-# 
-# setwd(wd)
-
-
-
-
 # source('../R/helpers.R')
 # libraries()
 # 
 # names <- c("dc","marvel","others")
-# 
-# test <- getBoxOfficeData(names)
 # data <- getData(names)
 # raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
 # raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
 # raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
 # raw.data$BO$others$raw$title <- raw.data$Critics$others$raw$title
-# processed.data <- data$df
-
-
-# posters <- poster.pic.name(processed.data$title)
-# wd <- getwd()
-# setwd("./www")
-# foreach(i=1:length(posters)) %do% {
-#   GET(processed.data$poster[i], write_disk(posters[i]))
-# };rm(i)
-# setwd(wd)
-
-# test <- Viz(processed.data)
+# df <- data$df
+# 
+# df <- data.table(df)
+# df[, mapping_size:= critics_score * bo_score]
+# df %>% plot_ly(
+#   x = ~bo_score,
+#   y = ~critics_score,
+#   mode = "markers",
+#   size = ~mapping_size,
+#   color = ~class,
+#   colors = "RdYlGn",
+#   opacity = ~mapping_size,
+#   text = paste(toupper(~title),"<br>",
+#                "Grade: ", toupper(~class), "<br>",
+#                "Overall Critical Reception: ", ~critics_score,"%" ,"<br>",
+#                "Box Office Performance Index: ", ~bo_score,"<br>",
+#                "All-time Ranking: ", ~overall_rank),
+#   hoverinfo = "text"
+#   ) -> Plot
 # show(test$viz)
 # View(test$table)
 
