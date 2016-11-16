@@ -290,10 +290,11 @@ getCriticsData <- function(names){
   
   foreach( i = 1:length(names)) %do% {
     
-    omdb = read.csv(paste0(names[i],"_omdb.csv"),
-                    na.strings = "N/A", 
-                    stringsAsFactors = F,
-                    header = TRUE)
+    omdb = fread(paste0(names[i],"_omdb.csv"),
+                 na.strings = c("NA",""),
+                 stringsAsFactors = F, 
+                 strip.white = T,
+                 data.table = F)
     
     omdb = omdb[ , order(names(omdb))]
     omdb = data.table(omdb,keep.rownames = FALSE)
@@ -564,18 +565,18 @@ Viz <- function(df){
   
   df <- data.table(df)
   df[, mapping_size:= critics_score * bo_score]
-  plot <- df %>% plot_ly(x = bo_score,
-                         y = critics_score,
+  plot <- df %>% plot_ly(x = ~bo_score,
+                         y = ~critics_score,
                          mode = "markers",
-                         size = mapping_size,
-                         color = class,
+                         size = ~mapping_size,
+                         color = ~class,
                          colors = "RdYlGn",
-                         opacity = mapping_size,
-                         text = paste(toupper(title),"<br>",
-                                      "Grade: ", toupper(class), "<br>",
-                                      "Overall Critical Reception: ", round(critics_score,2),"%" ,"<br>",
-                                      "Box Office Performance Index: ", round(bo_score,2),"<br>",
-                                      "All-time Ranking: ", overall_rank),
+                         opacity = ~mapping_size,
+                         text = ~paste(toupper(df$title),"<br>",
+                                      "Grade: ", toupper(df$class), "<br>",
+                                      "Overall Critical Reception: ", round(df$critics_score,2),"%" ,"<br>",
+                                      "Box Office Performance Index: ", round(df$bo_score,2),"<br>",
+                                      "All-time Ranking: ", df$overall_rank),
                          hoverinfo = "text")
   
   
