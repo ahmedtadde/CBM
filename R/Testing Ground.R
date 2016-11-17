@@ -1,31 +1,20 @@
 source('../R/helpers.R')
 libraries()
-# names <- c("marvel","dc","others")
-# BO <- getBoxOfficeData(names)
-# Critics <- getCriticsData(names)
+names <- c("marvel")
+tables <- getBoxOfficeData(names)$marvel
 
-wd <- getwd()
-fread("../R/dc_bom.csv",
-         na.strings = c("NA",""),
-         stringsAsFactors = F,
-      strip.white = T,
-      data.table = F) -> bom
-
-bom = bom[ , order(names(bom))]
-
-bom = data.table(bom,keep.rownames = FALSE)
-
-fread("../R/dc_omdb.csv",
-      na.strings = c("NA",""),
-      stringsAsFactors = F,
-      strip.white = T,
-      data.table = F) -> omdb
-
-omdb = omdb[ , order(names(omdb))]
-
-omdb = data.table(omdb,keep.rownames = FALSE)
-
-setwd(wd)
+# wd <- getwd()
+# fread("../R/others_bom.csv",
+#          na.strings = c("NA",""),
+#          stringsAsFactors = F,
+#       strip.white = T,
+#       data.table = F) -> bom
+# 
+# bom = bom[ , order(names(bom))]
+# 
+# bom = data.table(bom,keep.rownames = FALSE)
+# 
+# setwd(wd)
 
 
 
