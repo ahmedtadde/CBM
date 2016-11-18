@@ -1,45 +1,31 @@
 source('../R/helpers.R')
 libraries()
-names <- c("marvel")
-tables <- getBoxOfficeData(names)$marvel
-
-# wd <- getwd()
-# fread("../R/others_bom.csv",
-#          na.strings = c("NA",""),
-#          stringsAsFactors = F,
-#       strip.white = T,
-#       data.table = F) -> bom
-# 
-# bom = bom[ , order(names(bom))]
-# 
-# bom = data.table(bom,keep.rownames = FALSE)
-# 
-# setwd(wd)
-
-
-
-
-# source('../R/helpers.R')
-# libraries()
 # 
 # names <- c("dc","marvel","others")
-# 
-# test <- getBoxOfficeData(names)
 # data <- getData(names)
 # raw.data <- list("BO" = data$BO, "Critics" = data$Critics)
 # raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
 # raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
 # raw.data$BO$others$raw$title <- raw.data$Critics$others$raw$title
 # processed.data <- data$df
+# 
+# rm(data); rm(names)
 
 
 # posters <- poster.pic.name(processed.data$title)
 # wd <- getwd()
 # setwd("./www")
 # foreach(i=1:length(posters)) %do% {
-#   GET(processed.data$poster[i], write_disk(posters[i]))
+#   if(is.na(processed.data$poster[i]) & processed.data$title[i] %in% "Ghost World"){
+#     GET("https://images-na.ssl-images-amazon.com/images/M/MV5BMTI5MDg2ODA2M15BMl5BanBnXkFtZTYwNDAzMjk2._V1_.jpg", write_disk(posters[i]), overwrite = T)
+#   }else{
+#     GET(processed.data$poster[i], write_disk(posters[i]), overwrite = T)
+#   }
+#   
 # };rm(i)
 # setwd(wd)
+# 
+# rm(wd);rm(posters)
 
 # test <- Viz(processed.data)
 # show(test$viz)
