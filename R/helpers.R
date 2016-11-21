@@ -2,18 +2,40 @@
 libraries <- function(){
   if(!require(pacman)) install.packages('pacman', dependencies = T)
   library(pacman)
+  if(!require(versions)) install.packages('versions', dependencies = T)
+  library(versions)
   p_load(shiny)
   p_load(shinythemes)
   p_load(data.table)
   p_load(stringi)
   p_load(dplyr)
+  p_load(gtable)
+  p_load(ggplot2)
   p_load(httr)
-  p_load(plotly)
+  if(!require(maps)) install.packages('maps', dependencies = T) 
+  if(!require(viridis)) install.packages('viridis', dependencies = T) 
+  if(!require(gridExtra)) install.packages('gridExtra', dependencies = T)
+  if(!require(plotly) | installed.versions('plotly')!= '3.6.0') install.versions('plotly','3.6.0')
+  library(plotly)
   p_load(foreach)
   p_load(arules)
-  p_load(psych)
   p_load(DataCombine)
   
+}
+
+
+geometric.mean <- function(x, na.rm=TRUE, zero.propagate = FALSE){
+  if(any(x < 0, na.rm = TRUE)){
+    return(NaN)
+  }
+  if(zero.propagate){
+    if(any(x == 0, na.rm = TRUE)){
+      return(0)
+    }
+    exp(mean(log(x), na.rm = na.rm))
+  } else {
+    exp(sum(log(x[x > 0]), na.rm=na.rm) / length(x))
+  }
 }
 
 getBoxOfficeData <- function(names){
@@ -575,15 +597,16 @@ Viz <- function(df){
   
   df <- data.table(df)
   df[, mapping_size:= critics_score * bo_score]
-  plot <- df %>% plot_ly(x = ~bo_score,
-                         y = ~critics_score,
+  plot <- df %>% plot_ly(x = bo_score,
+                         y = critics_score,
                          type = "scatter",
                          mode = "markers",
-                         size = ~mapping_size,
-                         color = ~class,
+                         size = mapping_size,
+                         color = class,
                          colors = "RdYlGn",
-                         opacity = ~mapping_size,
-                         text = ~paste(toupper(title),"<br>",
+                         opacity = mapping_size,
+                         text = paste(toupper(title),"<br>",
+                                      # tags$img(src = poster.pic.name(title)),"<br>",
                                       "Grade: ", toupper(class), "<br>",
                                       "Overall Critical Reception: ", round(critics_score,2),"%" ,"<br>",
                                       "Box Office Performance Index: ", round(bo_score,2),"<br>",
@@ -1052,23 +1075,23 @@ versus.weekly.avg <- function(titles, df, List){
     table <- data.table(table)
     
     
-    first <- plot_ly( x = ~c(1:15),
-                      y = ~transpose(table[1] %>% select(3:dim(table)[2]))$V1,
-                      # type = "markers"
+    first <- plot_ly( x = c(1:15),
+                      y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
+                      # type = "scatter",
                       # orientation = 'h',
                       marker = list(color = "#20B2AA"),
                       # colors = c("#66cccc"),
-                      name = ~table$title[1]
+                      name = table$title[1]
     )
     
     second <- add_trace(first,
-                        x = ~c(1:15),
-                        y = ~transpose(table[2] %>% select(3:dim(table)[2]))$V1,
-                        # type = "markers"
+                        x = c(1:15),
+                        y = transpose(table[2] %>% select(3:dim(table)[2]))$V1,
+                        # type = "scatter",
                         # orientation = 'h',
                         marker = list(color = "red"),
                         # colors = c("#66cccc"),
-                        name = ~table$title[2]
+                        name = table$title[2]
     )
     
     
@@ -1109,23 +1132,23 @@ versus.weekly.avg <- function(titles, df, List){
     table <- data.table(table)
     
   
-    first <- plot_ly( x = ~c(1:15),
-                      y = ~transpose(table[1] %>% select(3:dim(table)[2]))$V1,
+    first <- plot_ly( x = c(1:15),
+                      y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
                       # type = "markers"
                       # orientation = 'h',
                       marker = list(color = "#20B2AA"),
                       # colors = c("#66cccc"),
-                      name = ~table$title[1]
+                      name = table$title[1]
     )
     
     second <- add_trace(first,
-                        x = ~c(1:15),
-                        y = ~transpose(table[2] %>% select(3:dim(table)[2]))$V1,
+                        x = c(1:15),
+                        y = transpose(table[2] %>% select(3:dim(table)[2]))$V1,
                         # type = "markers"
                         # orientation = 'h',
                         marker = list(color = "red"),
                         # colors = c("#66cccc"),
-                        name = ~table$title[2]
+                        name = table$title[2]
     )
     
     
@@ -1190,23 +1213,23 @@ versus.weekly.perc <- function(titles, df, List){
     
     
     
-    first <- plot_ly( x = ~c(2:15),
-                      y = ~transpose(table[1] %>% select(3:dim(table)[2]))$V1,
+    first <- plot_ly( x = c(2:15),
+                      y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
                       # type = "markers"
                       # orientation = 'h',
                       marker = list(color = "#20B2AA"),
                       # colors = c("#66cccc"),
-                      name = ~table$title[1]
+                      name = table$title[1]
     )
     
     second <- add_trace(first,
-                        x = ~c(2:15),
-                        y = ~transpose(table[2] %>% select(3:dim(table)[2]))$V1,
+                        x = c(2:15),
+                        y = transpose(table[2] %>% select(3:dim(table)[2]))$V1,
                         # type = "markers"
                         # orientation = 'h',
                         marker = list(color = "red"),
                         # colors = c("#66cccc"),
-                        name = ~table$title[2]
+                        name = table$title[2]
     )
     
     
@@ -1247,23 +1270,23 @@ versus.weekly.perc <- function(titles, df, List){
     
     
     
-    first <- plot_ly( x = ~c(2:15),
-                      y = ~transpose(table[1] %>% select(3:dim(table)[2]))$V1,
+    first <- plot_ly( x = c(2:15),
+                      y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
                       # type = "markers"
                       # orientation = 'h',
                       marker = list(color = "#20B2AA"),
                       # colors = c("#66cccc"),
-                      name = ~table$title[1]
+                      name = table$title[1]
     )
     
     second <- add_trace(first,
-                        x = ~c(2:15),
-                        y = ~transpose(table[2] %>% select(3:dim(table)[2]))$V1,
+                        x = c(2:15),
+                        y = transpose(table[2] %>% select(3:dim(table)[2]))$V1,
                         # type = "markers"
                         # orientation = 'h',
                         marker = list(color = "red"),
                         # colors = c("#66cccc"),
-                        name = ~table$title[2]
+                        name = table$title[2]
     )
     
     
@@ -1327,23 +1350,23 @@ versus.weekly.rank <- function(titles, df, List){
     table <- data.table(table)
     
     
-    first <- plot_ly( x = ~c(1:15),
-                      y = ~transpose(table[1] %>% select(3:dim(table)[2]))$V1,
+    first <- plot_ly( x = c(1:15),
+                      y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
                       # type = "markers"
                       # orientation = 'h',
                       marker = list(color = "#20B2AA"),
                       # colors = c("#66cccc"),
-                      name = ~table$title[1]
+                      name = table$title[1]
     )
     
     second <- add_trace(first,
-                        x = ~c(1:15),
-                        y = ~transpose(table[2] %>% select(3:dim(table)[2]))$V1,
+                        x = c(1:15),
+                        y = transpose(table[2] %>% select(3:dim(table)[2]))$V1,
                         # type = "markers"
                         # orientation = 'h',
                         marker = list(color = "red"),
                         # colors = c("#66cccc"),
-                        name = ~table$title[2]
+                        name = table$title[2]
     )
     
     
@@ -1384,23 +1407,23 @@ versus.weekly.rank <- function(titles, df, List){
     table <- data.table(table)
     
     
-    first <- plot_ly( x = ~c(1:15),
-                      y = ~transpose(table[1] %>% select(3:dim(table)[2]))$V1,
+    first <- plot_ly( x = c(1:15),
+                      y = transpose(table[1] %>% select(3:dim(table)[2]))$V1,
                       # type = "markers"
                       # orientation = 'h',
                       marker = list(color = "#20B2AA"),
                       # colors = c("#66cccc"),
-                      name = ~table$title[1]
+                      name = table$title[1]
     )
     
     second <- add_trace(first,
-                        x = ~c(1:15),
-                        y = ~transpose(table[2] %>% select(3:dim(table)[2]))$V1,
+                        x = c(1:15),
+                        y = transpose(table[2] %>% select(3:dim(table)[2]))$V1,
                         # type = "markers"
                         # orientation = 'h',
                         marker = list(color = "red"),
                         # colors = c("#66cccc"),
-                        name = ~table$title[2]
+                        name = table$title[2]
     )
     
     
@@ -1469,30 +1492,30 @@ versus.BO.chart.1 <- function(titles, df){
     
     
     chart_step.1 <- plot_ly( 
-      x = ~c("Opening Week",
+      x = c("Opening Week",
             "Domestic",
             "Foreign",
             "World Wide"
             # "D&F Weighted Avg"
       ),
-      y = ~transpose(data.table(plot.table)[1] %>% select(2:5))$V1,
+      y = transpose(data.table(plot.table)[1] %>% select(2:5))$V1,
       type = "bar",
       marker = list(color = "#20B2AA"),
-      name = ~plot.table$title[1]
+      name = plot.table$title[1]
     )
     
     
     chart_step.2 <- add_trace(chart_step.1,
-                              x = ~c("Opening Week",
+                              x = c("Opening Week",
                                     "Domestic",
                                     "Foreign",
                                     "World Wide"
                                     # "D&F Weighted Avg"
                               ),
-                              y = ~transpose(data.table(plot.table)[2] %>% select(2:5))$V1,
+                              y = transpose(data.table(plot.table)[2] %>% select(2:5))$V1,
                               type = "bar",
                               marker = list(color = "red"),
-                              name = ~plot.table$title[2]
+                              name = plot.table$title[2]
     )
     
     
@@ -1538,30 +1561,30 @@ versus.BO.chart.1 <- function(titles, df){
     
     
     chart_step.1 <- plot_ly( 
-      x = ~c("Opening Week",
+      x = c("Opening Week",
             "Domestic",
             "Foreign",
             "World Wide"
             # "D&F Weighted Avg"
       ),
-      y = ~transpose(data.table(plot.table)[1] %>% select(2:5))$V1,
+      y = transpose(data.table(plot.table)[1] %>% select(2:5))$V1,
       type = "bar",
       marker = list(color = "#20B2AA"),
-      name = ~plot.table$title[1]
+      name = plot.table$title[1]
     )
     
     
     chart_step.2 <- add_trace(chart_step.1,
-                              x = ~c("Opening Week",
+                              x = c("Opening Week",
                                     "Domestic",
                                     "Foreign",
                                     "World Wide"
                                     # "D&F Weighted Avg"
                               ),
-                              y = ~transpose(data.table(plot.table)[2] %>% select(2:5))$V1,
+                              y = transpose(data.table(plot.table)[2] %>% select(2:5))$V1,
                               type = "bar",
                               marker = list(color = "red"),
-                              name = ~plot.table$title[2]
+                              name = plot.table$title[2]
     )
     
     
@@ -1635,7 +1658,7 @@ versus.BO.chart.2 <- function(titles, df){
    
     
     chart_step.1 <- plot_ly( 
-      x = ~c(
+      x = c(
         
         "Word to Mouth Index",
         "Opening Week/Budget",
@@ -1648,15 +1671,15 @@ versus.BO.chart.2 <- function(titles, df){
         "Investment Index",
         "Overall BO Index"
       ),
-      y = ~c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[1] %>% select(2:11))$V1,
+      y = c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[1] %>% select(2:11))$V1,
       type = "bar",
       marker = list(color = "#20B2AA"),
-      name = ~plot.table$title[1]
+      name = plot.table$title[1]
     )
     
     
     chart_step.2 <- add_trace(chart_step.1,
-                              x = ~c(
+                              x = c(
                                 
                                 "Word to Mouth Index",
                                 "Opening Week/Budget",
@@ -1669,10 +1692,10 @@ versus.BO.chart.2 <- function(titles, df){
                                 "Investment Index",
                                 "Overall BO Index"
                               ),
-                              y = ~c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[2] %>% select(2:11))$V1,
+                              y = c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[2] %>% select(2:11))$V1,
                               type = "bar",
                               marker = list(color = "red"),
-                              name = ~plot.table$title[2]
+                              name = plot.table$title[2]
     )
     
     
@@ -1721,7 +1744,7 @@ versus.BO.chart.2 <- function(titles, df){
     # return(plot.table)
     
     chart_step.1 <- plot_ly( 
-      x = ~c(
+      x = c(
         
         "Word to Mouth Index",
         "Opening Week/Budget",
@@ -1734,15 +1757,15 @@ versus.BO.chart.2 <- function(titles, df){
         "Investment Index",
         "Overall BO Index"
       ),
-      y = ~c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[1] %>% select(2:11))$V1,
+      y = c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[1] %>% select(2:11))$V1,
       type = "bar",
       marker = list(color = "#20B2AA"),
-      name = ~plot.table$title[1]
+      name = plot.table$title[1]
     )
     
     
     chart_step.2 <- add_trace(chart_step.1,
-                              x = ~c(
+                              x = c(
                                 
                                 "Word to Mouth Index",
                                 "Opening Week/Budget",
@@ -1755,10 +1778,10 @@ versus.BO.chart.2 <- function(titles, df){
                                 "Investment Index",
                                 "Overall BO Index"
                               ),
-                              y = ~c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[2] %>% select(2:11))$V1,
+                              y = c(1,0.1,0.1,0.1,0.1,1,10,0.1,0.01,0.1)*transpose(data.table(plot.table)[2] %>% select(2:11))$V1,
                               type = "bar",
                               marker = list(color = "red"),
-                              name = ~plot.table$title[2]
+                              name = plot.table$title[2]
     )
     
     
@@ -1839,7 +1862,7 @@ versus_critics <- function(titles, df, List){
     plot.table <- data.table(plot.table)
     
     chart_step.1 <- plot_ly(
-      x = ~c( 
+      x = c( 
         "Rotten Tomatoes Critics Tometometer",
         "Rotten Tomates Critics Rating",
         "Rotten Tomatoes Audience Tometometer",
@@ -1850,17 +1873,17 @@ versus_critics <- function(titles, df, List){
         "Custom Rotten Tomatoes Audience Score",
         "Overall Estimated Critical Reception"
       ), 
-      y = ~transpose(plot.table[1] %>% select(2:10))$V1,
+      y = transpose(plot.table[1] %>% select(2:10))$V1,
       type = "bar",
       # orientation = 'h',
       marker = list(color = "#20B2AA"),
       # colors = c("#66cccc"),
-      name = ~plot.table$title[1]
+      name = plot.table$title[1]
     )
     
     
     chart_step.2 <- add_trace(chart_step.1,
-                              x = ~c( 
+                              x = c( 
                                 "Rotten Tomatoes Critics Tometometer",
                                 "Rotten Tomates Critics Rating",
                                 "Rotten Tomatoes Audience Tometometer",
@@ -1871,11 +1894,11 @@ versus_critics <- function(titles, df, List){
                                 "Custom Rotten Tomatoes Audience Score",
                                 "Overall Estimated Critical Reception"
                               ), 
-                              y = ~transpose(plot.table[2] %>% select(2:10))$V1,
+                              y = transpose(plot.table[2] %>% select(2:10))$V1,
                               type = "bar",
                               marker = list(color = "red"),
                               # orientation = 'h',
-                              name = ~plot.table$title[2])
+                              name = plot.table$title[2])
     
     
     
@@ -1950,7 +1973,7 @@ versus_critics <- function(titles, df, List){
     plot.table <- data.table(plot.table)
     
     chart_step.1 <- plot_ly(
-      x = ~c( 
+      x = c( 
         "Rotten Tomatoes Critics Tometometer",
         "Rotten Tomates Critics Rating",
         "Rotten Tomatoes Audience Tometometer",
@@ -1961,17 +1984,17 @@ versus_critics <- function(titles, df, List){
         "Custom Rotten Tomatoes Audience Score",
         "Overall Estimated Critical Reception"
       ), 
-      y = ~transpose(plot.table[1] %>% select(2:10))$V1,
+      y = transpose(plot.table[1] %>% select(2:10))$V1,
       type = "bar",
       # orientation = 'h',
       marker = list(color = "#20B2AA"),
       # colors = c("#66cccc"),
-      name = ~plot.table$title[1]
+      name = plot.table$title[1]
     )
     
     
     chart_step.2 <- add_trace(chart_step.1,
-                              x = ~c( 
+                              x = c( 
                                 "Rotten Tomatoes Critics Tometometer",
                                 "Rotten Tomates Critics Rating",
                                 "Rotten Tomatoes Audience Tometometer",
@@ -1982,11 +2005,11 @@ versus_critics <- function(titles, df, List){
                                 "Custom Rotten Tomatoes Audience Score",
                                 "Overall Estimated Critical Reception"
                               ), 
-                              y = ~transpose(plot.table[2] %>% select(2:10))$V1,
+                              y = transpose(plot.table[2] %>% select(2:10))$V1,
                               type = "bar",
                               marker = list(color = "red"),
                               # orientation = 'h',
-                              name = ~plot.table$title[2])
+                              name = plot.table$title[2])
     
     
     

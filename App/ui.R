@@ -133,7 +133,7 @@ studios <- c("All","Dimension Films","Disney","DreamWorks","Fine Line","Fox",
 shinyUI(
   navbarPage( 
               theme = "bootstrap.css",
-              "Movie Explorer",
+              "Comic Book Adaptations",
               tabPanel("Search Movie",
                        tags$br(),tags$br(),tags$br(),
                        fluidRow(
