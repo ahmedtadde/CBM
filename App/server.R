@@ -1,6 +1,5 @@
-source('../R/helpers.R')
+source('helpers.R')
 libraries()
-
 names <- c("dc","marvel","others")
 data <- getData(names)
 

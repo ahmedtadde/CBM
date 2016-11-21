@@ -1,6 +1,3 @@
-source('../R/helpers.R')
-libraries()
-library(shinythemes)
 movie.titles <- c(#### MARVEL TITLES
                   "Howard The Duck", "Blade",
                   "X-Men","Blade II",
