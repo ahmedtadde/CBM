@@ -1,5 +1,6 @@
 
 libraries <- function(){
+  library(pacman)
   if(!require(pacman)) install.packages('pacman', dependencies = T)
   library(pacman)
   if(!require(versions)) install.packages('versions', dependencies = T)
@@ -17,9 +18,14 @@ libraries <- function(){
   if(!require(gridExtra)) install.packages('gridExtra', dependencies = T)
   if(!require(plotly) | installed.versions('plotly')!= '3.6.0') install.versions('plotly','3.6.0')
   library(plotly)
-  p_load(foreach)
   p_load(arules)
   p_load(DataCombine)
+  p_load(foreach)
+  p_load(snow)
+  p_load(doSNOW)
+  registerDoSNOW(makeCluster(detectCores()))
+  p_load(doParallel)
+  registerDoParallel(makeCluster(detectCores()))
   
 }
 
