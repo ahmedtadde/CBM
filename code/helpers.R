@@ -1,23 +1,42 @@
 
 libraries <- function(){
-  library(devtools)
-  library(arules)
-  library(DataCombine)
-  library(stringi)
-  library(dplyr)
-  library(data.table)
-  library(plotly)
-  library(shiny)
-  library(shinythemes)
-  library(foreach)
-  library(snow)
-  library(doSNOW)
+  if(!require(pacman)) install.packages("pacman", dependencies = T)
+  library(pacman)
+  p_load(devtools)
+  p_load(arules)
+  p_load(DataCombine)
+  p_load(stringi)
+  p_load(httr)
+  p_load(dplyr)
+  p_load(data.table)
+  if(!require(plotly)){
+    install_version("plotly", version = "3.6.0", repos = "http://cran.us.r-project.org")
+  }
+  p_load(plotly)
+  p_load(shiny)
+  p_load(shinythemes)
+  p_load(foreach)
+  p_load(snow)
+  p_load(doSNOW)
   registerDoSNOW(makeCluster(detectCores()))
-  library(doParallel)
+  p_load(doParallel)
   registerDoParallel(makeCluster(detectCores()))
   
 }
 
+
+poster.pic.name <- function(vector){
+  foreach(i =1:length(vector),.combine = c)%do%{
+    name <- paste0(gsub(" ","", vector[i]),".png")
+    name <- gsub(":","", name)
+    name <- gsub("'","", name)
+    name <- gsub("-","", name)
+    name <- gsub("&","", name)
+    return(name)
+  } -> result ; rm(i)
+  
+  return(result)
+}
 
 geometric.mean <- function(x, na.rm=TRUE, zero.propagate = FALSE){
   if(any(x < 0, na.rm = TRUE)){
@@ -519,64 +538,34 @@ getData <- function(names){
   }
 
   movies$director <- fix.director.names(movies$director)
-
-  ff4.revised.plot <- c("Scientist Reed Richards (Loan Gruffudd) persuades his arrogant former classmate Victor von Doom (Julian McMahon), to fund his experiments with cosmic energy. On von Doom's space station, the crew - including astronaut Ben Grimm (Michael Chiklis), researcher Sue Storm (Jessica Alba) and pilot Johnny Storm (Chris Evans) - are exposed to a mysterious cosmic storm that bestows super powers upon them. As they cope with their transfortmations, von Doom vows his revenge.")
-  ff4.2.plot <- c("Reed (Ioan Gruffudd), Susan (Jessica Alba), Johnny (Chris Evans) and Ben (Michael Chiklis) face an intergalactic messenger who has arrived to prepare Earth for its destruction. While the enigmatic being wreaks havoc around the world, the heroic quartet must also contend with the unexpected return of their enemy, Victor Von Doom.")
-  thor2.revised.plot <- c("In ancient times, the gods of Asgard fought and won a war against an evil race known as the Dark Elves. The survivors were neutralized, and their ultimate weapon -- the Aether -- was buried in a secret location. Hundreds of years later, Jane Foster (Natalie Portman) finds the Aether and becomes its host, forcing Thor (Chris Hemsworth) to bring her to Asgard before Dark Elf Malekith (Christopher Eccleston) captures her and uses the weapon to destroy the Nine Realms -- including Earth.")
-  xmen_dofp.revised.plot <- c("Convinced that mutants pose a threat to humanity, Dr. Bolivar Trask (Peter Dinklage) develops the Sentinels, enormous robotic weapons that can detect a mutant gene and zero in on that person. In the 21st century, the Sentinels have evolved into highly efficient killing machines. With mutants now facing extinction, Wolverine (Hugh Jackman) volunteers to go back in time and rally the X-Men of the past to help change a pivotal moment in history and thereby save their future.")
-  dredd.revised.plot <- c("Mega City One is a vast, violent metropolis where felons rule the streets. The only law lies with cops called 'judges', who act as judge, jury and executioner, and Dredd (Karl Urban) is one of the city's most feared. One day, Dredd is partnered with Cassandra (Olivia Thirlby), a rookie with powerful psychic abilities. A report of a terrible crime sends Dredd and Cassandra to a dangerous area controlled by Ma-Ma (Lena Headey), a drug lord who will stop at nothing to protect her empire.")
-  tmnt2016.revised.plot <- c("The turtles face a new challenge when Shredder escapes from custody and joins forces with Baxter Stockman, a mad scientist who plans to use a serum to take over the world. Along for the ride are Bebop and Rocksteady, two dimwitted henchmen who provide plenty of muscle. Luckily, the turtles have their own allies in April O'Neil, Vernon Fenwick and Casey Jones, a hockey-masked vigilante. As the pizza-loving heroes prepare for battle, the notorious Krang also emerges to pose an even greater threat.")
-  kickass2.revised.plot <- c("Dave (Aaron Taylor-Johnson), aka Kick-Ass, and Mindy (Chloë Grace Moretz), aka Hit Girl, are trying to live as normal teenagers and briefly form a crime-fighting team. After Mindy is busted and forced to retire as Hit Girl, Dave joins a group of amateur superheroes led by Col. Stars and Stripes (Jim Carrey), a reformed mobster. Just as Dave and company start to make a real difference on the streets, the villain formerly known as Red Mist (Christopher Mintz-Plasse) rears his head yet again.")
-  blade3.revised.plot <- c("The war between humans and vampires continues, but the humans' best hope, human-vampire hybrid warrior Blade (Wesley Snipes), has been framed for countless murders, turning popular sentiment against him. The vampire leader responsible for Blade's bad publicity is Danica Talos (Parker Posey), who's determined to finally lead her bloodthirsty compatriots to victory. Now Blade must team up with a band of rogue vampire hunters (Ryan Reynolds, Jessica Biel) to save humanity.")
-  spiderman.revised.plot <- c("'Spider-Man' centers on student Peter Parker (Tobey Maguire) who, after being bitten by a genetically-altered spider, gains superhuman strength and the spider-like ability to cling to any surface. He vows to use his abilities to fight crime, coming to understand the words of his beloved Uncle Ben: 'With great power comes great responsibility'.")
-  batmanforever.revised.plot <- c("Batman (Val Kilmer) faces off against two foes: the schizophrenic, horribly scarred former District Attorney Harvey Dent, aka Two-Face (Tommy Lee Jones), and the Riddler (Jim Carrey), a disgruntled ex-Wayne Enterprises inventor seeking revenge against his former employer by unleashing his brain-sucking weapon on Gotham City's residents. As the caped crusader also deals with tortured memories of his parents' murder, he has a new romance, with psychologist Chase Meridian (Nicole Kidman).")
-  themask.revised.plot <- c("When timid bank clerk Stanley Ipkiss (Jim Carrey) discovers a magical mask containing the spirit of the Norse god Loki, his entire life changes. While wearing the mask, Ipkiss becomes a supernatural playboy exuding charm and confidence which allows him to catch the eye of local nightclub singer Tina Carlyle (Cameron Diaz). Unfortunately, under the mask's influence, Ipkiss also robs a bank, which angers junior crime lord Dorian Tyrell (Peter Greene), whose goons get blamed for the heist.")
-  rip.revised.plot <- c("Veteran lawman Roy Pulsifer (Jeff Bridges) works for the R.I.P.D., a legendary police force charged with finding monstrous spirits who are disguised as ordinary people but are trying to avoid their final judgment by hiding out among the living. When Roy and his new partner, Nick Walker (Ryan Reynolds), uncover a plot that could end all life, they must discover a way to restore the cosmic balance or else watch the tunnel to the afterlife start sending angry souls back to the world of the living.")
+  
   
   
   movies <- data.table(movies)
-  movies[which(movies$title %in% "Fantastic Four(2005)")]$plot <- ff4.revised.plot
-  movies[which(movies$title %in% "Fantastic Four: Rise of the Silver Surfer")]$plot <- ff4.2.plot
-  movies[which(movies$title %in% "Thor 2: The Dark World")]$plot <- thor2.revised.plot
-  movies[which(movies$title %in% "X-Men: Days of Future Past")]$plot <- xmen_dofp.revised.plot
-  movies[which(movies$title %in% "Dredd")]$plot <- dredd.revised.plot
-  movies[which(movies$title %in% "Kick-Ass 2")]$plot <- kickass2.revised.plot
-  movies[which(movies$title %in% "Teenage Mutant Ninja Turtles: Out of the Shadows")]$plot <- tmnt2016.revised.plot
-  movies[which(movies$title %in% "Blade: Trinity")]$plot <- blade3.revised.plot
-  movies[which(movies$title %in% "Spider-Man")]$plot <- spiderman.revised.plot
-  movies[which(movies$title %in% "Batman Forever")]$plot <- batmanforever.revised.plot
-  movies[which(movies$title %in% "The Mask")]$plot <- themask.revised.plot
-  movies[which(movies$title %in% "RIPD")]$plot <- rip.revised.plot
-  
-  
+  movies[which(movies$title %in% "Fantastic Four(2005)")]$plot <- revision[[1]]
+  movies[which(movies$title %in% "Fantastic Four: Rise of the Silver Surfer")]$plot <- revision[[2]]
+  movies[which(movies$title %in% "Thor: The Dark World")]$plot <- revision[[3]]
+  movies[which(movies$title %in% "X-Men: Days of Future Past")]$plot <- revision[[4]]
+  movies[which(movies$title %in% "Dredd")]$plot <- revision[[5]]
+  movies[which(movies$title %in% "Teenage Mutant Ninja Turtles: Out of the Shadows")]$plot <- revision[[6]]
+  movies[which(movies$title %in% "Kick-Ass 2")]$plot <- revision[[7]]
+  movies[which(movies$title %in% "Blade: Trinity")]$plot <- revision[[8]]
+  movies[which(movies$title %in% "Spider-Man")]$plot <- revision[[9]]
+  movies[which(movies$title %in% "Batman Forever")]$plot <- revision[[10]]
+  movies[which(movies$title %in% "The Mask")]$plot <- revision[[11]]
+  movies[which(movies$title %in% "RIPD")]$plot <- revision[[12]]
+
   
   Critics$marvel$raw$plot <- movies$plot[which(movies$IP %in% "Marvel")]
   Critics$dc$raw$plot <- movies$plot[which(movies$IP %in% "DC")]
   Critics$others$raw$plot <- movies$plot[which(movies$IP %in% "Other")]
-  
+
   Critics$marvel$processed$plot <- movies$plot[which(movies$IP %in% "Marvel")]
   Critics$dc$processed$plot <- movies$plot[which(movies$IP %in% "DC")]
   Critics$others$processed$plot <- movies$plot[which(movies$IP %in% "Other")]
-  
- 
-  
-  rm(list =c("ff4.revised.plot","ff4.2.plot",
-             "thor2.revised.plot",
-             "xmen_dofp.revised.plot",
-             "dredd.revised.plot",
-             "kickass2.revised.plot",
-             "tmnt2016.revised.plot",
-             "blade3.revised.plot",
-             "spiderman.revised.plot",
-             "batmanforever.revised.plot"
-             )
-     )
 
   return(list("df" = movies%>%arrange(desc(combined_score)), "BO" = BO, "Critics" = Critics))
-  # return(list("dc" = dc, "marvel" = marvel))
 }
-
-
 
 
 
@@ -595,7 +584,6 @@ Viz <- function(df){
                          colors = "RdYlGn",
                          opacity = mapping_size,
                          text = paste(toupper(title),"<br>",
-                                      # tags$img(src = poster.pic.name(title)),"<br>",
                                       "Grade: ", toupper(class), "<br>",
                                       "Overall Critical Reception: ", round(critics_score,2),"%" ,"<br>",
                                       "Box Office Performance Index: ", round(bo_score,2),"<br>",
@@ -650,26 +638,26 @@ Viz <- function(df){
   
   
   
-  # Get the list for the plot
-  # plot <- plotly_build(plot)
-  # 
-  # foreach(i =1:length(plot$data)) %do% {
-  # 
-  #   # Pick up the hover text
-  #   hvrtext <- plot$data[[i]]$text
-  #   # Split by line break and wt
-  #   hvrtext_fixed <- stri_split(hvrtext, split = '<br>mapping_size')
-  #   # Get the first element of each split
-  #   hvrtext_fixed <- lapply(hvrtext_fixed, function(x) x[1])
-  #   # Convert back to vector
-  #   hvrtext_fixed <- as.character(hvrtext_fixed)
-  #   # Assign as hovertext in the plot
-  #   plot$data[[i]]$text <- hvrtext_fixed
-  # 
-  # 
-  # }
-  # 
-  # rm(list=c("hvrtext","hvrtext_fixed"))
+  #Get the list for the plot
+  plot <- plotly_build(plot)
+
+  foreach(i =1:length(plot$data)) %do% {
+
+    # Pick up the hover text
+    hvrtext <- plot$data[[i]]$text
+    # Split by line break and wt
+    hvrtext_fixed <- stri_split(hvrtext, fixed = '<br>mapping_size')
+    # Get the first element of each split
+    hvrtext_fixed <- lapply(hvrtext_fixed, function(x) x[1])
+    # Convert back to vector
+    hvrtext_fixed <- as.character(hvrtext_fixed)
+    # Assign as hovertext in the plot
+    plot$data[[i]]$text <- hvrtext_fixed
+
+
+  }
+
+  rm(list=c("hvrtext","hvrtext_fixed"))
   
   df <- df %>% select(which(names(df) %in% c("title","IP","studio","combined_score","class")))
   setnames(df, names(df), c("Studio","Title","Combined Critics/BoxOffice Score","IP","Grade"))
@@ -718,15 +706,15 @@ rank.by <- function(vector, List){
       table <- data.table(table) %>% select(c(2,1,3,6,5)) %>% arrange(rank)
       setnames(table, paste0(vector,".x"), vector)
       
-      poster.pic.name <- function(vector){
-        foreach(i =1:length(vector),.combine = c)%do%{
-          name <- paste0(gsub(" ","", vector[i]),".png")
-          name <- gsub(":","", name)
-          return(name)
-        } -> result ; rm(i)
-        
-        return(result)
-      }
+      # poster.pic.name <- function(vector){
+      #   foreach(i =1:length(vector),.combine = c)%do%{
+      #     name <- paste0(gsub(" ","", vector[i]),".png")
+      #     name <- gsub(":","", name)
+      #     return(name)
+      #   } -> result ; rm(i)
+      #   
+      #   return(result)
+      # }
       
       table$poster <-  poster.pic.name(table$title)
       
@@ -755,15 +743,15 @@ rank.by <- function(vector, List){
         table <- data.table(table)%>% arrange(rank)%>% select(c(1,3,5,4))
       }
       
-      poster.pic.name <- function(vector){
-        foreach(i =1:length(vector),.combine = c)%do%{
-          name <- paste0(gsub(" ","", vector[i]),".png")
-          name <- gsub(":","", name)
-          return(name)
-        } -> result ; rm(i)
-        
-        return(result)
-      }
+      # poster.pic.name <- function(vector){
+      #   foreach(i =1:length(vector),.combine = c)%do%{
+      #     name <- paste0(gsub(" ","", vector[i]),".png")
+      #     name <- gsub(":","", name)
+      #     return(name)
+      #   } -> result ; rm(i)
+      #   
+      #   return(result)
+      # }
       table$poster <- poster.pic.name(table$title)
       
       
@@ -804,16 +792,16 @@ rank.by <- function(vector, List){
         setnames(table, paste0(vector,".x"), vector)
       }
       
-      poster.pic.name <- function(vector){
-        foreach(i =1:length(vector),.combine = c)%do%{
-          name <- paste0(gsub(" ","", vector[i]),".png")
-          name <- gsub(":","", name)
-          return(name)
-          
-        } -> result ; rm(i)
-        
-        return(result)
-      }
+      # poster.pic.name <- function(vector){
+      #   foreach(i =1:length(vector),.combine = c)%do%{
+      #     name <- paste0(gsub(" ","", vector[i]),".png")
+      #     name <- gsub(":","", name)
+      #     return(name)
+      #     
+      #   } -> result ; rm(i)
+      #   
+      #   return(result)
+      # }
       
       table$poster <- poster.pic.name(table$title)
       
@@ -2057,58 +2045,36 @@ versus_critics <- function(titles, df, List){
 
 
 
-
-poster.pic.name <- function(vector){
-  foreach(i =1:length(vector),.combine = c)%do%{
-    name <- paste0(gsub(" ","", vector[i]),".png")
-    name <- gsub(":","", name)
-    return(name)
-  } -> result ; rm(i)
-  
-  # wd <- getwd()
-  # setwd("./www")
-  # foreach(i=1:length(posters)) %do% {
-  #   GET(test$poster[i], write_disk(posters[i]))
-  # };rm(i)
-  # setwd(wd)
-  
-  return(result)
-}
-
-
-
-
-
-find_movie <- function(titles, df,List){
-  
-  data <- df %>% filter(title %in% titles)
-  if (dim(data)[1] == 0){
-    return(data.table("Empty" = "yes",
-                      "movie_report"= "N/A", 
-                      "poster" = "NoPosterAvailable.png"
-                      )
-           )
-  }else{
-    
-    critics.raw <- data.table(rbind(List$Critics$dc$raw, List$Critics$marvel$raw,List$Critics$others$raw))
-    critics.raw <- critics.raw%>%filter(title %in% data$title)
-    
-    bo.raw <- data.frame(rbind(List$BO$dc$raw, List$BO$marvel$raw,List$BO$others$raw))
-    bo.raw <- bo.raw %>% filter(title %in% critics.raw$title)
-    
-    raw.list <- list("critics"=critics.raw, "BO" = bo.raw)
-    
-    report <- report.text(list("processed.data" = data,"raw.data" = raw.list ))
-    report <- report$processed.data 
-    report <- report %>% select(which(names(report) %in% c("title","movie_report")))
-    
-    posters <- foreach(i =1 :dim(report)[1], .combine = c) %do% {
-      poster.pic.name(report$title[i])
-    }; rm(i)
-    
-    
-    return(data.table(report, "posters" = posters))
-    
-  }
-  
-}
+# find_movie <- function(titles, df,List){
+#   
+#   data <- df %>% filter(title %in% titles)
+#   if (dim(data)[1] == 0){
+#     return(data.table("Empty" = "yes",
+#                       "movie_report"= "N/A", 
+#                       "poster" = "NoPosterAvailable.png"
+#                       )
+#            )
+#   }else{
+#     
+#     critics.raw <- data.table(rbind(List$Critics$dc$raw, List$Critics$marvel$raw,List$Critics$others$raw))
+#     critics.raw <- critics.raw%>%filter(title %in% data$title)
+#     
+#     bo.raw <- data.frame(rbind(List$BO$dc$raw, List$BO$marvel$raw,List$BO$others$raw))
+#     bo.raw <- bo.raw %>% filter(title %in% critics.raw$title)
+#     
+#     raw.list <- list("critics"=critics.raw, "BO" = bo.raw)
+#     
+#     report <- report.text(list("processed.data" = data,"raw.data" = raw.list ))
+#     report <- report$processed.data 
+#     report <- report %>% select(which(names(report) %in% c("title","movie_report")))
+#     
+#     posters <- foreach(i =1 :dim(report)[1], .combine = c) %do% {
+#       poster.pic.name(report$title[i])
+#     }; rm(i)
+#     
+#     
+#     return(data.table(report, "posters" = posters))
+#     
+#   }
+#   
+# }

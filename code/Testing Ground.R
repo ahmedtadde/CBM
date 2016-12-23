@@ -1,5 +1,9 @@
 # source('helpers.R')
+# source('Movie_Titles.R')
+# source('Revised_Plots.R')
 # libraries()
+# 
+# 
 # 
 # names <- c("dc","marvel","others")
 # data <- getData(names)
@@ -7,21 +11,21 @@
 # raw.data$BO$dc$raw$title <- raw.data$Critics$dc$raw$title
 # raw.data$BO$marvel$raw$title <- raw.data$Critics$marvel$raw$title
 # raw.data$BO$others$raw$title <- raw.data$Critics$others$raw$title
-# processed.data <- data$df
-# 
-# rm(data); rm(names)
+# movies <- data.table(data$df)
+# rm(data);rm(names)
+
 
 
 # posters <- poster.pic.name(processed.data$title)
 # wd <- getwd()
-# setwd("./www")
+# setwd("./new")
 # foreach(i=1:length(posters)) %do% {
-#   if(is.na(processed.data$poster[i]) & processed.data$title[i] %in% "Ghost World"){
-#     GET("https://images-na.ssl-images-amazon.com/images/M/MV5BMTI5MDg2ODA2M15BMl5BanBnXkFtZTYwNDAzMjk2._V1_.jpg", write_disk(posters[i]), overwrite = T)
+#   if(is.na(processed.data$poster[i])){
+#     GET("https://upload.wikimedia.org/wikipedia/en/c/c3/Ghostworldposter.jpg", write_disk(posters[i]), overwrite = T)
 #   }else{
 #     GET(processed.data$poster[i], write_disk(posters[i]), overwrite = T)
 #   }
-#   
+# 
 # };rm(i)
 # setwd(wd)
 # 

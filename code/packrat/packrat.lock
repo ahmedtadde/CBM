@@ -1,17 +1,22 @@
 PackratFormat: 1.4
 PackratVersion: 0.4.8.1
 RVersion: 3.3.2
-Repos: BioCsoft=https://bioconductor.org/packages/3.4/bioc,
+Repos: CRANextra=https://www.stats.ox.ac.uk/pub/RWin,
+    BioCsoft=https://bioconductor.org/packages/3.4/bioc,
     BioCann=https://bioconductor.org/packages/3.4/data/annotation,
     BioCexp=https://bioconductor.org/packages/3.4/data/experiment,
     BioCextra=https://bioconductor.org/packages/3.4/extra,
-    CRAN=https://cran.rstudio.com/,
-    CRANextra=https://www.stats.ox.ac.uk/pub/RWin
+    CRAN=https://cran.rstudio.com/
 
 Package: BH
 Source: CRAN
 Version: 1.60.0-2
 Hash: be2967bcff307e561d9ba17faf03205c
+
+Package: BiocInstaller
+Source: Bioconductor
+Version: 1.24.0
+Hash: b1c2c51cc77fd1031c7851d3116c39d0
 
 Package: DBI
 Source: CRAN
@@ -29,11 +34,10 @@ Source: CRAN
 Version: 7.3-45
 Hash: 0650d5701aa7e369e77c9e2c8e1dc913
 
-Package: Matrix
+Package: OpenMPController
 Source: CRAN
-Version: 1.2-7.1
-Hash: 44c7e8fe4ce50a044ec2e5196f6694cc
-Requires: lattice
+Version: 0.1-2
+Hash: 1c1ee5675eda6a1075a6afa6fd431942
 
 Package: R6
 Source: CRAN
@@ -50,11 +54,15 @@ Source: CRAN
 Version: 0.12.8
 Hash: 436ad5c23fad4e22224c7ac2fc82b049
 
+Package: XML
+Source: CRAN
+Version: 3.98-1.5
+Hash: 818adc834fc0a16dd4340a59d63b673a
+
 Package: arules
 Source: CRAN
 Version: 1.5-0
 Hash: 9289eb5bd48b9b72b356e5dc146cd729
-Requires: Matrix
 
 Package: assertthat
 Source: CRAN
@@ -73,8 +81,13 @@ Hash: a4268e48f71dc70ac2203aced7cdd8ea
 
 Package: colorspace
 Source: CRAN
-Version: 1.3-1
-Hash: a28c977a419f4a42621984f3770f2dac
+Version: 1.3-2
+Hash: 0bf8618b585fa98eb23414cd3ab95118
+
+Package: crayon
+Source: CRAN
+Version: 1.3.2
+Hash: 576a9d297a567d6a5ebd164ca5221590
 
 Package: curl
 Source: CRAN
@@ -125,6 +138,12 @@ Version: 0.5.0
 Hash: 1acc0b1601b5c89c3ade8072036bf9e0
 Requires: BH, DBI, R6, Rcpp, assertthat, lazyeval, magrittr, tibble
 
+Package: evaluate
+Source: CRAN
+Version: 0.10
+Hash: c3601a10c987d439e0c63ec635234a76
+Requires: stringr
+
 Package: foreach
 Source: CRAN
 Version: 1.4.3
@@ -140,8 +159,8 @@ Requires: MASS, digest, gtable, lazyeval, plyr, reshape2, scales,
 
 Package: git2r
 Source: CRAN
-Version: 0.15.0
-Hash: 92d5a9f3cba5e146b92a76dabbc29fbb
+Version: 0.16.0
+Hash: 8022c40f316e7b99258eb19969e2a11c
 
 Package: gridExtra
 Source: CRAN
@@ -158,7 +177,11 @@ Package: hexbin
 Source: CRAN
 Version: 1.27.1
 Hash: 9f94c576cc4b9e83fd714ae8387272e6
-Requires: lattice
+
+Package: highr
+Source: CRAN
+Version: 0.6
+Hash: aa3d5b7912b5fed4b546ed5cd2a1760b
 
 Package: htmltools
 Source: CRAN
@@ -194,15 +217,16 @@ Source: CRAN
 Version: 1.1
 Hash: 86d4b85b84421a4815f1bb4872e30ef4
 
+Package: knitr
+Source: CRAN
+Version: 1.15.1
+Hash: eed7437e2b614c9e3923b7932b16ac97
+Requires: digest, evaluate, highr, markdown, stringr, yaml
+
 Package: labeling
 Source: CRAN
 Version: 0.3
 Hash: ecf589b42cd284b03a4beb9665482d3e
-
-Package: lattice
-Source: CRAN
-Version: 0.20-34
-Hash: 4390fc5602fd36017be70a27f7123ff3
 
 Package: lazyeval
 Source: CRAN
@@ -213,6 +237,12 @@ Package: magrittr
 Source: CRAN
 Version: 1.5
 Hash: bdc4d48c3135e8f3b399536ddf160df4
+
+Package: markdown
+Source: CRAN
+Version: 0.7.7
+Hash: fea2343a1119d61b0cc5c0a950d103a3
+Requires: mime
 
 Package: memoise
 Source: CRAN
@@ -241,6 +271,12 @@ Source: CRAN
 Version: 0.4.8-1
 Hash: 6ad605ba7b4b476d84be6632393f5765
 
+Package: pacman
+Source: CRAN
+Version: 0.4.1
+Hash: 95e04058468f618d3285f757464e02ce
+Requires: devtools
+
 Package: plotly
 Source: CRAN
 Version: 3.6.0
@@ -253,6 +289,11 @@ Source: CRAN
 Version: 1.8.4
 Hash: fee2f470d73a85f4db7e89d771427e57
 Requires: Rcpp
+
+Package: praise
+Source: CRAN
+Version: 1.0.0
+Hash: 77da8f1df873a4b91e5c4a68fe2fb1b6
 
 Package: reshape2
 Source: CRAN
@@ -304,6 +345,12 @@ Source: CRAN
 Version: 1.1.0
 Hash: 4d21d0063b37a17ea18eaec6acd29bf3
 Requires: magrittr, stringi
+
+Package: testthat
+Source: CRAN
+Version: 1.0.2
+Hash: 88d5291104227f9dc2e7c7c1d0eb6c74
+Requires: R6, crayon, digest, magrittr, praise
 
 Package: tibble
 Source: CRAN
