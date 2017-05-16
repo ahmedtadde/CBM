@@ -1,5 +1,7 @@
-
-
+source('Revised_Plots.R')
+source('Movie_Titles.R')
+source('helpers.R')
+libraries()
 movie.titles <- sort(movie.titles)
 
 studios <- c("All","Dimension Films","Disney","DreamWorks","Fine Line","Fox",

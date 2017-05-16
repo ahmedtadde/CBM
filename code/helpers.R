@@ -1,6 +1,5 @@
 
 libraries <- function(){
-  if(!require(pacman)) install.packages("pacman", dependencies = T)
   library(pacman)
   p_load(devtools)
   p_load(arules)
@@ -9,9 +8,6 @@ libraries <- function(){
   p_load(httr)
   p_load(dplyr)
   p_load(data.table)
-  if(!require(plotly)){
-    install_version("plotly", version = "3.6.0", repos = "http://cran.us.r-project.org")
-  }
   p_load(plotly)
   p_load(shiny)
   p_load(shinythemes)

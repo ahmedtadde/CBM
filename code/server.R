@@ -1,7 +1,3 @@
-source('helpers.R')
-source('Movie_Titles.R')
-source('Revised_Plots.R')
-libraries()
 names <- c("dc","marvel","others")
 data <- getData(names)
 

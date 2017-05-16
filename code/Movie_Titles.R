@@ -15,7 +15,7 @@ movie.titles <- c(#### MARVEL TITLES
   "Iron Man","Iron Man 2","Iron Man 3",
   "Captain America: The Winter Soldier",
   "Guardians of the Galaxy",
-  "Captain America: Civil War",
+  "Captain America: Civil War","Doctor Strange",
   "The Punisher","Punisher: War Zone",
   "Spider-Man","Spider-Man 2","Spider-Man 3","The Amazing Spider-Man",
   "Thor","Thor: The Dark World",
