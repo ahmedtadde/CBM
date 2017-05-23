@@ -28,7 +28,7 @@ def get_movie_by_alias(alias):
     with open('resources.txt') as json_file:  
         resource = ujson.load(json_file)['movies']
         
-    return list(filter((lambda movie:  movie['alias'] == alias), resource))
+    return list(filter((lambda movie:  movie['alias'] == alias), resource))[0]
 
 def get_movie_by_title(title):
     if 'resources.txt' not in os.listdir('.'):
@@ -37,7 +37,7 @@ def get_movie_by_title(title):
     with open('resources.txt') as json_file:  
         resource = ujson.load(json_file)['movies']
         
-    return list(filter((lambda movie:  movie['title'].lower() == title.lower()), resource))
+    return list(filter((lambda movie:  movie['title'].lower() == title.lower()), resource))[0]
 
 
 def movie_titles():
@@ -50,14 +50,13 @@ def movie_titles():
     return list(map((lambda movie: movie['title']),resource))
     
 
-def is_in_resource(resource, alias):
-    
+def is_in_resources(resource, alias):
     if len(list(filter((lambda movie : movie['alias'] == alias), resource['movies']))) > 0:
         return(True)
     else:
         return(False)
 
-def add(movie):
+def add_to_resources(movie):
     
     if type(movie) is not dict: return("Movie need to be specified as key:value pairs in a dictionnary. Process Aborted.")
     
@@ -68,10 +67,10 @@ def add(movie):
     if 'resources.txt' not in os.listdir('.'):
             return " The file 'resources.txt' is not in the current working directory. Process Aborted."
     
-    with open('movies_logs_resource.txt') as json_file:  
+    with open('resources.txt') as json_file:  
         resource = ujson.load(json_file)
     
-    if is_in_resource(resource, movie['alias']) == True :
+    if is_in_resources(resource, movie['alias']) == True :
         return "%s with alias '%s' and tag '%s' is already added. Need to update?.. use the update function" %(movie['title'], movie['alias'], movie['tag'])
     else:
         movie['timestamp'] = datetime.datetime.now()
@@ -89,14 +88,14 @@ def add(movie):
         return "%s with alias '%s' and tag '%s' was successfully added." %(movie['title'], movie['alias'], movie['tag'])
 
 
-def delete(alias):
+def delete_from_resources(alias):
     if 'resources.txt' not in os.listdir('.'):
                return " The file 'resources.txt' is not in the current working directory. Process Aborted."
     
     with open('resources.txt') as json_file:
                resource = ujson.load(json_file)
     
-    if is_in_resource(resource, alias) == False :
+    if is_in_resources(resource, alias) == False :
         return "Movie with alias is not in resource file. Movie must be added first." %(alias)
     else:
         removing = list(filter((lambda movie : movie['alias'] in alias), resource['movies']))
@@ -109,7 +108,7 @@ def delete(alias):
         return True
         
     
-def update(alias, updates):
+def update_in_resources(alias, updates):
     if type(update) is not dict: return("Updates need to be specified as key:value pairs in a dictionnary. Process Aborted.")
     keys = updates.keys()
     values = updates.values()
@@ -133,7 +132,7 @@ def update(alias, updates):
     with open('resources.txt') as json_file:
                resource = ujson.load(json_file)
     
-    if is_in_resource(resource, alias) == False :
+    if is_in_resources(resource, alias) == False :
         return "Movie with alias is not in resource file. Movie must be added first." %(alias)
     else:
         movie = list(filter((lambda movie : movie['alias'] in alias), resource['movies']))

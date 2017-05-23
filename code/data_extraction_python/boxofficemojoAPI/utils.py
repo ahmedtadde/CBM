@@ -114,6 +114,6 @@ def standardize_keys(obj):
 def get_soup(url):
     r = requests.get(url)
     if r.status_code == 200:
-        return bs4.BeautifulSoup(r.content)
+        return bs4.BeautifulSoup(r.content, "lxml")
     else:
         return None
