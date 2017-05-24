@@ -188,7 +188,7 @@ def get_data_omdb(title):
 
 
 
-def get_data(movie):
+def collect_data(movie):
     omdb_data = get_data_omdb(movie['title'])
     bom_data = get_bom_data(movie['alias'])
     record = {}
@@ -213,30 +213,14 @@ def get_data(movie):
 
 def summary(movie):
     
-    keys = ['title','Year','Released',"budget","director","actors","composers","producers",'writers','Awards','Plot',"distributor","domestic_BO","foreign_BO","genre","rating","runtime",'Poster']
+    keys = ['Year','Released',"budget","director","actors","composers","producers",'writers','Awards','Plot',"distributor","domestic_BO","foreign_BO","genre","rating","runtime"]
     summary = {key: movie[key] for key in keys}
     summary['director'] = str(summary['director']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan", '')
     summary['actors'] = str(summary['actors']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan", '')
     summary['producers'] = str(summary['producers']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan", '')
     summary['composers'] = str(summary['composers']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan", '')
     summary['writers'] = str(summary['writers']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan",'')
-    ratings_map = {"PG": 1, "PG-13": 2,"R": 3}
-    runtime_map = {"1": range(91), "2": range(91,121) , "3" : range(121,151), "4":range(151,181), "5":range(151,500)}
     
-    def rating_coef(rating):
-        for key in ratings_map.keys():
-            if key == rating: return ratings_map[key]
-    
-    def runtime_coef(runtime):
-        for key, values in runtime_map.items():
-            if runtime in values: 
-                return int(key)
-            
-    summary['rating_coef'] = rating_coef(summary['rating'])
-    summary['runtime_coef'] = runtime_coef(summary['runtime'])
-    
-    summary['international_BO'] = summary['domestic_BO'] + summary['foreign_BO']
-    summary['international_BO_score'] = np.average([summary['domestic_BO'],summary['foreign_BO']], weights = [0.7,0.3])
     return summary
 
 
@@ -251,8 +235,8 @@ def weekly_avgs_per_theater(record):
                     weighted_sum+= value*n
         return weighted_sum
     
-    weekly_avgs_per_theater['weekly_avgs_per_theater_weighted_avg'] = np.round(get_sum(weekly_avgs_per_theater)/len(weekly_avgs_per_theater.keys()))
-    weekly_avgs_per_theater['weekly_avgs_per_theater_avg_score'] = weekly_avgs_per_theater['weekly_avgs_per_theater_weighted_avg']/10000
+    weekly_avgs_per_theater['weekly_avgs_per_theater_weighted_avg']=get_sum(weekly_avgs_per_theater)/len(weekly_avgs_per_theater.keys())
+    weekly_avgs_per_theater['weekly_avgs_per_theater_avg_score'] = round(weekly_avgs_per_theater['weekly_avgs_per_theater_weighted_avg']/10000,3)
     return weekly_avgs_per_theater
 
 
@@ -298,18 +282,16 @@ def weekly_percent_change(record):
 
     return weekly_percent_change
 
-
-
-
-
-def critical_reception(record):
+def critics_score(record):
     
     data = { key:record[key] for key in ['Metascore', 'Rotten Tomatoes', 'imdbRating']}
-    data['critics_score'] = np.average([record['Metascore'], record['Rotten Tomatoes'],record['imdbRating']], weights = [0.5, 0.4, 0.1])
+    data['critics_score'] = round(np.average([record['Metascore'], record['Rotten Tomatoes'],record['imdbRating']], weights = [0.5, 0.40, 0.1]),2)
     return data
 
-def bo_perfomance(record):
-    keys = ['week_1_gross','domestic_BO', 'foreign_BO', 'rating', 'runtime', 'budget']
+def bo_score(record):
+    
+    keys = ['week_1_gross','domestic_BO', 'foreign_BO', 'rating', 'runtime', 'budget',
+           'weekly_avgs_per_theater_avg_score','weekly_rank_score','weekly_percent_change_score']
     data = { key:record[key] for key in keys}
     ratings_map = {"PG": 1, "PG-13": 2,"R": 3}
     runtime_map = {"1": range(91), "2": range(91,121) , "3" : range(121,151), "4":range(151,181), "5":range(151,500)}
@@ -331,38 +313,59 @@ def bo_perfomance(record):
     bad_values = ['','N/A', None, 'NaN','nan']
     
     if (str(data['domestic_BO']) not in bad_values) and (str(data['foreign_BO']) not in bad_values):
-        data['international_BO_score'] = np.average([data['domestic_BO'],data['foreign_BO']], weights = [0.7,0.3])
+        data['international_BO_score'] = round(np.log(np.average([data['domestic_BO'],data['foreign_BO']], weights = [0.7,0.3])),3)
     else:
         data['international_BO_score'] = np.nan
         
     
     
     if (str(data['domestic_BO']) not in bad_values) and (str(data['week_1_gross']) not in bad_values):
-        data['ow_over_domestic_bo'] = data['week_1_gross']/data['domestic_BO']
+        data['domestic_over_ow'] =round(data['domestic_BO']/ data['week_1_gross'],3)
     else:
-        data['ow_over_domestic_bo'] = np.nan
+        data['domestic_over_ow'] = np.nan
     
     if (str(data['budget']) not in bad_values) and (str(data['week_1_gross']) not in bad_values):
-        data['ow_over_budget'] = data['week_1_gross']/data['budget']
+        data['ow_over_budget'] = round(data['week_1_gross']/data['budget'],3)
     else:
         data['ow_over_budget'] = np.nan
         
     if (str(data['budget']) not in bad_values) and (str(data['domestic_BO']) not in bad_values):
-        data['domestic_over_budget'] = data['domestic_BO']/data['budget']
+        data['domestic_over_budget'] = round(data['domestic_BO']/data['budget'],3)
     else:
         data['domestic_over_budget'] = np.nan
         
         
     if (str(data['budget']) not in bad_values) and (str(data['foreign_BO']) not in bad_values):
-        data['foreign_over_budget'] = data['foreign_BO']/data['budget']
+        data['foreign_over_budget'] = round(data['foreign_BO']/data['budget'],3)
     else:
         data['foreign_over_budget'] = np.nan
     
+    keys = ['rating_coef','runtime_coef', 'international_BO_score', 
+            'domestic_over_ow','ow_over_budget','domestic_over_budget',
+            'foreign_over_budget','weekly_avgs_per_theater_avg_score',
+            'weekly_rank_score','weekly_percent_change_score']
+    
+    performance = {key:data[key] for key in keys}
+    data['bo_score'] = round(np.log(np.prod(performance.values())),3)
+    return data
+   
+    
+def performances(record):
+    data = {}
+    
+    bo = bo_score(record) 
+    critics = critics_score(record)
+    overall =  round(np.average([critics['critics_score'], bo['bo_score']], weights = [0.6, 0.4]),3)
+    
+    data['bo_performance'] = bo
+    data['critics_reception'] = critics
+    data['overall_score'] = overall
     
     return data
-    
 
-def add(record):
+
+
+def add_movie(record):
     if type(record) is not dict: return("Movie needs to be specified as key:value pairs in a dictionnary. Process Aborted.")
     
     
@@ -372,27 +375,43 @@ def add(record):
     with open('db.json') as f:  
         db = ujson.load(f)
     
-    if length(db) > 0:
-        movies = [movie['meta']['title'] for movie in db]
+    if len(db) > 0:
+        movies = [movie['title'] for movie in db]
         if record['title'] in movies:
             return " {} is already in the collection. Use update function to Update records.".format(record['title'])
     
     movie ={}
-    movie['metadata'] = {"title": record['title'], 'alias': record['alias'], 'tag': record['tag'],
-                         'imdbID': record['imdbID'], 'poster': record['Poster'] , "logs": [record['log']]}
     
+    movie['title'] = record['title'] 
+    movie['alias'] = record['alias'] 
+    movie['tag'] = record['tag']
+    movie['imdbID'] = record['imdbID']
+    movie['poster'] = record['Poster']
+    movie["logs"]= [record['log']]
     
     movie['summary'] = summary(record)
-    movie['weekly_avgs_per_theater'] = weekly_avgs_per_theater(record)
-    movie['weekly_percent_changes'] = weekly_percent_change(record)
-    movie['weekly_ranks'] = weekly_ranks(record)
-    movie['bo_score'] = bo_score(movie)
-    movie['critics_score'] = critics_score(record)
-    movie['overall_score']  = overall_score(movie)
     
-    movie['metadata']['logs'].append({
+    avgs = weekly_avgs_per_theater(record)
+    percents = weekly_percent_change(record)
+    ranks =  weekly_ranks(record)
+    
+    movie['weekly_avgs_per_theater'] = avgs
+    movie['weekly_percent_changes'] = percents
+    movie['weekly_ranks'] = ranks
+    
+    record['weekly_avgs_per_theater_avg_score'] = avgs['weekly_avgs_per_theater_avg_score']
+    record['weekly_rank_score'] = ranks['weekly_rank_score']
+    record['weekly_percent_change_score'] = percents['weekly_percent_change_score']
+    
+    Object = performances(record)
+    
+    movie['bo_performance'] = Object['bo_performance']
+    movie['critics_reception'] = Object['critics_reception']
+    movie['overall_score']  = Object['overall_score']
+    
+    movie['logs'].append({
         "timestamp" : datetime.datetime.now(),
-        "text": "{} was successfully added to the db.json collection".format(record['title'])
+        "text": "{} was successfully added".format(record['title'])
     })
     
     db.append(movie)
@@ -401,7 +420,7 @@ def add(record):
     return movie
 
 
-def update(record):
+def update_movie(record):
     if type(record) is not dict: return("Movie needs to be specified as key:value pairs in a dictionnary. Process Aborted.")
     
     
@@ -411,37 +430,57 @@ def update(record):
     with open('db.json') as f:  
         db = ujson.load(f)
     
-    if length(db) > 0: return "There is no movie in the collection yet.An update is not feasible. Process Aborted."
-    movies = [movie['meta']['title'] for movie in db]
+    if len(db) == 0: return "There is no movie in the collection yet.An update is not feasible. Process Aborted."
+    movies = [movie['title'] for movie in db]
     if record['title'] not in movies:
-        return " {} is not in the collection yet. Must be added first befor an update. Process Aborted.".format(record['Title'])
+        return " {} is not in the collection yet. Must be added before an update. Process Aborted.".format(record['title'])
 
-    movie ={}
-    movie['metadata'] = {"title": record['title'], 'alias': record['alias'], 'tag': record['tag'],
-                         'imdbID': record['imdbID'],  "logs": [record['log']]}
+    old = [movie for movie in db if movie['title'] == record['title']]
+    if len(old) ==0 : return 'No current records for {}. Possible coding bugs. Investigate!'.format(record['title'])
     
-    
-    movie['summary'] = summary(record)
-    movie['weekly_avgs_per_theater'] = weekly_avgs_per_theater(record)
-    movie['weekly_percent_change'] = weekly_percent_change(record)
-    movie['weekly_ranks'] = weekly_ranks(record)
-    movie['bo_performance'] = bo_performace(movie)
-    movie['critical_reception'] = critical_reception(record)
-    movie['overall_score'] = overall_score(movie)
-   
-    
-    old = [movie for movie in db if movie['meta']['title'] == record['title']]
     for movie in old:
         db.remove(movie)
     
-    old = [movie for movie in db if movie['meta']['title'] == record['title']]
-    if len(old) !=0 : return 'Old record for {} are not removed despite attempt. Possible coding bugs. Investigate!'.format(record['title'])
+    old = [movie for movie in db if movie['title'] == record['title']]
+    if len(old) !=0 : return 'Old records for {} are not removed despite attempt. Possible coding bugs. Investigate!'.format(record['title'])
     
-    db.append(movie)
-    movie['metadata']['logs'].append({
+    
+    movie ={}
+    
+    movie['title'] = record['title'] 
+    movie['alias'] = record['alias'] 
+    movie['tag'] = record['tag']
+    movie['imdbID'] = record['imdbID']
+    movie['poster'] = record['Poster']
+    movie["logs"]= [record['log']]
+    
+    movie['summary'] = summary(record)
+    
+    avgs = weekly_avgs_per_theater(record)
+    percents = weekly_percent_change(record)
+    ranks =  weekly_ranks(record)
+    
+    movie['weekly_avgs_per_theater'] = avgs
+    movie['weekly_percent_changes'] = percents
+    movie['weekly_ranks'] = ranks
+    
+    record['weekly_avgs_per_theater_avg_score'] = avgs['weekly_avgs_per_theater_avg_score']
+    record['weekly_rank_score'] = ranks['weekly_rank_score']
+    record['weekly_percent_change_score'] = percents['weekly_percent_change_score']
+    
+    Object = performances(record)
+    
+    movie['bo_performance'] = Object['bo_performance']
+    movie['critics_reception'] = Object['critics_reception']
+    movie['overall_score']  = Object['overall_score']
+    
+    movie['logs'].append({
         "timestamp" : datetime.datetime.now(),
         "text": "{} was successfully updated".format(record['title'])
     })
+    
+    
+    db.append(movie)
     with open('db.json', 'w') as f:  
         ujson.dump(db, f)
         

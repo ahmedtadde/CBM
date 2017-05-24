@@ -3,48 +3,48 @@ import datetime
 import os
 
 def movie_aliases():
-    if 'resources.txt' not in os.listdir('.'):
-            return " The file 'movies_logs_resource.txt' is not in the current working directory. Process Aborted."
+    if 'resources.json' not in os.listdir('.'):
+            return " The file 'resources.json' is not in the current working directory. Process Aborted."
     
-    with open('resources.txt') as json_file:  
+    with open('resources.json') as json_file:  
         resource = ujson.load(json_file)['movies']
         
     return list(map((lambda movie: movie['alias']),resource))
 
 
 def get_movies_by_tag(tag):
-    if 'resources.txt' not in os.listdir('.'):
-            return " The file 'movies_logs_resource.txt' is not in the current working directory. Process Aborted."
+    if 'resources.json' not in os.listdir('.'):
+            return " The file 'resources.json' is not in the current working directory. Process Aborted."
     
-    with open('resources.txt') as json_file:  
+    with open('resources.json') as json_file:  
         resource = ujson.load(json_file)['movies']
         
     return list(filter((lambda movie:  movie['tag'] == tag.lower() ), resource))
 
 def get_movie_by_alias(alias):
-    if 'resources.txt' not in os.listdir('.'):
-            return " The file 'resources.txt is not in the current working directory. Process Aborted."
+    if 'resources.json' not in os.listdir('.'):
+            return " The file 'resources.json' is not in the current working directory. Process Aborted."
     
-    with open('resources.txt') as json_file:  
+    with open('resources.json') as json_file:  
         resource = ujson.load(json_file)['movies']
         
     return list(filter((lambda movie:  movie['alias'] == alias), resource))[0]
 
 def get_movie_by_title(title):
-    if 'resources.txt' not in os.listdir('.'):
-            return " The file 'resources.txt' is not in the current working directory. Process Aborted."
+    if 'resources.json' not in os.listdir('.'):
+            return " The file 'resources.json' is not in the current working directory. Process Aborted."
     
-    with open('resources.txt') as json_file:  
+    with open('resources.json') as json_file:  
         resource = ujson.load(json_file)['movies']
         
     return list(filter((lambda movie:  movie['title'].lower() == title.lower()), resource))[0]
 
 
 def movie_titles():
-    if 'resources.txt' not in os.listdir('.'):
-            return " The file 'resources.txt' is not in the current working directory. Process Aborted."
+    if 'resources.json' not in os.listdir('.'):
+            return " The file 'resources.json' is not in the current working directory. Process Aborted."
     
-    with open('resources.txt') as json_file:  
+    with open('resources.json') as json_file:  
         resource = ujson.load(json_file)['movies']
         
     return list(map((lambda movie: movie['title']),resource))
@@ -64,10 +64,10 @@ def add_to_resources(movie):
     if 'tag' not in movie.keys(): return "Update has no 'tag' key. Process Aborted."
     if 'title' not in movie.keys(): return "Update has no 'title' key. Process Aborted."
     
-    if 'resources.txt' not in os.listdir('.'):
-            return " The file 'resources.txt' is not in the current working directory. Process Aborted."
+    if 'resources.json' not in os.listdir('.'):
+            return " The file 'resources.json' is not in the current working directory. Process Aborted."
     
-    with open('resources.txt') as json_file:  
+    with open('resources.json') as json_file:  
         resource = ujson.load(json_file)
     
     if is_in_resources(resource, movie['alias']) == True :
@@ -82,17 +82,17 @@ def add_to_resources(movie):
         'message': " '%s' with alias '%s' and tag '%s' was successfully added." %(movie['title'], movie['alias'], movie['tag'])
         })
         
-        with open('resources.txt', 'w') as outfile:  
+        with open('resources.json', 'w') as outfile:  
             ujson.dump(resource, outfile)
         
         return "%s with alias '%s' and tag '%s' was successfully added." %(movie['title'], movie['alias'], movie['tag'])
 
 
 def delete_from_resources(alias):
-    if 'resources.txt' not in os.listdir('.'):
-               return " The file 'resources.txt' is not in the current working directory. Process Aborted."
+    if 'resources.json' not in os.listdir('.'):
+               return " The file 'resources.json' is not in the current working directory. Process Aborted."
     
-    with open('resources.txt') as json_file:
+    with open('resources.json') as json_file:
                resource = ujson.load(json_file)
     
     if is_in_resources(resource, alias) == False :
@@ -103,7 +103,7 @@ def delete_from_resources(alias):
         for movie in removing: resource['movies'].remove(movie)
         del removing
         
-        with open('resources.txt', 'w') as outfile:  
+        with open('resources.json', 'w') as outfile:  
             ujson.dump(resource, outfile)
         return True
         
@@ -126,10 +126,10 @@ def update_in_resources(alias, updates):
         movie['timestamp'] = datetime.datetime.now()
         return movie
     
-    if 'resources.txt' not in os.listdir('.'):
-               return " The file 'resources.txt' is not in the current working directory. Process Aborted."
+    if 'resources.json' not in os.listdir('.'):
+               return " The file 'resources.json' is not in the current working directory. Process Aborted."
     
-    with open('resources.txt') as json_file:
+    with open('resources.json') as json_file:
                resource = ujson.load(json_file)
     
     if is_in_resources(resource, alias) == False :
@@ -147,7 +147,7 @@ def update_in_resources(alias, updates):
             if deleted is not True : return deleted
             del deleted
             
-            with open('resources.txt') as json_file:
+            with open('resources.json') as json_file:
                 resource = ujson.load(json_file)
             
             resource['movies']. append(updated)
@@ -158,7 +158,7 @@ def update_in_resources(alias, updates):
             
             })
             
-            with open('resources.txt', 'w') as outfile:
+            with open('resources.json', 'w') as outfile:
                 ujson.dump(resource, outfile)
             return " '%s' with alias '%s' and tag '%s' was successfully added as an update." %(updated['title'], updated['alias'], updated['tag'])
                        
