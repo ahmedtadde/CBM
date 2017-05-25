@@ -4,17 +4,18 @@ import ujson
 api_key = 'f8b2b946'
 
 def get(title, year):
-    if type(year) is int :
+    if np.isnan(year) :
+        parameters = {
+          "t": title, 
+          "type": 'movie', 
+          "plot" : 'short', 
+        }
+        
+    else:
         parameters = {
           "t": title, 
           "type": 'movie',
           "y": year, 
-          "plot" : 'short', 
-        }
-    else:
-        parameters = {
-          "t": title, 
-          "type": 'movie', 
           "plot" : 'short', 
         }
         

@@ -7,7 +7,7 @@ import pymongo
 import boxofficemojoAPI as bomAPI
 import omdbAPI as omdb
 
-def get_bom_data(alias):
+def get_data_bom(alias):
    
     
     api = bomAPI.BoxOfficeMojo()
@@ -116,7 +116,7 @@ def get_bom_data(alias):
 
 def get_data_omdb(title):
     
-    if title == 'Fantastic Four(2005)':
+    if title == 'Fantastic Four (2005)':
         data = omdb.get(title='Fantastic Four', year=2005)
     
     if title == 'Chronicle (2012)':
@@ -129,7 +129,7 @@ def get_data_omdb(title):
         data = omdb.get(title='Fantastic Four', year=2015)
 
     elif title == "Marvel's The Avengers":
-        data = omdb.get(title='The Avengers', year= "")
+        data = omdb.get(title='The Avengers', year= np.nan)
 
     elif title == 'Supergirl':
         data = omdb.get(title='Supergirl', year=1984)
@@ -148,7 +148,7 @@ def get_data_omdb(title):
         data = omdb.get(title='Teenage Mutant Ninja Turtles', year=1990)
 
     elif title == "Teenage Mutant Ninja Turtles: The Secret of the Ooze":
-        data = omdb.get(title="Teenage Mutant Ninja Turtles II: The Secret of the Ooze", year= "")
+        data = omdb.get(title="Teenage Mutant Ninja Turtles II: The Secret of the Ooze", year= np.nan)
 
 
     elif title == "Men in Black III":
@@ -158,22 +158,22 @@ def get_data_omdb(title):
         data = omdb.get(title='Hercules', year=2014) 
 
     elif title == "RIPD":
-        data = omdb.get(title='R.I.P.D.', year= "") 
+        data = omdb.get(title='R.I.P.D.', year= np.nan) 
 
 
     elif title == "Alien vs Predator":
-        data = omdb.get(title="AVP: Alien vs. Predator", year= "") 
+        data = omdb.get(title="AVP: Alien vs. Predator", year= np.nan) 
 
     elif title == "Alien vs Predator Requiem":
-        data = omdb.get(title="Aliens vs. Predator: Requiem", year= "") 
+        data = omdb.get(title="Aliens vs. Predator: Requiem", year= np.nan) 
 
 
     elif title == "Scott Pilgrim vs the World":
-        data = omdb.get(title="Scott Pilgrim vs. the World",  year= "")
+        data = omdb.get(title="Scott Pilgrim vs. the World",  year= np.nan)
 
 
     elif title == "Mighty Morphin' Power Rangers":
-        data = omdb.get(title="Mighty Morphin Power Rangers: The Movie", year= "")
+        data = omdb.get(title="Mighty Morphin Power Rangers: The Movie", year= np.nan)
 
     elif title == "Buffy the Vampire Slayer":
         data = omdb.get( title="Buffy the Vampire Slayer", year= 1992)
@@ -182,7 +182,7 @@ def get_data_omdb(title):
 
 
     else:
-        data = omdb.get(title=title, year= "")
+        data = omdb.get(title=title, year= np.nan)
 
     return data
 
@@ -190,7 +190,7 @@ def get_data_omdb(title):
 
 def collect_data(movie):
     omdb_data = get_data_omdb(movie['title'])
-    bom_data = get_bom_data(movie['alias'])
+    bom_data = get_data_bom(movie['alias'])
     record = {}
     for key, value in omdb_data.items(): 
         record[key] = value
