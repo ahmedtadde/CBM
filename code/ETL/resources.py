@@ -2,6 +2,16 @@ import ujson
 import datetime
 import os
 
+
+def get_all_movies():
+    if 'resources.json' not in os.listdir('.'):
+            return " The file 'resources.json' is not in the current working directory. Process Aborted."
+    
+    with open('resources.json') as json_file:  
+        resource = ujson.load(json_file)['movies']
+        
+    return resource
+
 def movie_aliases():
     if 'resources.json' not in os.listdir('.'):
             return " The file 'resources.json' is not in the current working directory. Process Aborted."
@@ -178,7 +188,6 @@ def bulk_add_missing_movies(aliases, titles, tag, resource):
                 to_add.append({'alias': aliases[i], 'title': titles[i], 'tag':tag})
    
     return(list(map((lambda movie: add(movie)), to_add)))
-
-
+    
 
 

@@ -1,4 +1,4 @@
-__author__ = 'rastko'
+__author__ = 'a.t'
 
 import decorator
 import requests.exceptions

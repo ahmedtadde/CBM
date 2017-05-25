@@ -1,5 +1,3 @@
-__author__ = 'rastko'
-
 import bs4
 import json
 from bson import json_util

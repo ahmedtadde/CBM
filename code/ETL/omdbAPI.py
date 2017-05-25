@@ -1,5 +1,6 @@
 import requests
 import ujson
+import numpy as np
 
 api_key = 'f8b2b946'
 
@@ -33,9 +34,27 @@ def get(title, year):
             'Country']
     record = {key:response[key] for key in keys}
     
-    record['Rotten Tomatoes'] = float(response['Ratings'][1]['Value'].replace("%",""))
-    record['Metascore'] = float(record['Metascore'])
-    record['imdbRating'] = float(record['imdbRating'])
+    
+    sources = [element['Source'] for element in response['Ratings']]
+    if 'Rotten Tomatoes' not in sources:
+        record['Rotten Tomatoes'] = 'nan'
+    else:
+        try:
+            record['Rotten Tomatoes'] = float(response['Ratings'][1]['Value'].replace("%",""))
+        except ValueError:
+            record['Rotten Tomatoes'] = 'nan'
+        
+    try:
+        record['Metascore'] = float(record['Metascore'])
+    except ValueError:
+        record['Metascore'] =  'nan'
+     
+    try: 
+        record['imdbRating'] = float(record['imdbRating'])
+    except ValueError:
+        record['imdbRating'] = 'nan'
+        
+        
     return record
     
 

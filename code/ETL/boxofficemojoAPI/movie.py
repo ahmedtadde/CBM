@@ -1,10 +1,7 @@
-__author__ = 'rastko'
-
 import bs4
 import re
 import json
 from bson import json_util
-
 from . import utils
 from base import MovieBase
 
