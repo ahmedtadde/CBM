@@ -199,20 +199,20 @@ def get_data_omdb(title):
 def collect_data(movie):
     
     omdb_data = get_data_omdb(movie['title'])
-    if len(omdb_data.keys()) == 0: return "bad status code response from omdbAPI. Investigate! Process Aborted."
+    if len(omdb_data.keys()) == 0: return "Bad status code response from omdbAPI. Investigate! Process Aborted."
     bom_data = get_data_bom(movie['alias'])
     if len(bom_data.keys()) == 0: return "Error response from boxofficemojoAPI. Investigate! Process Aborted."
     
     record = {}
     
     for key, value in omdb_data.items(): 
-        if value in [None,'NaN', 'N/A', 'nan', 'None', '', 'Nan', 'naN', np.nan]:
+        if value in [None,'NaN', 'N/A', 'nan', 'None', '', 'Nan', 'naN', np.nan,'']:
             record[key] = 'nan'
         else:
             record[key] = value
     
     for key, value in bom_data.items() :
-        if value in [None,'NaN', 'N/A', 'nan', 'None', '', 'Nan', 'naN', np.nan]:
+        if value in [None,'NaN', 'N/A', 'nan', 'None', '', 'Nan', 'naN', np.nan,'']:
             record[key] = 'nan'
         else:
             record[key] = value
@@ -227,12 +227,22 @@ def collect_data(movie):
     print "\n"
     print "Records for '{}' were successfully retrieved".format(record['title'])
     return record
+  
     
 
-def summary(movie):
+def metadata(record):
+    movie = {}
+    movie['title'] = record['title'] 
+    movie['alias'] = record['alias'] 
+    movie['tag'] = record['tag']
+    movie['imdbID'] = record['imdbID']
     
-    keys = ['Year','Released',"budget","director","actors","composers","producers",'writers','Awards','Plot',"distributor","domestic_BO","foreign_BO","genre","rating","runtime"]
-    summary = {key: movie[key] for key in keys}
+    return movie
+
+def summary(record):
+    
+    keys = ['Year','Released',"budget","director","actors","composers","producers",'writers','Awards','Plot',"distributor","domestic_BO","foreign_BO","genre","rating","runtime", 'Poster']
+    summary = {key: record[key] for key in keys}
     summary['director'] = str(summary['director']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan", '')
     summary['actors'] = str(summary['actors']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan", '')
     summary['producers'] = str(summary['producers']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan", '')
@@ -240,6 +250,21 @@ def summary(movie):
     summary['writers'] = str(summary['writers']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan",'')
     
     return summary
+
+
+def weekly_ranks(record):
+    weekly_ranks= {key: record[key] for key in list(filter((lambda key: '_rank' in key), record.keys()))}
+    weekly_ranks= {key: weekly_ranks[key] for key in weekly_ranks.keys() if weekly_ranks[key] not in ['nan', np.nan, None, 'NaN','N/A','None', 'Nan', '']}
+    
+    def get_sum(weekly_ranks):
+        points = 0
+        for key, value in weekly_ranks.items():
+            points+= float(key.split('_')[1])/value
+        return points
+    
+    weekly_ranks['score'] = round(get_sum(weekly_ranks)/len(weekly_ranks.keys()),3)
+    return weekly_ranks
+
 
 
 def weekly_avgs_per_theater(record):
@@ -255,76 +280,32 @@ def weekly_avgs_per_theater(record):
                     weighted_sum+= value*n
         return weighted_sum
     
-    weekly_avgs_per_theater['weekly_avgs_per_theater_weighted_avg']=get_sum(weekly_avgs_per_theater)/len(weekly_avgs_per_theater.keys())
-    weekly_avgs_per_theater['weekly_avgs_per_theater_avg_score'] = round(weekly_avgs_per_theater['weekly_avgs_per_theater_weighted_avg']/10000,3)
+    total=get_sum(weekly_avgs_per_theater)/len(weekly_avgs_per_theater.keys())
+    weekly_avgs_per_theater['score'] = round(total/10000,3)
+    
     return weekly_avgs_per_theater
 
 
-def weekly_ranks(record):
-    weekly_ranks= {key: record[key] for key in list(filter((lambda key: '_rank' in key), record.keys()))}
-    weekly_ranks= {key: weekly_ranks[key] for key in weekly_ranks.keys() if weekly_ranks[key] not in ['nan', np.nan, None, 'NaN','N/A','None', 'Nan', '']}
+def weekly_percent_changes(record):
+    data = {key: record[key] for key in list(filter((lambda key: '_change' in key), record.keys()))}
+    data['week_1_change'] = 1
     
-    def get_sum(weekly_ranks):
-        points = 0
-        for key, value in weekly_ranks.items():
-            points+= float(key.split('_')[1])/value
-        return points
-    
-    weekly_ranks['weekly_rank_score'] = round(get_sum(weekly_ranks)/len(weekly_ranks.keys()),3)
-    return weekly_ranks
+    bad = ['nan', None, 'NaN', 'None', 'N/A', 'Nan', '']
+    for key, value in data.items():
+        if str(value) in bad:
+            data[key] = np.nan
 
-
-def weekly_percent_change(record):
-    weekly_percent_change= {key: record[key] for key in list(filter((lambda key: '_change' in key), record.keys()))}
-    
-    usable_data = {key: weekly_percent_change[key] for key in weekly_percent_change.keys() if weekly_percent_change[key] not in ['nan', np.nan, None, 'NaN', 'None', 'N/A', 'Nan', '']}
-    
-    if len(usable_data.keys()) == 0:
-        weekly_percent_change['weekly_percent_change_score'] = 'nan'
-        return weekly_percent_change
-    
-    usable_data['week_1_change'] = 1
-    weeks_ordering = np.sort([int(key.split('_')[1]) for key in usable_data.keys()])
-    if weeks_ordering is not range(1,len(weeks_ordering)+1):
-        weekly_percent_change['weekly_percent_change_score'] = 'nan'
-        return weekly_percent_change
-        
-    
     def transform(data):
         for key, value in data.items():
             if value < 0 :
                 data[key] = 1+value
+            
         return data
     
-    usable_data = transform(usable_data)
-    
-    
-    
-    keys = usable_data.keys()
-    values = []
-    for k in range(len(keys)):
-        for key in keys:
-            if int(k+1) == int(key.split('_')[1]):
-                values.append(usable_data[key])
-    
-    if len(values) == 0:
-        weekly_percent_change['weekly_percent_change_score'] = 'nan'
-        return weekly_percent_change
+    data = transform(data)
+    return data
         
-    values = np.cumprod(values)
-    for k in range(len(values)):
-        key = "week_{}_change".format(k+1)
-        usable_data[key] = values[k]
     
-    score = round(np.average(values, weights = range(1, len(values)+1)) * len(values) ,3)
-    if np.isnan(score):
-        weekly_percent_change['weekly_percent_change_score'] = 'nan'
-        return weekly_percent_change
-    
-    usable_data['weekly_percent_change_score'] = score
-
-
-    return usable_data
 
 def critics_score(record):
     
@@ -449,7 +430,10 @@ def performances(record):
         overall = 'nan'
     else:
         #overall =  round(np.average([critics['critics_score'], bo['bo_score']], weights = [0.6, 0.4]),3)
-        overall = np.mean([critics['critics_score'], bo['bo_score']])
+        try:
+            overall = np.mean([critics['critics_score'], bo['bo_score']])
+        except TypeError:
+            overall = 'nan'
     
     data['bo_performance'] = bo
     data['critics_reception'] = critics
@@ -476,13 +460,8 @@ def add_movie(record):
     
     movie ={}
     
-    movie['title'] = record['title'] 
-    movie['alias'] = record['alias'] 
-    movie['tag'] = record['tag']
-    movie['imdbID'] = record['imdbID']
-    movie['poster'] = record['Poster']
+    movie['metadata'] = metadata(record)
     movie["logs"]= [record['log']]
-    
     movie['summary'] = summary(record)
     
     avgs = weekly_avgs_per_theater(record)
