@@ -2,10 +2,47 @@ import os
 import datetime
 import numpy as np
 import pandas as pd
+import json
 import ujson
 import pymongo
 import boxofficemojoAPI as bomAPI
 import omdbAPI as omdb
+
+manual_budgets_input = {
+    "Batman: Mask of the Phantasm":6e+06,
+    "Superman III": 3.9e+07,
+    "Supergirl":3.5e+07,
+    "Blade": 4.5e+07,
+    "The Amazing Spider-Man 2":2.55e+08,
+    "American Splendor":2e+07,
+    "Alien vs Predator Requiem":4e+07,
+    "Buffy the Vampire Slayer":7e+06,
+    "Bulletproof Monk":5.2e+07,
+    "Bullet to the Head":5.5e+07,
+    "Chronicle (2012)":1.2e+07,
+    "Casper":5.5e+07,
+    "The Crow":1.5e+07,
+    "The Crow:City of Angels": 6.5e+07,
+    "Darkman":1.6e+07,
+    "The Diary of a Teenage Girl": 2e+06,
+    "The Phantom": 4.5e+07,
+    "The League of Extraordinary Gentlemen":7.8e+07,
+    "The Mask of Zorro":9.5e+07,
+    "Mighty Morphin' Power Rangers":1.5e+07,
+    "The Powerpuff Girls Movie": 1.1e+07,
+    "The Shadow":4.0e+07,
+    "Sin City: A Dame to Kill For":6.5e+07,
+    "Snowpiercer":4.0e+07,
+    "My Super Ex-Girlfriend": 6.5e+07,
+    "Superhero Movie":3.5e+07,
+    "The Spirit": 6.0e+07,
+    "Timecop":2.7e+07,
+    "The Adventures of Tintin":1.35e+08,
+    "Zoom":3.5e+07
+}
+
+
+
 
 def get_data_bom(alias):
    
@@ -111,6 +148,8 @@ def get_data_bom(alias):
             Features['_'.join(('week', str(k+1), 'rank'))]= data2[k]['rank']
             Features['_'.join(('week', str(k+1),'avg'))] = data2[k]['average_per_theatre']
             
+      
+            
     return Features
 
 
@@ -191,6 +230,8 @@ def get_data_omdb(title):
 
     else:
         data = omdb.get(title=title, year= np.nan)
+        
+    
 
     return data
 
@@ -202,6 +243,9 @@ def collect_data(movie):
     if len(omdb_data.keys()) == 0: return "Bad status code response from omdbAPI. Investigate! Process Aborted."
     bom_data = get_data_bom(movie['alias'])
     if len(bom_data.keys()) == 0: return "Error response from boxofficemojoAPI. Investigate! Process Aborted."
+    
+    if movie['title'] in manual_budgets_input.keys():
+        bom_data['budget'] = manual_budgets_input.get(movie['title'], None)
     
     record = {}
     
@@ -220,9 +264,6 @@ def collect_data(movie):
     record['title'] = movie['title']
     record['alias'] = movie['alias']
     record['tag'] = movie['tag']
-    record['log'] = {
-        "text": "Records for '{}' were successfully retrieved at {}".format(record['title'], datetime.datetime.now())
-    }
     
     print "\n"
     print "Records for '{}' were successfully retrieved".format(record['title'])
@@ -230,23 +271,17 @@ def collect_data(movie):
   
     
 
-def metadata(record):
-    movie = {}
-    movie['title'] = record['title'] 
-    movie['alias'] = record['alias'] 
-    movie['tag'] = record['tag']
-    movie['imdbID'] = record['imdbID']
-    
-    return movie
-
 def summary(record):
     
     keys = ['Year','Released',"budget","director","actors","composers",
             "producers",'writers','Awards','Plot',"distributor", 
             'budget','week_1_gross',"domestic_BO","foreign_BO",
-            "genre","rating","runtime", 'Poster']
+            "genre","rating","runtime", 'Poster','title','imdbID', 'alias']
+    
     summary = {key: record[key] for key in keys}
-    if summary['foreign_BO'] is not np.nan: 
+    bad_values = ['nan', None, 'NaN', 'None', 'N/A', 'Nan', '']
+    
+    if str(summary['foreign_BO']) not in bad_values: 
         summary['international_BO'] = summary['domestic_BO'] + summary['foreign_BO']
     else:
         summary['international_BO'] = summary['domestic_BO']
@@ -256,7 +291,7 @@ def summary(record):
     summary['producers'] = str(summary['producers']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan", '')
     summary['composers'] = str(summary['composers']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan", '')
     summary['writers'] = str(summary['writers']).replace('[','').replace(']','').replace("u'",'').replace("'",'').replace("nan",'')
-    summary['imdbID'] = record['imdbID']
+    summary['source'] = (record['tag']).upper()
     return summary
 
 
@@ -446,7 +481,7 @@ def bo_performance(record):
     performance['weekly_ranks_score'] = data['weekly_ranks']['score']
     performance['weekly_percent_gross_changes_score'] = data['weekly_percent_gross_changes']['score']
     
-    performance['score'] = round(np.log(pd.DataFrame(performance, index = [0]).prod(axis=1)),3)
+    performance['bo_score'] = round(np.log(pd.DataFrame(performance, index = [0]).prod(axis=1)),3)
     performance['imdbID'] = record['imdbID']
     
     del data['weekly_per_theater_gross_avgs']['score']
@@ -464,135 +499,23 @@ def bo_performance(record):
     
 def transform(record):
     transformed ={}
+    transformed['summary'] = summary(record)
     transformed['critical_reception'] = critical_reception(record)
     transformed['bo_performance'] = bo_performance(record)
     
     data = {}
     data['critical_score'] = transformed['critical_reception']['score']
-    data['bo_score'] = transformed['bo_performance']['calculated_metrics']['score']
+    data['bo_score'] = transformed['bo_performance']['calculated_metrics']['bo_score']
     data['overall_score'] = pd.DataFrame(data, index = [0]).multiply([0.6,0.4], axis=1).mean(axis=1)
     data['overall_score'] = round(data['overall_score'],3)
     data['imdbID'] = record['imdbID']
     data['title'] = record['title']
     
-    transformed['ranking'] = data
+    transformed['scoring'] = data
     return transformed
 
 
 
-def add_movie(record):
-    if type(record) is not dict: return("Movie needs to be specified as key:value pairs in a dictionnary. Process Aborted.")
-    
-    
-    if 'db.json' not in os.listdir('.'):
-        return " The file 'db.json' is not in the current working directory. Process Aborted."
-    
-    with open('db.json') as f:  
-        db = ujson.load(f)
-    
-    if len(db) > 0:
-        movies = [movie['title'] for movie in db]
-        if record['title'] in movies:
-            return " {} is already in the collection. Use update function to Update records.".format(record['title'])
-    
-    movie ={}
-    
-    movie['metadata'] = metadata(record)
-    movie["logs"]= [record['log']]
-    movie['summary'] = summary(record)
-    
-    avgs = weekly_avgs_per_theater(record)
-    percents = weekly_percent_change(record)
-    ranks =  weekly_ranks(record)
-    
-    movie['weekly_avgs_per_theater'] = avgs
-    movie['weekly_percent_changes'] = percents
-    movie['weekly_ranks'] = ranks
-    
-    record['weekly_avgs_per_theater_avg_score'] = avgs['weekly_avgs_per_theater_avg_score']
-    record['weekly_rank_score'] = ranks['weekly_rank_score']
-    record['weekly_percent_change_score'] = percents['weekly_percent_change_score']
-    
-    Object = performances(record)
-    
-    movie['bo_performance'] = Object['bo_performance']
-    movie['critics_reception'] = Object['critics_reception']
-    movie['overall_score']  = Object['overall_score']
-    
-    movie['logs'].append({
-        "text": "{} was successfully added at {}".format(record['title'], datetime.datetime.now())
-    })
-    
-    db.append(movie)
-    with open('db.json', 'w') as f:  
-        ujson.dump(db, f)
-    return movie
-
-
-def update_movie(record):
-    if type(record) is not dict: return("Movie needs to be specified as key:value pairs in a dictionnary. Process Aborted.")
-    
-    
-    if 'db.json' not in os.listdir('.'):
-        return " The file 'db.json' is not in the current working directory. Process Aborted."
-    
-    with open('db.json') as f:  
-        db = ujson.load(f)
-    
-    if len(db) == 0: return "There is no movie in the collection yet.An update is not feasible. Process Aborted."
-    movies = [movie['title'] for movie in db]
-    if record['title'] not in movies:
-        return " {} is not in the collection yet. Must be added before an update. Process Aborted.".format(record['title'])
-
-    old = [movie for movie in db if movie['title'] == record['title']]
-    if len(old) ==0 : return 'No current records for {}. Possible coding bugs. Investigate!'.format(record['title'])
-    
-    for movie in old:
-        db.remove(movie)
-    
-    old = [movie for movie in db if movie['title'] == record['title']]
-    if len(old) !=0 : return 'Old records for {} are not removed despite attempt. Possible coding bugs. Investigate!'.format(record['title'])
-    
-    
-    movie ={}
-    
-    movie['title'] = record['title'] 
-    movie['alias'] = record['alias'] 
-    movie['tag'] = record['tag']
-    movie['imdbID'] = record['imdbID']
-    movie['poster'] = record['Poster']
-    movie["logs"]= [record['log']]
-    
-    movie['summary'] = summary(record)
-    
-    avgs = weekly_avgs_per_theater(record)
-    percents = weekly_percent_change(record)
-    ranks =  weekly_ranks(record)
-    
-    movie['weekly_avgs_per_theater'] = avgs
-    movie['weekly_percent_changes'] = percents
-    movie['weekly_ranks'] = ranks
-    
-    record['weekly_avgs_per_theater_avg_score'] = avgs['weekly_avgs_per_theater_avg_score']
-    record['weekly_rank_score'] = ranks['weekly_rank_score']
-    record['weekly_percent_change_score'] = percents['weekly_percent_change_score']
-    
-    Object = performances(record)
-    
-    movie['bo_performance'] = Object['bo_performance']
-    movie['critics_reception'] = Object['critics_reception']
-    movie['overall_score']  = Object['overall_score']
-    
-    movie['logs'].append({
-        "text": "{} was successfully updated at {}".format(record['title'], datetime.datetime.now())
-    })
-    
-    
-    db.append(movie)
-    with open('db.json', 'w') as f:  
-        ujson.dump(db, f)
-        
-    return movie
 
 
 

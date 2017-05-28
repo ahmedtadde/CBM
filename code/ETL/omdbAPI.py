@@ -55,6 +55,19 @@ def get(title, year):
         record['imdbRating'] = 'nan'
         
         
+    if title == "The Incredibles":
+        record['Rotten Tomatoes'] = 97.0
+        
+    if title == "Richie Rich":
+        record['Rotten Tomatoes'] = 24.0
+        record['imdbRating'] = 5.2
+    
+    if title == "Fantastic Four: Rise of the Silver Surfer":
+        record['Metascore'] = 45.0
+        
+    if title == "Whiteout":
+        record['Metascore'] = 28.0
+        
     return record
     
 
