@@ -72,18 +72,65 @@ rank.metrics <- selectizeInput('rankBy',
                               )
 
 
-htmlTemplate("index.html",
-             ipInput = ip,
-             studioInput = studio,
-             yearInput = years,
-             monthInput = month,
-             runtimeInput = runtime,
-             mpaaInput = mpaa,
-             metascoreInput = metascore,
-             rtInput = rt,
-             imdbInput = imdb,
-             rankInput = rank.metrics
+shinyUI(
+  
+  navbarPage(
+    title = "Comics Adaptation",
+    tags$head(
+      tags$link(rel="stylesheet", type="text/css", href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"),
+      tags$link(rel="stylesheet", type="text/css", href="https://fonts.googleapis.com/css?family=Architects+Daughter|Ubuntu"),
+      tags$script(src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"),
+      tags$script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js",
+                  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g=",
+                  crossorigin="anonymous")
+    ),
+    tabPanel("Discover",
+              htmlTemplate("discover.html",
+                           ipInput = ip,
+                           studioInput = studio,
+                           yearInput = years,
+                           monthInput = month,
+                           runtimeInput = runtime,
+                           mpaaInput = mpaa,
+                           metascoreInput = metascore,
+                           rtInput = rt,
+                           imdbInput = imdb,
+                           rankInput = rank.metrics
+                           )
+            ),
+    tabPanel("Discover",
+             htmlTemplate("discover.html",
+                          ipInput = ip,
+                          studioInput = studio,
+                          yearInput = years,
+                          monthInput = month,
+                          runtimeInput = runtime,
+                          mpaaInput = mpaa,
+                          metascoreInput = metascore,
+                          rtInput = rt,
+                          imdbInput = imdb,
+                          rankInput = rank.metrics
+                          )
             )
+  )
+)
+
+
+
+# htmlTemplate("index.html",
+#              ipInput = ip,
+#              studioInput = studio,
+#              yearInput = years,
+#              monthInput = month,
+#              runtimeInput = runtime,
+#              mpaaInput = mpaa,
+#              metascoreInput = metascore,
+#              rtInput = rt,
+#              imdbInput = imdb,
+#              rankInput = rank.metrics
+#             )
+
+
 
 # shinyUI(
 #   navbarPage( 
