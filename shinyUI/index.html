@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">
+    {{ headContent() }}
+
+  </head>
+  <body>
+    
+    <div class="ui attached stackable menu">
+      <div class="ui container">
+        <a class="item">
+          <i class="home icon"></i> Home
+        </a>
+        <a class="item">
+          <i class="grid layout icon"></i> Browse
+        </a>
+        <a class="item">
+          <i class="lightning icon"></i> Showdown
+        </a>
+        <div class="ui simple dropdown item">
+          All-Time Ranking
+          <i class="dropdown icon"></i>
+          <div class="menu">
+            <a class="item"><i class="pie chart icon"></i> Visual Ranking</a>
+            <a class="item"><i class="table icon"></i> Table </a>
+            <a class="item"><i class="info icon"></i> About</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="ui container raised segment">
+      <div class="ui four column doubling stackable grid container">
+        <div class="column">
+          {{ ipInput }}
+        </div>
+        <div class="column">
+          {{ studioInput }}
+        </div>
+        <div class="column">
+          {{ mpaaInput }}
+        </div>
+        <div class="column">
+          {{ runtimeInput }}
+        </div>
+      </div>
+      <div class="ui four column doubling stackable grid container">
+        <div class="column">
+          {{ yearInput }}
+        </div>
+        <div class="column">
+          {{ monthInput }}
+        </div>
+      </div>
+      <div class="ui four column doubling stackable grid container">
+        <div class="column">
+          {{ metascoreInput }}
+        </div>
+        <div class="column">
+          {{ rtInput }}
+        </div>
+        <div class="column">
+          {{ imdbInput }}
+        </div>
+        <div class="column">
+          {{ rankInput }}
+        </div>
+      </div>
+    </div>
+    
+    <script
+    src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g="
+    crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"></script>
+   
+  </body>
+</html>

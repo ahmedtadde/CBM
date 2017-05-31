@@ -293,67 +293,67 @@ shinyServer(function(input, output) {
   #   
   # })
   
-  
-  GET.Filtered.Data <- reactive({
-    
-    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
-    summary <- data.table(dbGetQuery(database, 'SELECT * FROM summaries'))[, 
-                                                                           c("distributor","month") := list(
-                                                                             set.distributor.names(distributor),
-                                                                             get.release.months(Released)
-                                                                           )
-                                                                           ]
-    
-    runtimes_ratings <- data.table((dbGetQuery(database, 'SELECT imdbID, runtime_coef, rating_coef FROM boMetrics')))
-    critics <- data.table(dbGetQuery(database, 'SELECT imdbID, Metascore, "Rotten Tomatoes", imdbRating FROM critics'))
-    setnames(critics, names(critics),  c("imdbID","Metascore","rt","imdbRating"))
-    
-    setkey(summary, imdbID)
-    setkey(runtimes_ratings, imdbID)
-    setkey(critics, imdbID)
-    data <- summary[runtimes_ratings, nomatch = 0][critics, nomatch = 0]
-    rm(list=c("runtimes_ratings","critics","summary"))
-    dbDisconnect(database); rm(database)
-    
-    data <- data %>% 
-      # filter.by.ip(uiInputOptions$ip[[input$ip]]) %>%
-      # filter.by.studio(input$studio) %>%
-      # filter.by.year(input$years) %>%
-      # filter.by.month(input$month) %>%
-      # filter.by.mpaa(uiInputOptions$mpaa[[input$mpaa]]) %>%
-      # filter.by.runtime(uiInputOptions$runtime[[input$runtime]]) %>%
-      filter.by.metascore(input$metascore) %>%
-      filter.by.rt(input$rt) %>%
-      filter.by.imdb(input$imdb)
-    
-    
-    if (is.null(data) | dim(data)[1] == 0) return(NULL)
-    return(data)
-    
-  })
-  
-  
-  
-  output$posters <- renderUI({
-    if(is.null(GET.Filtered.Data())) return("<h1> DATA CAME BACK NULL YO! FIX IT!!! </h1>")
-    
-    header <- '<link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">'
-    
-    scripts <- '<script src="https://code.jquery.com/jquery-3.1.1.min.js"
-    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
-    crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"></script>'
-    
-    foreach(k=1:dim(GET.Filtered.Data())[1], .combine = c)%do%{
-      return(render.rank.poster(GET.Filtered.Data()[k]))
-    } -> htmlBlob
-    
-    
-    HTML(paste0(header, "\n", htmlBlob,'\n',scripts))
-    
-    
-    
-  })
+  # 
+  # GET.Filtered.Data <- reactive({
+  #   
+  #   database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+  #   summary <- data.table(dbGetQuery(database, 'SELECT * FROM summaries'))[, 
+  #                                                                          c("distributor","month") := list(
+  #                                                                            set.distributor.names(distributor),
+  #                                                                            get.release.months(Released)
+  #                                                                          )
+  #                                                                          ]
+  #   
+  #   runtimes_ratings <- data.table((dbGetQuery(database, 'SELECT imdbID, runtime_coef, rating_coef FROM boMetrics')))
+  #   critics <- data.table(dbGetQuery(database, 'SELECT imdbID, Metascore, "Rotten Tomatoes", imdbRating FROM critics'))
+  #   setnames(critics, names(critics),  c("imdbID","Metascore","rt","imdbRating"))
+  #   
+  #   setkey(summary, imdbID)
+  #   setkey(runtimes_ratings, imdbID)
+  #   setkey(critics, imdbID)
+  #   data <- summary[runtimes_ratings, nomatch = 0][critics, nomatch = 0]
+  #   rm(list=c("runtimes_ratings","critics","summary"))
+  #   dbDisconnect(database); rm(database)
+  #   
+  #   data <- data %>% 
+  #     # filter.by.ip(uiInputOptions$ip[[input$ip]]) %>%
+  #     # filter.by.studio(input$studio) %>%
+  #     # filter.by.year(input$years) %>%
+  #     # filter.by.month(input$month) %>%
+  #     # filter.by.mpaa(uiInputOptions$mpaa[[input$mpaa]]) %>%
+  #     # filter.by.runtime(uiInputOptions$runtime[[input$runtime]]) %>%
+  #     filter.by.metascore(input$metascore) %>%
+  #     filter.by.rt(input$rt) %>%
+  #     filter.by.imdb(input$imdb)
+  #   
+  #   
+  #   if (is.null(data) | dim(data)[1] == 0) return(NULL)
+  #   return(data)
+  #   
+  # })
+  # 
+  # 
+  # 
+  # output$posters <- renderUI({
+  #   if(is.null(GET.Filtered.Data())) return("<h1> DATA CAME BACK NULL YO! FIX IT!!! </h1>")
+  #   
+  #   header <- '<link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">'
+  #   
+  #   scripts <- '<script src="https://code.jquery.com/jquery-3.1.1.min.js"
+  #   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  #   crossorigin="anonymous"></script>
+  #   <script src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"></script>'
+  #   
+  #   foreach(k=1:dim(GET.Filtered.Data())[1], .combine = c)%do%{
+  #     return(render.rank.poster(GET.Filtered.Data()[k]))
+  #   } -> htmlBlob
+  #   
+  #   
+  #   HTML(paste0(header, "\n", htmlBlob,'\n',scripts))
+  #   
+  #   
+  #   
+  # })
   
   # database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
   # summary <- data.table(dbGetQuery(database, 'SELECT * FROM summaries'))[, distributor := set.distributor.names(distributor)]

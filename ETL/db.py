@@ -191,7 +191,7 @@ def get_data_omdb(title):
         data = omdb.get(title='Teenage Mutant Ninja Turtles', year=2016)
 
 
-    elif title == "Teenage Mutant Ninja Turtles (1990)":
+    elif title == "Teenage Mutant Ninja Turtles":
         data = omdb.get(title='Teenage Mutant Ninja Turtles', year=1990)
 
     elif title == "Teenage Mutant Ninja Turtles: The Secret of the Ooze":
