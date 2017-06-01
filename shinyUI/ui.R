@@ -1,7 +1,7 @@
 
 ip <- checkboxGroupInput("ip",
                          h4("Comicbook Company"),
-                         choices = list("DC", "Marvel", "Other"),
+                         choices = list("DC", "MARVEL", "OTHER"),
                          inline =TRUE)
 
 studio <- selectizeInput('studio',
@@ -14,8 +14,8 @@ studio <- selectizeInput('studio',
 years <- sliderInput("years",
                      h4("Years"),
                      min = 1978,
-                     max = 2016,
-                     value = c(2010, 2016),
+                     max = 2017,
+                     value = c(2010, 2017),
                      step=1, sep = ""
                     ) 
 
@@ -76,30 +76,19 @@ shinyUI(
   
   navbarPage(
     title = "Comics Adaptation",
-    tags$head(
+    header = tags$header(
       tags$link(rel="stylesheet", type="text/css", href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"),
-      tags$link(rel="stylesheet", type="text/css", href="https://fonts.googleapis.com/css?family=Architects+Daughter|Ubuntu"),
       tags$script(src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"),
-      tags$script(src="https://code.jquery.com/jquery-3.2.1.slim.min.js",
-                  integrity="sha256-k2WSCIexGzOj3Euiig+TlR8gA0EmPjuc79OEeY5L45g=",
-                  crossorigin="anonymous")
+      tags$script(src="https://code.jquery.com/jquery-3.1.1.min.js",
+                  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=",
+                  crossorigin="anonymous"
+                )
     ),
-    tabPanel("Discover",
-              htmlTemplate("discover.html",
-                           ipInput = ip,
-                           studioInput = studio,
-                           yearInput = years,
-                           monthInput = month,
-                           runtimeInput = runtime,
-                           mpaaInput = mpaa,
-                           metascoreInput = metascore,
-                           rtInput = rt,
-                           imdbInput = imdb,
-                           rankInput = rank.metrics
-                           )
-            ),
-    tabPanel("Discover",
-             htmlTemplate("discover.html",
+    inverse = TRUE,
+    selected = "Filter and Rank",
+    # tabPanel("Home", htmlTemplate("home.html")),
+    tabPanel("Filter and Rank",
+             htmlTemplate("filterRank.html",
                           ipInput = ip,
                           studioInput = studio,
                           yearInput = years,

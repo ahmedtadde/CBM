@@ -1,5 +1,6 @@
 libraries <- function(){
   library(pacman)
+  p_load(Hmisc)
   p_load(stringi)
   p_load(httr)
   p_load(magrittr)
@@ -55,12 +56,12 @@ get.release.months <- function(releases){
 
 
 filter.by.ip <- function(data,ips){
-  if(is.nan(ips)) return(data)
+  if(is.null(ips) | length(ips) == 0) return(data)
   return(data[source %in% ips])
 }
 
 filter.by.month <- function(data,months){
-  if("All" %in% months) return(data)
+  if("All" %in% months | is.null(months) | length(months) == 0) return(data)
   return(data[month %in% months])
 }
 
@@ -71,19 +72,26 @@ filter.by.year <- function(data,years){
 
 
 filter.by.studio <- function(data,studios){
-  if("All" %in% studios ) return(data)
+  if("All" %in% studios | is.null(studios) | length(studios) == 0) return(data)
   return(data[distributor %in% studios])
 }
 
 
 filter.by.mpaa <- function(data,mpaas){
-  if(is.nan(mpaas)) return(data)
-  return(data[rating_coef %in% mpaas])
+  if(is.null(mpaas)  | length(mpaas) == 0) return(data)
+  return(data[rating %in% mpaas])
 }
 
 filter.by.runtime <- function(data, runtimes){
-  if(is.nan(runtimes)) return(data)
-  return(data[runtime_coef %in% runtimes])
+  if("All" %in% runtimes | is.null(runtimes) | length(runtimes) == 0) return(data)
+  foreach(k=1:length(runtimes), .combine = c) %do%{
+    if(runtimes[k] == "0 to 100 minutes") return(1)
+    if(runtimes[k] == "101 to 120 minutes") return(2)
+    if(runtimes[k] == "121 to 150 minutes") return(3)
+    if(runtimes[k] == "151 to 180 minutes") return(4)
+    if(runtimes[k] == "180+ minutes") return(5)
+  } -> values
+  return(data[runtime_coef %in% values])
 }
 
 filter.by.imdb <- function(data, imdbs){
@@ -98,11 +106,24 @@ filter.by.rt <- function(data, rts){
   return(data[rt %between% list(rts[1],rts[2])])
 }
 
-render.rank.poster <- function(data){
+render.filterRankTemplate <- function(data){
+  
+  if(data$source[1] == "DC"){
+    logo = "https://4.bp.blogspot.com/-7K0dR8MmfI4/Vzx4nd5MJzI/AAAAAAAAVz4/59mGrWzNWnMWy880PfkHClXDP8LeiiHpACLcB/s1600/fixed.png"
+    color = "#0282f9"
+  }else if(data$source[1] == "MARVEL"){
+    logo = "https://logorealm.com/wp-content/uploads/2016/07/Marvel-Logo.png"
+    color = "#ed1717"
+  }else{
+    logo = "https://cdn.dribbble.com/users/1960/screenshots/877446/logo_1x.png"
+    color = "#c9a318"
+  }
+  
+  
   result <- paste0("\n",
-                   shiny::htmlTemplate("./PosterTemplate.html",
-                                       logo = ipLogos[[data$source]],
-                                       color = ipColors[[data$source]],
+                   shiny::htmlTemplate("./filterRankTemplate.html",
+                                       logo = logo,
+                                       color = color,
                                        studio = data$distributor, 
                                        poster = data$Poster
                                       ),
@@ -110,3 +131,7 @@ render.rank.poster <- function(data){
                    )
   return(result)
 }
+
+
+
+

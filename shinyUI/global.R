@@ -1,7 +1,6 @@
-source('processing/functions.R')
+source('functions.R')
 libraries()
 
-# database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
 
 
 studios <- c(
@@ -16,18 +15,6 @@ months <- c(
 )
 
 
-ipLogos <- c(
-  "DC" = "./www/dc.png",
-  "MARVEL" = "./www/marvel.png",
-  "OTHER"= "./www/other.png"
-)
-
-ipColors <- c(
-  "DC" = "#0282f9",
-  "MARVEL" = "#ed1717",
-  "OTHER" = "#c9a318"
-)
-
 uiInputOptions <- list(
   "runtime" = c(
     "All" = NaN,
@@ -39,6 +26,7 @@ uiInputOptions <- list(
   ),
   
   "rankMetrics" = c(
+    "Year" = "Year",
     "Overall Critical Reception" = "overall_score",
     "Overall Box Office Performance" = "bo_score",
     "Critics Tomatometer"="critics_score",
