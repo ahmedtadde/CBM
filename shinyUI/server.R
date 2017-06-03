@@ -341,8 +341,7 @@ shinyServer(function(input, output) {
       return(render.filterRankTemplate(GET.Filtered.Data()[k]))
     } -> htmlBlob
 
-
-    HTML(htmlBlob)
+    HTML(paste0("\n",htmlBlob,"\n"))
 
 
 

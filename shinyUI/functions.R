@@ -15,6 +15,9 @@ libraries <- function(){
   
 }
 
+format.money  <- function(x) {
+  formatC(as.numeric(x), format="f", digits=1, big.mark=",")
+}
 
 set.distributor.names <- function(studios){
   
@@ -109,26 +112,59 @@ filter.by.rt <- function(data, rts){
 render.filterRankTemplate <- function(data){
   
   if(data$source[1] == "DC"){
-    logo = "https://4.bp.blogspot.com/-7K0dR8MmfI4/Vzx4nd5MJzI/AAAAAAAAVz4/59mGrWzNWnMWy880PfkHClXDP8LeiiHpACLcB/s1600/fixed.png"
-    color = "#0282f9"
+    iplogo = "https://4.bp.blogspot.com/-7K0dR8MmfI4/Vzx4nd5MJzI/AAAAAAAAVz4/59mGrWzNWnMWy880PfkHClXDP8LeiiHpACLcB/s1600/fixed.png"
+    ipcolor = "#0282f9"
   }else if(data$source[1] == "MARVEL"){
-    logo = "https://logorealm.com/wp-content/uploads/2016/07/Marvel-Logo.png"
-    color = "#ed1717"
+    iplogo = "https://logorealm.com/wp-content/uploads/2016/07/Marvel-Logo.png"
+    ipcolor = "#ed1717"
   }else{
-    logo = "https://cdn.dribbble.com/users/1960/screenshots/877446/logo_1x.png"
-    color = "#c9a318"
+    iplogo = "https://cdn.dribbble.com/users/1960/screenshots/877446/logo_1x.png"
+    ipcolor = "#c9a318"
   }
   
+  # shiny::htmlTemplate("./flipCardBack.html", 
+  #                     rating = data$rating,
+  #                     budget = data$budget,
+  #                     plot= data$Plot
+  #                     ) -> backHTML
   
-  result <- paste0("\n",
-                   shiny::htmlTemplate("./filterRankTemplate.html",
-                                       logo = logo,
-                                       color = color,
-                                       studio = data$distributor, 
-                                       poster = data$Poster
-                                      ),
-                   "\n"
-                   )
+  # return(
+  #   shiny::htmlTemplate("./filterRankTemplate.html", 
+  #                       poster = data$Poster,
+  #                       flipCardBack = backHTML
+  #                       )
+  # )
+  result <- paste0(
+                   shiny::htmlTemplate("./filterRankTemplate.html", 
+                                       iplogo = iplogo,
+                                       ipcolor= ipcolor,
+                                       studio = data$distributor,
+                                       release = data$Release,
+                                       runtime = data$runtime,
+                                       poster = data$Poster,
+                                       ranking = data$ID,
+                                       rating = data$rating,
+                                       budget = format.money(data$budget),
+                                       openingWeek = format.money(data$week_1_gross),
+                                       domestic = format.money(data$domestic_BO),
+                                       foreign = format.money(data$foreign_BO),
+                                       metascore = data$Metascore,
+                                       rt = data$rt,
+                                       imdb = data$imdbRating,
+                                       plot= data$Plot
+                                       )
+                  )
+  
+  
+  # result <- paste0("\n",
+  #                  shiny::htmlTemplate("./filterRankTemplate.html",
+  #                                      logo = logo,
+  #                                      color = color,
+  #                                      studio = data$distributor, 
+  #                                      poster = data$Poster
+  #                                     ),
+  #                  "\n"
+  #                  )
   return(result)
 }
 

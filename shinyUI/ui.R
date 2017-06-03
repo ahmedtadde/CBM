@@ -78,15 +78,20 @@ shinyUI(
     title = "Comics Adaptation",
     header = tags$header(
       tags$link(rel="stylesheet", type="text/css", href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"),
-      tags$script(src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"),
-      tags$script(src="https://code.jquery.com/jquery-3.1.1.min.js",
-                  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=",
+      tags$script(src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"),
+      tags$script(
+                  src="https://code.jquery.com/jquery-3.2.1.slim.js",
+                  integrity="sha256-tA8y0XqiwnpwmOIl3SGAcFl2RvxHjA8qp0+1uCGmRmg=",
                   crossorigin="anonymous"
-                )
+                ),
+      tags$script(src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.3/axios.min.js"),
+      tags$script(src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"),
+      tags$script(src="index.js"),
+      tags$script(src="justFlipIt.min.js")
     ),
     inverse = TRUE,
     selected = "Filter and Rank",
-    # tabPanel("Home", htmlTemplate("home.html")),
+    tabPanel("Home", htmlTemplate("home.html")),
     tabPanel("Filter and Rank",
              htmlTemplate("filterRank.html",
                           ipInput = ip,
