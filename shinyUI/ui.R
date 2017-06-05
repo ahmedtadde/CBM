@@ -1,4 +1,3 @@
-
 ip <- checkboxGroupInput("ip",
                          h4("Comicbook Company"),
                          choices = list("DC", "MARVEL", "OTHER"),
@@ -93,14 +92,16 @@ shinyUI(
       tags$link(rel="stylesheet", type="text/css", href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"),
       tags$script(src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"),
       tags$script(
-        src="https://code.jquery.com/jquery-3.2.1.slim.js",
-        integrity="sha256-tA8y0XqiwnpwmOIl3SGAcFl2RvxHjA8qp0+1uCGmRmg=",
-        crossorigin="anonymous"),
-      tags$script(src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.3/axios.min.js"),
+        src="https://code.jquery.com/jquery-3.2.1.min.js",
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=",
+        crossorigin="anonymous"
+      ),
+      tags$script(src="https://cdn.plot.ly/plotly-latest.min.js"),
       tags$script(src="index.js")
     ),
     inverse = TRUE,
     selected = "Filter and Rank",
+    
     tabPanel("Filter and Rank",
              htmlTemplate("filterRank.html",
                           ipInput = ip,
@@ -115,11 +116,12 @@ shinyUI(
                           rankInput = rank.metrics
                         )
             ),
-    tabPanel("Compare", htmlTemplate("compare.html", first.movie  = first.movie, second.movie = second.movie)),
+    
+    tabPanel("Compare", htmlTemplate("compare.html", first.movie = first.movie, second.movie = second.movie)),
+    
     navbarMenu("All-Time Ranking",
               tabPanel("Table",htmlTemplate("rankingTable.html")),
-              tabPanel("About",htmlTemplate("about.html"))
-              )
+              tabPanel("About",htmlTemplate("about.html")))
   )
 )
 

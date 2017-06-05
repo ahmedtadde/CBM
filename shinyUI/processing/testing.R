@@ -2,10 +2,22 @@ source('functions.R')
 libraries()
 
 database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
-summary <- data.table(dbGetQuery(database, 'SELECT * FROM summaries'))
+ranks <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_ranks')), imdbID)
+summary <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)
+data <- summary[ranks, nomatch=0][title %in% c("The Dark Knight", "Logan")][,c(2,10:18,4:9)]
+data <- melt(data, id.vars = "title", variable.name ="week", value.name = "rank")
+data[, week:= foreach(i= 1:length(data$week), .combine = c) %do%{return(as.numeric(stri_split_fixed(data$week[i], "_")[[1]][2]))}]
 
-dbDisconnect(database); rm(database)
 
+dbDisconnect(database); rm(list = c("database","ranks","summary"))
+
+plot_ly(data,
+        x = ~week,
+        y = ~rank,
+        color = ~title,
+        colors = c("The Dark Knight"="red","Logan"="blue"),
+        type = 'scatter', mode = 'lines+markers'
+        ) %>% layout(yaxis = list(autorange = "reversed")) -> p
 
 
 # headerhtml <- '<!DOCTYPE HTML>

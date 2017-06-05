@@ -1,23 +1,46 @@
-<div class = "ui container raised segment">
-  <div class="ui three column doubling stackable grid container">
+
+<div class="ui three equal width column container grid">
+ 
+  <div class="row">
     <div class="column">
-      {{ first.movie }}
+    {{first.movie}}
     </div>
-    <div class="column">
-    </div>
+    
+    <div class="column"></div>
+    
     <div class="column">
       {{second.movie}}
     </div>
-  </div> 
+  </div>
   
-  <div class="ui three column doubling stackable grid container">
+  <div class="row">
     <div class="column">
-      {{ htmlOutput("first.movie.poster") }}
+    {{htmlOutput("first.movie.poster")}}
     </div>
-    <div class="column">
-    </div>
+    
+    <div class="column"></div>
+    
     <div class="column">
       {{htmlOutput("second.movie.poster")}}
     </div>
-  </div> 
+  </div>
+
 </div>
+
+
+<div class="ui three equal width column raised segment grid">
+  
+  <div class="column">
+    <div id="testPlot1" style="width:500px; height:500px;"></div>
+  </div>
+  
+  <div class="column">
+    <div id="testPlot2" style="width:500px; height:500px;"></div>
+  </div>
+  
+  <div class="column">
+    <div id="testPlot3" style="width:500px; height:500px;"></div>
+  </div>
+
+</div>
+  

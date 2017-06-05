@@ -368,6 +368,7 @@ shinyServer(function(input, output) {
   
   
   output$all.time.ranking.table <- renderUI({
+    if(is.null(all.time.ranking.data)) return(NULL)
     foreach(k=1:dim(all.time.ranking.data)[1], .combine = c)%do%{
       return(render.all.time.ranking.table.template(all.time.ranking.data[ranking == k]))
     } -> htmlBlob
@@ -376,7 +377,7 @@ shinyServer(function(input, output) {
   
   output$first.movie.poster <- renderUI({
     if(is.null(input$first.movie)) return(NULL)
-    if(is.null(get.filtered.data())) return(HTML(render.404.card.template()))
+    if(is.null(all.time.ranking.data)) return(NULL)
     
     data <- all.time.ranking.data[title == input$first.movie]
     
@@ -389,8 +390,7 @@ shinyServer(function(input, output) {
   
   output$second.movie.poster <- renderUI({
     if(is.null(input$second.movie)) return(NULL)
-    if(is.null(get.filtered.data())) return(HTML(render.404.card.template()))
-    
+    if(is.null(all.time.ranking.data)) return(NULL)
     
     data <- all.time.ranking.data[title == input$second.movie]
     
@@ -400,6 +400,34 @@ shinyServer(function(input, output) {
     
     HTML(render.compare.poster.template(data))
   })
+  
+  
+  # output$weekly.ranks.plot <- plotly::renderPlotly({
+  #   if(is.null(input$first.movie)) return(NULL)
+  #   if(is.null(input$second.movie)) return(NULL)
+  #   if(is.null(all.time.ranking.data)) return(NULL)
+  #   
+  #   database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+  #   ranks <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_ranks')), imdbID)
+  #   summary <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)
+  #   table <- summary[ranks, nomatch=0][title %in% c(input$first.movie, input$second.movie)][,c(2,10:18,4:9)]
+  #   table <- melt(table, id.vars = "title", variable.name ="week", value.name = "rank")
+  #   table[, week:= foreach(i= 1:length(table$week), .combine = c) %do%{return(stri_split_fixed(table$week[i], "_")[[1]][2])}]
+  #   
+  #   
+  #   dbDisconnect(database); rm(list = c("database","ranks","summary"))
+  #   
+  #   
+  #   plot_ly(data,
+  #           x = ~week,
+  #           y = ~rank,
+  #           color = ~title,
+  #           colors = c(input$first.movie="red",input$second.movie="blue"),
+  #           type = 'scatter', mode = 'lines+markers'
+  #   ) %>% layout(yaxis = list(autorange = "reversed"))
+  # 
+  # 
+  # })
 
   
   # output$reports <- renderUI({

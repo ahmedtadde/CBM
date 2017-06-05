@@ -168,30 +168,17 @@ filter.by.rt <- function(data, rts){
 
 
 render.compare.poster.template <- function(data){
-  if(is.null(data)) return('')
-  # if(data$source == "DC"){
-  #   iplogo = "https://4.bp.blogspot.com/-7K0dR8MmfI4/Vzx4nd5MJzI/AAAAAAAAVz4/59mGrWzNWnMWy880PfkHClXDP8LeiiHpACLcB/s1600/fixed.png"
-  #   ipcolor = "#0282f9"
-  # }else if(data$source == "MARVEL"){
-  #   iplogo = "https://logorealm.com/wp-content/uploads/2016/07/Marvel-Logo.png"
-  #   ipcolor = "#ed1717"
-  # }else{
-  #   iplogo = "https://cdn.dribbble.com/users/1960/screenshots/877446/logo_1x.png"
-  #   ipcolor = "#c9a318"
-  # }
+  # if(is.null(data)) return('')
   
   paste0(
-    shiny::htmlTemplate("./comparePosterTemplate.html", 
-                        # iplogo = iplogo,
-                        # ipcolor= ipcolor,
-                        # studio = data$distributor,
+    shiny::htmlTemplate("./comparePosterTemplate.html",
                         release = data$Release,
                         runtime = data$runtime,
                         poster = data$Poster,
                         rating = data$rating,
                         grade = data$grade
                         )
-  )
+    )
 }
 
 render.filter.rank.template <- function(data,rank.by.metrics){
