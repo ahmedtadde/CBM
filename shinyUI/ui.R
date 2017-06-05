@@ -65,33 +65,42 @@ imdb <- sliderInput("imdb",
 
 rank.metrics <- selectizeInput('rankBy',
                                 h4('Rank By'),
-                                selected = NULL,
+                                selected = "Overal Score",
                                 choices = names(uiInputOptions$rankMetrics),
                                 options = list(maxItems = 3),
                                 multiple = T
                               )
 
 
+first.movie <- selectizeInput('first.movie', 
+                              h4('Select Movie'), 
+                              selected = "The Dark Knight",
+                              choices = all.time.ranking.data$title,
+                              multiple = F
+                              )
+
+second.movie <- selectizeInput('second.movie', 
+                              h4('Select Movie'), 
+                              selected = "Logan",
+                              choices = all.time.ranking.data$title,
+                              multiple = F
+                              )
 shinyUI(
   
   navbarPage(
     title = "Comics Adaptation",
-    header = tags$header(
+    tags$header(
       tags$link(rel="stylesheet", type="text/css", href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"),
       tags$script(src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"),
       tags$script(
-                  src="https://code.jquery.com/jquery-3.2.1.slim.js",
-                  integrity="sha256-tA8y0XqiwnpwmOIl3SGAcFl2RvxHjA8qp0+1uCGmRmg=",
-                  crossorigin="anonymous"
-                ),
+        src="https://code.jquery.com/jquery-3.2.1.slim.js",
+        integrity="sha256-tA8y0XqiwnpwmOIl3SGAcFl2RvxHjA8qp0+1uCGmRmg=",
+        crossorigin="anonymous"),
       tags$script(src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.15.3/axios.min.js"),
-      tags$script(src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"),
-      tags$script(src="index.js"),
-      tags$script(src="justFlipIt.min.js")
+      tags$script(src="index.js")
     ),
     inverse = TRUE,
     selected = "Filter and Rank",
-    tabPanel("Home", htmlTemplate("home.html")),
     tabPanel("Filter and Rank",
              htmlTemplate("filterRank.html",
                           ipInput = ip,
@@ -104,8 +113,13 @@ shinyUI(
                           rtInput = rt,
                           imdbInput = imdb,
                           rankInput = rank.metrics
-                          )
-            )
+                        )
+            ),
+    tabPanel("Compare", htmlTemplate("compare.html", first.movie  = first.movie, second.movie = second.movie)),
+    navbarMenu("All-Time Ranking",
+              tabPanel("Table",htmlTemplate("rankingTable.html")),
+              tabPanel("About",htmlTemplate("about.html"))
+              )
   )
 )
 

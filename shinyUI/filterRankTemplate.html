@@ -3,24 +3,10 @@
 
 
 <div class="ui cards">
-  <div class="ui card flip">
+  <div class="ui card">
     <img class="ui large image" src={{poster}}>
     <div class="content">
-      <div class="ui five column row grid">
-        
-        <div class="column"></div>
-        <div class="column"></div>
-  
-        <div class="column">
-          <div class="left floated author">
-            <div class="meta category">{{ranking}}</div>
-          </div>
-        </div>
-  
-        <div class="column"></div>
-        <div class="column"></div>
-      
-      </div>
+      <div class="ui center aligned header">{{ranking}}</div>
     </div>
   </div>
   
@@ -34,12 +20,12 @@
     </div>
     <div class="content">
       <div class="meta">
-        <span class="category">A+ | </span>
+        <span class="category">{{grade}} | </span>
         <span class="category">{{rating}} | </span>
         <span>{{runtime}} minutes | </span>
         <span>{{release}}</span>
       </div>
-      <div class="description justified">
+      <div class="description left aligned">
         <p>{{plot}}</p>
         <div class="ui two column equal width left aligned padded grid">
   
@@ -50,7 +36,7 @@
               </div>
             </div>
             <div class="column">
-              ${{budget}}
+              {{budget}}
             </div>
           </div>
   
@@ -61,7 +47,7 @@
               </div>
             </div>
             <div class="column">
-              ${{openingWeek}}
+              {{openingWeek}}
             </div>
           </div>
   
@@ -72,7 +58,7 @@
               </div>
             </div>
             <div class="column">
-              ${{domestic}}
+              {{domestic}}
             </div>
           </div>
   
@@ -83,7 +69,7 @@
               </div>
             </div>
             <div class="column">
-              ${{foreign}}
+              {{foreign}}
             </div>
           </div>
   
@@ -114,90 +100,61 @@
   
   <div class="ui card">
     <div class="extra content">
-      <div class="left floated author">
-        <img class="ui avatar image" src="{{iplogo}}">
+      <div class="ui center aligned header">
+        Ranking Metrics
       </div>
-      <div class="right floated author" style="color:{{ipcolor}}"> {{ studio }}</div>
     </div>
     <div class="content">
-      <div class="meta">
-        <span class="category">A+ | </span>
-        <span class="category">{{rating}} | </span>
-        <span>{{runtime}} minutes | </span>
-        <span>{{release}}</span>
-      </div>
       <div class="description justified">
-        <p>{{plot}}</p>
-        <div class="ui two column equal width left aligned padded grid">
+        <div class="ui one column center aligned padded  grid">
   
-          <div class="row">
-            <div class="column">
-              <div class="meta category">
-                Budget:
-              </div>
-            </div>
-            <div class="column">
-              ${{budget}}
+        <div class="row">
+          <div class="column">
+            <div class="meta category">
             </div>
           </div>
-  
-          <div class="row">
-            <div class="column">
-              <div class="meta category">
-                Opening Week:
-              </div>
-            </div>
-            <div class="column">
-              ${{openingWeek}}
-            </div>
-          </div>
-  
-          <div class="row">
-            <div class="column">
-              <div class="meta category">
-                Domestic:
-              </div>
-            </div>
-            <div class="column">
-              ${{domestic}}
-            </div>
-          </div>
-  
-          <div class="row">
-            <div class="column">
-              <div class="meta category">
-                Foreign:
-              </div>
-            </div>
-            <div class="column">
-              ${{foreign}}
-            </div>
-          </div>
-  
-        </div>
-      </div>
-    </div>
-    <div class="extra content">
-      <div class="ui three column row grid">
-        <div class="column">
-          <div class="left floated author">
-            <img class="ui avatar image" src="http://www.gameinformer.com/cfs-filesystemfile.ashx/__key/CommunityServer-Components-ImageFileViewer/CommunityServer-Components-UserFiles-00-00-58-31-12-Attached+Files/4011.BigLogo_5F00_jpg.png_2D00_610x0.png">              {{metascore}}
+          <div class="column">
           </div>
         </div>
-        <div class="column">
-          <div class="right floated author">
-            <img class="ui avatar image" src="http://2.bp.blogspot.com/-zFaGcPVVhic/V-xb4MxbuKI/AAAAAAAAGik/IAK0Gnq07DQM-UpnmiiGtID_dlT_KUiUgCK4B/s1600/rotten_tomatoes_8290.jpg"> {{rt}}%
-          </div>
-        </div>
-        <div class="column">
-          <div class="right floated author">
-            <img class="ui avatar image" src="http://is4.mzstatic.com/image/thumb/Purple111/v4/29/72/81/2972819d-bee1-5ea6-6c7b-d2e0d621cb22/source/175x175bb.jpg"> {{imdb}}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
 
+        <div class="row">
+          <div class="column">
+            <div class="meta category">
+             {{metricOne}}
+            </div>
+          </div>
+          <div class="column">
+            {{metricOneValue}}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column">
+            <div class="meta category">
+              {{metricTwo}}
+            </div>
+          </div>
+          <div class="column">
+            {{metricTwoValue}}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="column">
+            <div class="meta category">
+              {{metricThree}}
+            </div>
+          </div>
+          <div class="column">
+            {{metricThreeValue}}
+          </div>
+        </div>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+  
   
 
 </div>

@@ -1,53 +1,4 @@
 
-
-
-
-
-# movies$class <- cut(movies$combined_score,
-#                     breaks = 11,
-#                     labels = c("F*** You!",
-#                                "F",
-#                                "E",
-#                                "D-",
-#                                "D",
-#                                "C-",
-#                                "C",
-#                                "B",
-#                                "B+",
-#                                "A",
-#                                "A+"),
-#                     ordered_result = T
-# )
-# 
-# # movies$class <- as.character(movies$class)
-# 
-# movies$studio <- as.character(movies$studio)
-# movies$studio[which(movies$studio == "Buena Vista")] <- "Disney"
-# movies$studio[which(movies$studio == "Sony / Columbia")] <- "Sony"
-# movies$studio[which(movies$studio == "Sony Classics")] <- "Sony"
-# movies$studio[which(movies$studio == "Sony (Revolution)"  )] <- "Sony"
-# movies$studio[which(movies$studio == "Lionsgate/Summit")] <- "Lionsgate"
-# movies$studio[which(movies$studio == "Lions Gate")] <- "Lionsgate"
-# movies$studio[which(movies$studio == "Weinstein / Dimension")] <- "Weinstein"
-# 
-# 
-# 
-# movies[which(movies$title %in% "Fantastic Four(2005)")]$plot <- revision[[1]]
-# movies[which(movies$title %in% "Fantastic Four: Rise of the Silver Surfer")]$plot <- revision[[2]]
-# movies[which(movies$title %in% "Thor: The Dark World")]$plot <- revision[[3]]
-# movies[which(movies$title %in% "X-Men: Days of Future Past")]$plot <- revision[[4]]
-# movies[which(movies$title %in% "Dredd")]$plot <- revision[[5]]
-# movies[which(movies$title %in% "Teenage Mutant Ninja Turtles: Out of the Shadows")]$plot <- revision[[6]]
-# movies[which(movies$title %in% "Kick-Ass 2")]$plot <- revision[[7]]
-# movies[which(movies$title %in% "Blade: Trinity")]$plot <- revision[[8]]
-# movies[which(movies$title %in% "Spider-Man")]$plot <- revision[[9]]
-# movies[which(movies$title %in% "Batman Forever")]$plot <- revision[[10]]
-# movies[which(movies$title %in% "The Mask")]$plot <- revision[[11]]
-# movies[which(movies$title %in% "RIPD")]$plot <- revision[[12]]
-# 
-# 
-# 
-# 
 # # tabPanel("Search Movie",
 #          tags$br(),tags$br(),tags$br(),
 #          fluidRow(
@@ -70,3 +21,94 @@
 #          ),
 
 
+# rankingViz <- function(data){
+#   
+#   df <- copy(data)[, mapping_size:= critical_score * bo_score]
+#   
+#   plot <- df %>% plot_ly(x = ~bo_score,
+#                          y = ~critical_score,
+#                          width = 1400,
+#                          height = 650,
+#                          type = "scatter",
+#                          mode = "markers",
+#                          size = ~mapping_size,
+#                          color = ~grade,
+#                          colors = "RdYlGn",
+#                          opacity = ~mapping_size
+#                          # text = paste(
+#                          #   # toupper(~title),"<br>"
+#                          #    # "Grade: ", toupper(~grade), "<br>",
+#                          #    # "Overall Critical Reception: ", round(~critical_score,2),"%" ,"<br>",
+#                          #    # "Box Office Performance Index: ", round(bo_score,2),"<br>",
+#                          #    # "All-time Ranking: ", ~ranking
+#                          #  ),
+#                          # hoverinfo = "text"
+#                          
+#   ) %>% layout(
+#     
+#     
+#     title = "Ranking Visulation (hover on bubble for movie info)",
+#     titlefont = list(size = 15),
+#     legend = list(font = list(size = 15), x = 0.9,y = 0.1),
+#     # autosize = T, 
+#     # width = 1400, 
+#     # height = 650, 
+#     # paper_bgcolor='rgba(0,0,0,0)',
+#     # plot_bgcolor='rgba(0,0,0,0)',
+#     # margin = m,
+#     xaxis = list(title = "Overall Box Office Performance Index (higher is better)",
+#                  showgrid = F,
+#                  zeroline = FALSE,
+#                  showline = FALSE,
+#                  showticklabels = F
+#                  # tickfont = list(size = 15),
+#                  # titlefont = list(size = 15)
+#                  # showgrid = F,
+#                  # tickcolor = toRGB("white"),
+#                  # tickfont = list(color = toRGB("white"), size = 10),
+#                  # zeroline = FALSE,
+#                  # showline = FALSE,
+#                  # showticklabels = T
+#     ),
+#     yaxis = list(title = "Overall Critical Reception (in %)",
+#                  showgrid = F,
+#                  zeroline = FALSE,
+#                  showline = FALSE,
+#                  showticklabels = F
+#                  # tickfont = list(size = 15),
+#                  # titlefont= list(size = 15)
+#                  # showgrid = F,
+#                  # tickcolor = toRGB("white"),
+#                  # tickfont = list(color = toRGB("white"), size = 10),
+#                  # zeroline = FALSE,
+#                  # showline = FALSE,
+#                  # showticklabels = T
+#     )
+#   )
+#   
+#   
+#   
+#   # #Get the list for the plot
+#   # plot <- plotly_build(plot)
+#   # 
+#   # foreach(i =1:length(plot$data)) %do% {
+#   # 
+#   #   # Pick up the hover text
+#   #   hvrtext <- plot$data[[i]]$text
+#   #   # Split by line break and wt
+#   #   hvrtext_fixed <- stri_split(hvrtext, fixed = '<br>mapping_size')
+#   #   # Get the first element of each split
+#   #   hvrtext_fixed <- lapply(hvrtext_fixed, function(x) x[1])
+#   #   # Convert back to vector
+#   #   hvrtext_fixed <- as.character(hvrtext_fixed)
+#   #   # Assign as hovertext in the plot
+#   #   plot$data[[i]]$text <- hvrtext_fixed
+#   # 
+#   # 
+#   # }
+#   
+#   # rm(list=c("hvrtext","hvrtext_fixed","df"))
+#   # 
+#   return(plot)
+#   
+# }

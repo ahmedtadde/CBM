@@ -1,26 +1,12 @@
-source('processing/functions.R')
+source('functions.R')
 libraries()
 
+database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+summary <- data.table(dbGetQuery(database, 'SELECT * FROM summaries'))
 
-# database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
-# tables <- dbListTables(database)
-# summary <- data.table(dbGetQuery(database, 'SELECT * FROM summaries'))[, 
-#                                                                        c("distributor","month") := list(
-#                                                                          set.distributor.names(distributor),
-#                                                                          get.release.months(Released)
-#                                                                          )
-#                                                                       ]
-# 
-# runtimes_ratings <- data.table((dbGetQuery(database, 'SELECT imdbID, runtime_coef, rating_coef FROM boMetrics')))
-# critics <- data.table(dbGetQuery(database, 'SELECT imdbID, Metascore, "Rotten Tomatoes", imdbRating FROM critics'))
-# setnames(critics, names(critics),  c("imdbID","Metascore","rt","imdbRating"))
-# 
-# setkey(summary, imdbID)
-# setkey(runtimes_ratings, imdbID)
-# setkey(critics, imdbID)
-# data <- summary[runtimes_ratings, nomatch = 0][critics, nomatch = 0]
-# rm(list=c("runtimes_ratings","critics","summary"))
-# dbDisconnect(database); rm(database)
+dbDisconnect(database); rm(database)
+
+
 
 # headerhtml <- '<!DOCTYPE HTML>
 # <link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">'

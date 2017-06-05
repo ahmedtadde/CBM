@@ -1,7 +1,7 @@
 source('functions.R')
 libraries()
 
-
+all.time.ranking.data <- get.all.time.ranking.data()
 
 studios <- c(
   "All","Dimension Films","Disney","DreamWorks","Fine Line","Fox",
@@ -26,10 +26,10 @@ uiInputOptions <- list(
   ),
   
   "rankMetrics" = c(
-    "Year" = "Year",
-    "Overall Critical Reception" = "overall_score",
-    "Overall Box Office Performance" = "bo_score",
-    "Critics Tomatometer"="critics_score",
+    "Overal Score Index" = "overall_score",
+    "Overall Critical Reception" = "critical_score",
+    "Overall Box Office Performance Index" = "bo_score",
+    "Critics Tomatometer"="rt",
     "Metascore" = "Metascore",
     "IMDB" = "imdbRating",
     "Budget" = "budget",
@@ -37,10 +37,10 @@ uiInputOptions <- list(
     "Domestic Box Office Gross" = "domestic_BO",
     "Foreign Box Office Gross" = "foreign_BO",
     "International Box Office Gross" = "international_BO",
-    "International Box Office Score" = "international_BO_score",
-    "Weekly per Theater Averages" = "weekly_per_theater_gross_avgs_score",
-    "Weekly Grosses as % of Opening Week" = "weekly_percent_gross_changes_score" ,
-    "Weekly Ranking" = "weekly_ranks_score",
+    "International Box Office Index" = "international_BO_score",
+    "Weekly per Theater Averages Index" = "weekly_per_theater_gross_avgs_score",
+    "Weekly Grosses as % of Opening Week Index" = "weekly_percent_gross_changes_score" ,
+    "Weekly Ranking Index" = "weekly_ranks_score",
     "Domestic Gross over Openning Week"='domestic_over_ow',
     "Domestic Gross over Budget"='domestic_over_budget',
     "Foreign Gross over Budget"='foreign_over_budget',

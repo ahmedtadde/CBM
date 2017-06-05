@@ -1,0 +1,23 @@
+<div class = "ui container raised segment">
+  <div class="ui three column doubling stackable grid container">
+    <div class="column">
+      {{ first.movie }}
+    </div>
+    <div class="column">
+    </div>
+    <div class="column">
+      {{second.movie}}
+    </div>
+  </div> 
+  
+  <div class="ui three column doubling stackable grid container">
+    <div class="column">
+      {{ htmlOutput("first.movie.poster") }}
+    </div>
+    <div class="column">
+    </div>
+    <div class="column">
+      {{htmlOutput("second.movie.poster")}}
+    </div>
+  </div> 
+</div>

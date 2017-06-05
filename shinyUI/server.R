@@ -294,7 +294,7 @@ shinyServer(function(input, output) {
   # })
   
 
-  GET.Filtered.Data <- reactive({
+  get.filtered.data <- reactive({
 
     database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
     summary <- data.table(dbGetQuery(database, 'SELECT * FROM summaries'))[,
@@ -303,18 +303,25 @@ shinyServer(function(input, output) {
                                                                              get.release.months(Released)
                                                                            )
                                                                            ]
-
-    runtimes_ratings <- data.table((dbGetQuery(database, 'SELECT imdbID, runtime_coef  FROM boMetrics')))
+    
+    bo <- data.table((dbGetQuery(database, 'SELECT *  FROM boMetrics')))
     critics <- data.table(dbGetQuery(database, 'SELECT imdbID, Metascore, "Rotten Tomatoes", imdbRating FROM critics'))
     setnames(critics, names(critics),  c("imdbID","Metascore","rt","imdbRating"))
+    scores <- data.table(dbGetQuery(database, 'SELECT imdbID, critical_score, overall_score from scoring'))
 
     setkey(summary, imdbID)
-    setkey(runtimes_ratings, imdbID)
+    setkey(bo, imdbID)
     setkey(critics, imdbID)
-    data <- summary[runtimes_ratings, nomatch = 0][critics, nomatch = 0]
-    rm(list=c("runtimes_ratings","critics","summary"))
+    setkey(scores, imdbID)
+    
+    data <- summary[bo, nomatch = 0][critics, nomatch = 0][scores, nomatch = 0]
+    data <- data[!is.infinite(overall_score) | !is.infinite(bo_score)]
+    data[, critical_score := set.critical.reception.range(critical_score)
+         ][, grade := as.character(overall.scores.to.grades(overall_score))]
+    
+    rm(list=c("bo","critics","summary","scores"))
     dbDisconnect(database); rm(database)
-
+    
     data <- data %>%
       filter.by.ip(input$ip) %>%
       filter.by.studio(input$studio) %>%
@@ -328,31 +335,78 @@ shinyServer(function(input, output) {
 
 
     if (is.null(data) | dim(data)[1] == 0) return(NULL)
+    
+    metrics <- get.ranking.metrics(input$rankBy)
+    if (is.null(metrics)) return(data)
+    
+    setkeyv(data, metrics)
+    
+    data[, ranking := c(dim(data)[1]:1)]
     return(data)
+    
+    
 
   })
 
 
 
-  output$filterRankOutput <- renderUI({
-    if(is.null(GET.Filtered.Data())) return("DATA CAME BACK NULL YO! FIX IT!!!")
+  output$filter.rank <- renderUI({
+    if(is.null(get.filtered.data())){
+      return(HTML(render.404.card.template()))
+    } 
 
-    foreach(k=1:dim(GET.Filtered.Data())[1], .combine = c)%do%{
-      return(render.filterRankTemplate(GET.Filtered.Data()[k]))
+    foreach(k=1:dim(get.filtered.data())[1], .combine = c)%do%{
+      if(is.null(input$rankBy)) return(render.filter.rank.template(get.filtered.data()[k], input$rankBy))
+      return(render.filter.rank.template(get.filtered.data()[ranking == k], input$rankBy))
     } -> htmlBlob
 
-    HTML(paste0("\n",htmlBlob,"\n"))
+    return(HTML(paste0("\n",htmlBlob,"\n")))
 
 
 
   })
   
   
+  output$all.time.ranking.table <- renderUI({
+    foreach(k=1:dim(all.time.ranking.data)[1], .combine = c)%do%{
+      return(render.all.time.ranking.table.template(all.time.ranking.data[ranking == k]))
+    } -> htmlBlob
+    HTML(paste0("\n",htmlBlob,"\n"))
+  })
+  
+  output$first.movie.poster <- renderUI({
+    if(is.null(input$first.movie)) return(NULL)
+    if(is.null(get.filtered.data())) return(HTML(render.404.card.template()))
+    
+    data <- all.time.ranking.data[title == input$first.movie]
+    
+    if(is.null(data)) return(NULL)
+    if(dim(data)[1] == 0) return(NULL)
+    
+    
+    HTML(render.compare.poster.template(data))
+  })
+  
+  output$second.movie.poster <- renderUI({
+    if(is.null(input$second.movie)) return(NULL)
+    if(is.null(get.filtered.data())) return(HTML(render.404.card.template()))
+    
+    
+    data <- all.time.ranking.data[title == input$second.movie]
+    
+    if(is.null(data)) return(NULL)
+    if(dim(data)[1] == 0) return(NULL)
+  
+    
+    HTML(render.compare.poster.template(data))
+  })
+
+  
   # output$reports <- renderUI({
-  #   if(is.null(GET.Filtered.Data())) return("DATA CAME BACK NULL YO! FIX IT!!!")
+  #   if(is.null(get.filtered.data())) return("DATA CAME BACK NULL YO! FIX IT!!!")
   #   
-  #   foreach(k=1:dim(GET.Filtered.Data())[1], .combine = c)%do%{
-  #     return(render.rank.report(GET.Filtered.Data()[k]))
+  #   foreach(k=1:dim(get.filtered.data())[1], .combine = c)%do%{
+  #     return(render.rank.report(get.filtered.data()[k]))
   #   } -> htmlBlob
   #   
   #   
