@@ -2,22 +2,43 @@ source('functions.R')
 libraries()
 
 database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
-ranks <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_ranks')), imdbID)
-summary <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)
-data <- summary[ranks, nomatch=0][title %in% c("The Dark Knight", "Logan")][,c(2,10:18,4:9)]
-data <- melt(data, id.vars = "title", variable.name ="week", value.name = "rank")
-data[, week:= foreach(i= 1:length(data$week), .combine = c) %do%{return(as.numeric(stri_split_fixed(data$week[i], "_")[[1]][2]))}]
+data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM boMetrics')), imdbID)
+# data <- setnames(data[,c(4,2,3,5,6)], c("imdbRating","score") ,c("IMDB", "Critical Reception"))
+# data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data[,IMDB:= 10*IMDB], nomatch = 0]
+# data <- setkey(data[, imdbID := NULL ], title)[title %in% c("Man of Steel", "Logan")]
+# data <- setnames(data[title %in% c("Man of Steel", "Logan")], c("budget","domestic_BO","foreign_BO"), c("Budget","Domestic","Foreign"))
+# data[, c("Budget","Domestic","Foreign") := list(as.numeric(Budget), as.numeric(Domestic), as.numeric(Foreign))]
+# data <- melt(data, id.vars = "title", variable.name ="index", value.name = "value")
+# data[, title := factor(title, levels = c("Man of Steel", "Logan"), ordered = T)]
 
+dbDisconnect(database); rm(list = c("database"))
 
-dbDisconnect(database); rm(list = c("database","ranks","summary"))
-
-plot_ly(data,
-        x = ~week,
-        y = ~rank,
-        color = ~title,
-        colors = c("The Dark Knight"="red","Logan"="blue"),
-        type = 'scatter', mode = 'lines+markers'
-        ) %>% layout(yaxis = list(autorange = "reversed")) -> p
+# data%>%
+#   ggplot(aes(source, value, fill = title)) +
+#   geom_bar(position="dodge", width = 0.5, stat="identity") +
+#   scale_y_continuous(labels = scales::dollar) +
+#   scale_x_discrete() +
+#   ggtitle("Critics Performance")+
+#   scale_fill_manual(values=c("#999999", "#E69F00"))+
+#   geom_text(
+#     aes(label=paste0(value,"%")),
+#     vjust= -0.8,
+#     color="black", position=position_dodge(.5), size = 3,fontface = "bold") +
+#   theme_classic() +
+#   theme(
+# 
+#     axis.title.x = element_blank(),
+#     axis.line.x = element_blank(),
+#     axis.ticks.x = element_blank(),
+#     axis.text.x = element_text(color ="black", face = "bold", size = 10),
+# 
+#     axis.title.y = element_blank(),
+#     axis.line.y = element_blank(),
+#     axis.ticks.y = element_blank(),
+#     axis.text.y = element_blank(),
+# 
+#     legend.position="none"
+#   ) -> p
 
 
 # headerhtml <- '<!DOCTYPE HTML>

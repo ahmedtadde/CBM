@@ -7,6 +7,9 @@ libraries <- function(){
   p_load(foreach)
   p_load(DBI)
   p_load(RSQLite)
+  p_load(ggplot2)
+  p_load(ggthemes)
+  p_load(magrittr)
   
 }
 
@@ -167,11 +170,12 @@ filter.by.rt <- function(data, rts){
 }
 
 
-render.compare.poster.template <- function(data){
-  # if(is.null(data)) return('')
+render.compare.poster.template <- function(data, color){
   
   paste0(
     shiny::htmlTemplate("./comparePosterTemplate.html",
+                        title = data$title,
+                        color = color,
                         release = data$Release,
                         runtime = data$runtime,
                         poster = data$Poster,

@@ -95,9 +95,7 @@ shinyUI(
         src="https://code.jquery.com/jquery-3.2.1.min.js",
         integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=",
         crossorigin="anonymous"
-      ),
-      tags$script(src="https://cdn.plot.ly/plotly-latest.min.js"),
-      tags$script(src="index.js")
+      )
     ),
     inverse = TRUE,
     selected = "Filter and Rank",
