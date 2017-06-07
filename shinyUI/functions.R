@@ -292,6 +292,18 @@ render.404.card.template <- function(){
   paste0(shiny::htmlTemplate("./404cardTemplate.html"))
 }
 
+new.col.names.for.bo.metrics.data <- function(data){
+ 
+   foreach(i=1:length(names(data)), .combine = c) %do%{
+    foreach(j=1:length(uiInputOptions$rankMetrics), .combine = c) %do%{
+      if(names(data)[i] == unname(uiInputOptions$rankMetrics[j])){
+        return(names(uiInputOptions$rankMetrics)[j])
+      }
+    } -> new.col.name
+  } -> new.col.names; rm(i);rm(j); rm(new.col.name)
+  
+  return(new.col.names)
+}
 
 
 

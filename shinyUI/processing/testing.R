@@ -2,46 +2,45 @@ source('functions.R')
 libraries()
 
 database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
-data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM boMetrics')), imdbID)
-# data <- setnames(data[,c(4,2,3,5,6)], c("imdbRating","score") ,c("IMDB", "Critical Reception"))
-# data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data[,IMDB:= 10*IMDB], nomatch = 0]
-# data <- setkey(data[, imdbID := NULL ], title)[title %in% c("Man of Steel", "Logan")]
-# data <- setnames(data[title %in% c("Man of Steel", "Logan")], c("budget","domestic_BO","foreign_BO"), c("Budget","Domestic","Foreign"))
-# data[, c("Budget","Domestic","Foreign") := list(as.numeric(Budget), as.numeric(Domestic), as.numeric(Foreign))]
-# data <- melt(data, id.vars = "title", variable.name ="index", value.name = "value")
-# data[, title := factor(title, levels = c("Man of Steel", "Logan"), ordered = T)]
-
+data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_ranks')), imdbID)[, ID := NULL]
+data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data, nomatch = 0]
+data <- setkey(data[, imdbID := NULL ], title)[title %in% c("Man of Steel", "Logan"), c(1,8:16,2:7)]
+data <- data[, lapply(.SD, as.numeric), .SDcols = grepl("week_", names(data), fixed = T) ][, title:= data$title]
+data <- melt(data, id.vars = "title", variable.name = "week", value.name = "rank")
+data <- data[, week:= foreach(k=1:length(data$week), .combine = c) %do%{return(as.numeric(stri_split_fixed(data$week[k], "_")[[1]][2]))}]
+data <- data[, title := factor(title, levels = c("Man of Steel", "Logan"), ordered = T)][!is.na(rank)]
 dbDisconnect(database); rm(list = c("database"))
 
-# data%>%
-#   ggplot(aes(source, value, fill = title)) +
-#   geom_bar(position="dodge", width = 0.5, stat="identity") +
-#   scale_y_continuous(labels = scales::dollar) +
-#   scale_x_discrete() +
-#   ggtitle("Critics Performance")+
-#   scale_fill_manual(values=c("#999999", "#E69F00"))+
-#   geom_text(
-#     aes(label=paste0(value,"%")),
-#     vjust= -0.8,
-#     color="black", position=position_dodge(.5), size = 3,fontface = "bold") +
-#   theme_classic() +
-#   theme(
-# 
-#     axis.title.x = element_blank(),
-#     axis.line.x = element_blank(),
-#     axis.ticks.x = element_blank(),
-#     axis.text.x = element_text(color ="black", face = "bold", size = 10),
-# 
-#     axis.title.y = element_blank(),
-#     axis.line.y = element_blank(),
-#     axis.ticks.y = element_blank(),
-#     axis.text.y = element_blank(),
-# 
-#     legend.position="none"
-#   ) -> p
+data%>%
+  ggplot(aes(week, rank, color = title)) +
+  geom_point() + geom_line()+
+  ggtitle("Weekly Ranking")+
+  scale_y_reverse()+
+  scale_x_continuous(limits = c(1,15), breaks = c(1:15))+
+  scale_color_manual(values=c("red", "blue"))+
+  geom_text(
+    aes(label= rank),
+    vjust= -0.8,
+    color="black", size = 2,fontface = "bold") +
+  theme_classic() +
+  theme(
+
+    axis.title.x =  element_blank(),
+    axis.line.x = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.text.x = element_text(color ="black", face = "bold", size = 8),
+
+    axis.title.y = element_blank(),
+    axis.line.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    axis.text.y = element_blank(),
+
+    legend.position="none",
+    plot.title = element_text(hjust = 0.5)
+  ) -> p
 
 
-# headerhtml <- '<!DOCTYPE HTML>
+# # headerhtml <- '<!DOCTYPE HTML>
 # <link rel="stylesheet" type ="text/css" href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css">'
 
 # scripts <- '<script src="https://code.jquery.com/jquery-3.1.1.min.js"

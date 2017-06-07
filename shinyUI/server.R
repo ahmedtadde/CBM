@@ -125,8 +125,6 @@ shinyServer(function(input, output) {
     data%>%
       ggplot(aes(bo, value, fill = title)) + 
       geom_bar(position="dodge", width = 0.5, stat="identity") + 
-      scale_y_continuous(labels = scales::dollar) +
-      scale_x_discrete() +
       ggtitle("Budget & Revenues")+
       scale_fill_manual(values=c("red", "blue"))+
       geom_text(
@@ -169,8 +167,6 @@ shinyServer(function(input, output) {
     data%>%
       ggplot(aes(source, value, fill = title)) +
       geom_bar(position="dodge", width = 0.5, stat="identity") +
-      scale_y_continuous(labels = scales::dollar) +
-      scale_x_discrete() +
       ggtitle("Critical Performance")+
       scale_fill_manual(values=c("red", "blue"))+
       geom_text(
@@ -195,6 +191,183 @@ shinyServer(function(input, output) {
         
       )
   })
+  
+  get.bo.metrics.plots.data <- reactive({
+    
+    if(is.null(input$first.movie)) return(NULL)
+    if(is.null(input$second.movie)) return(NULL)
+    
+    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM boMetrics')), imdbID)
+    data <- data[, which(names(data) %notin% c("ID","rating_coef","runtime_coef")), with = FALSE]
+    data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data, nomatch = 0]
+    data <- setkey(data[, imdbID := NULL ], title)[title %in% c(input$first.movie, input$second.movie)]
+
+    first.plot.data <- data[,.(title, domestic_over_ow, international_BO_score, bo_score)]
+    second.plot.data <- data[,.(title,ow_over_budget,domestic_over_budget, foreign_over_budget)]
+    third.plot.data <- data[,.(title,weekly_per_theater_gross_avgs_score,
+                               weekly_percent_gross_changes_score,
+                               weekly_ranks_score)]
+
+    rm(data)
+    setnames(first.plot.data,
+             names(first.plot.data)[which(names(first.plot.data) %notin% c("imdbID","title"))],
+             new.col.names.for.bo.metrics.data(first.plot.data))
+
+    setnames(third.plot.data,
+             names(third.plot.data)[which(names(third.plot.data) %notin% c("imdbID","title"))],
+             new.col.names.for.bo.metrics.data(third.plot.data))
+
+    setnames(second.plot.data,
+             names(second.plot.data)[which(names(second.plot.data) %notin% c("imdbID","title"))],
+             new.col.names.for.bo.metrics.data(second.plot.data))
+
+    first.plot.data <- melt(first.plot.data, id.vars = "title", variable.name ="index", value.name = "value")
+    first.plot.data[, title := factor(title, levels = c(input$first.movie, input$second.movie), ordered = T)]
+
+    second.plot.data <- melt(second.plot.data, id.vars = "title", variable.name ="index", value.name = "value")
+    second.plot.data[, title := factor(title, levels = c(input$first.movie, input$second.movie), ordered = T)]
+
+    third.plot.data <- melt(third.plot.data, id.vars = "title", variable.name ="index", value.name = "value")
+    third.plot.data[, title := factor(title, levels = c(input$first.movie, input$second.movie), ordered = T)]
+
+    dbDisconnect(database); rm(list = c("database"))
+    
+    if(is.null(first.plot.data) | is.null(second.plot.data) | is.null(third.plot.data)) return(NULL)
+    
+    return(list("first" = first.plot.data, "second" = second.plot.data, "third"= third.plot.data))
+  })
+  
+  output$first.bo.metrics.plot <- renderPlot({
+    if(is.null(get.bo.metrics.plots.data())) return(NULL)
+    
+    get.bo.metrics.plots.data()$first %>%
+      ggplot(aes(index, value, fill = title)) +
+      geom_bar(position="dodge", width = 0.3, stat="identity") +
+      scale_fill_manual(values=c("red", "blue"))+
+      geom_text(
+        aes(label=value),
+        vjust= -0.8,
+        color="black", position=position_dodge(.5), size = 3,fontface = "bold") +
+      theme_classic() +
+      theme(
+        
+        axis.title.x = element_blank(),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_text(color ="black", face = "bold", size = 7),
+        
+        axis.title.y = element_blank(),
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        
+        legend.position="none"
+      )
+  })
+  
+  output$second.bo.metrics.plot <- renderPlot({
+    if(is.null(get.bo.metrics.plots.data())) return(NULL)
+    
+    get.bo.metrics.plots.data()$second %>%
+      ggplot(aes(index, value, fill = title)) +
+      geom_bar(position="dodge", width = 0.3, stat="identity") +
+      scale_fill_manual(values=c("red", "blue"))+
+      geom_text(
+        aes(label=value),
+        vjust= -0.8,
+        color="black", position=position_dodge(.5), size = 3,fontface = "bold") +
+      theme_classic() +
+      theme(
+        
+        axis.title.x = element_blank(),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_text(color ="black", face = "bold", size = 7),
+        
+        axis.title.y = element_blank(),
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        
+        legend.position="none"
+      )
+  })
+  
+  output$third.bo.metrics.plot <- renderPlot({
+    if(is.null(get.bo.metrics.plots.data())) return(NULL)
+    
+    get.bo.metrics.plots.data()$third %>%
+      ggplot(aes(index, value, fill = title)) +
+      geom_bar(position="dodge", width = 0.3, stat="identity") +
+      scale_fill_manual(values=c("red", "blue"))+
+      geom_text(
+        aes(label=value),
+        vjust= -0.8,
+        color="black", position=position_dodge(.5), size = 3,fontface = "bold") +
+      theme_classic() +
+      theme(
+        
+        axis.title.x = element_blank(),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_text(color ="black", face = "bold", size =7),
+        
+        axis.title.y = element_blank(),
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        
+        legend.position="none"
+      )
+  })
+  
+  output$weekly.ranking.plot <- renderPlot({
+    if(is.null(input$first.movie)) return(NULL)
+    if(is.null(input$second.movie)) return(NULL)
+    
+    
+    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_ranks')), imdbID)[, ID := NULL]
+    data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data, nomatch = 0]
+    data <- setkey(data[, imdbID := NULL ], title)[title %in% c(input$first.movie, input$second.movie), c(1,8:16,2:7)]
+    data <- data[, lapply(.SD, as.numeric), .SDcols = grepl("week_", names(data), fixed = T) ][, title:= data$title]
+    data <- melt(data, id.vars = "title", variable.name = "week", value.name = "rank")
+    data <- data[, week:= foreach(k=1:length(data$week), .combine = c) %do%{return(as.numeric(stri_split_fixed(data$week[k], "_")[[1]][2]))}]
+    data <- data[, title := factor(title, levels = c(input$first.movie, input$second.movie), ordered = T)][!is.na(rank)]
+    dbDisconnect(database); rm(list = c("database"))
+    
+    data%>%
+      ggplot(aes(week, rank, color = title)) +
+      geom_point() + geom_line()+
+      ggtitle("Weekly Ranking")+
+      scale_y_reverse()+
+      scale_x_continuous(limits = c(1,15), breaks = c(1:15))+
+      scale_color_manual(values=c("red", "blue"))+
+      geom_text(
+        aes(label= rank),
+        vjust= -0.8,
+        color="black", size = 3.5,fontface = "bold") +
+      theme_classic() +
+      theme(
+        
+        axis.title.x =  element_blank(),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_text(color ="black", face = "bold", size = 8),
+        
+        axis.title.y = element_blank(),
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(),
+        
+        legend.position="none",
+        plot.title = element_text(hjust = 0.5)
+      )
+  })
+  
+  output$weekly.avgs.plot <- renderPlot({})
+  
   
   
 })
