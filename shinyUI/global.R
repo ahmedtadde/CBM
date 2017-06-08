@@ -3,6 +3,11 @@ libraries()
 
 all.time.ranking.data <- get.all.time.ranking.data()
 
+# legend.colors <- list(
+#   "first" = "http://www.colorhexa.com/023373.png",
+#   "average" = "http://www.colorhexa.com/E89E01.png",
+#   "second" = "http://www.colorhexa.com/73182c.png"
+# )
 studios <- c(
   "All","Dimension Films","Disney","DreamWorks","Fine Line","Fox",
   "Lionsgate","MGM","Miramax","New Line","Paramount","Sony",
