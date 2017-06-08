@@ -366,7 +366,93 @@ shinyServer(function(input, output) {
       )
   })
   
-  output$weekly.avgs.plot <- renderPlot({})
+  output$weekly.avgs.plot <- renderPlot({
+    if(is.null(input$first.movie)) return(NULL)
+    if(is.null(input$second.movie)) return(NULL)
+    
+    
+    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_avgs')), imdbID)[, ID := NULL]
+    data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data, nomatch = 0]
+    data <- setkey(data[, imdbID := NULL ], title)[title %in% c(input$first.movie, input$second.movie), c(1,8:16,2:7)]
+    data <- data[, lapply(.SD, as.numeric), .SDcols = grepl("week_", names(data), fixed = T) ][, title:= data$title]
+    data <- melt(data, id.vars = "title", variable.name = "week", value.name = "avg")
+    data <- data[, week:= foreach(k=1:length(data$week), .combine = c) %do%{return(as.numeric(stri_split_fixed(data$week[k], "_")[[1]][2]))}]
+    data <- data[, title := factor(title, levels = c(input$first.movie, input$second.movie), ordered = T)][!is.na(avg)]
+    dbDisconnect(database); rm(list = c("database"))
+    
+    data%>%
+      ggplot(aes(week, avg, color = title)) +
+      geom_point() + geom_line()+
+      ggtitle("Weekly Averages per Theather")+
+      scale_y_continuous(limits = c(0,60000), breaks = seq(0, 60000,10000))+
+      scale_x_continuous(limits = c(1,15), breaks = c(1:15))+
+      scale_color_manual(values=c("red", "blue"))+
+      # geom_text(
+      #   aes(label= avg),
+      #   vjust= -0.8,
+      #   color="black", size = 1,fontface = "bold") +
+      theme_classic() +
+      theme(
+        
+        axis.title.x =  element_blank(),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_text(color ="black", face = "bold", size = 8),
+        
+        axis.title.y = element_blank(),
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        axis.text.y = element_text(color ="black", face = "bold", size = 8),
+        
+        legend.position="none",
+        plot.title = element_text(hjust = 0.5)
+      )
+  })
+  
+  output$weekly.percents.plot <- renderPlot({
+    if(is.null(input$first.movie)) return(NULL)
+    if(is.null(input$second.movie)) return(NULL)
+    
+    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_percents')), imdbID)[, ID := NULL]
+    data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data, nomatch = 0]
+    data <- setkey(data[, imdbID := NULL ], title)[title %in% c(c("Man of Steel", "Logan")), c(1,8:16,2:7)]
+    data <- data[, lapply(.SD, as.numeric), .SDcols = grepl("week_", names(data), fixed = T) ][, title:= data$title]
+    data <- melt(data, id.vars = "title", variable.name = "week", value.name = "percent")[, percent:= round(100*percent,2)]
+    data <- data[, week:= foreach(k=1:length(data$week), .combine = c) %do%{return(as.numeric(stri_split_fixed(data$week[k], "_")[[1]][2]))}]
+    data <- data[, title := factor(title, levels = c("Man of Steel", "Logan"), ordered = T)][!is.na(percent)]
+    dbDisconnect(database); rm(list = c("database"))
+    
+    data%>%
+      ggplot(aes(week,percent, color = title)) +
+      geom_point() + geom_line()+
+      ggtitle("Weekly Gross as % of Opening Week")+
+      scale_x_continuous(limits = c(1,15), breaks = c(1:15))+
+      scale_y_continuous(limits = c(0,100), breaks = seq(0,100,10))+
+      scale_color_manual(values=c("red", "blue"))+
+      # geom_text(
+      #   aes(label= percent),
+      #   vjust= -0.8,
+      #   color="black", size = 2,fontface = "bold") +
+      theme_classic() +
+      theme(
+        
+        axis.title.x =  element_blank(),
+        axis.line.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.text.x = element_text(color ="black", face = "bold", size = 8),
+        
+        axis.title.y = element_blank(),
+        axis.line.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        # axis.text.y  = element_blank(),
+        axis.text.y = element_text(color ="black", face = "bold", size = 8),
+        
+        legend.position="none",
+        plot.title = element_text(hjust = 0.5)
+      )
+  })
   
   
   
