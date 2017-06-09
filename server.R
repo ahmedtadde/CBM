@@ -2,7 +2,7 @@ shinyServer(function(input, output) {
   
   get.filtered.data <- reactive({
 
-    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    database <- dbConnect(RSQLite::SQLite(), "./ETL/DATABASE.db")
     summary <- data.table(dbGetQuery(database, 'SELECT * FROM summaries'))[,
                                                                            c("distributor","month") := list(
                                                                              set.distributor.names(distributor),
@@ -72,12 +72,30 @@ shinyServer(function(input, output) {
   })
   
   
-  output$all.time.ranking.table <- renderUI({
+  output$all.time.ranking.rows.of.three <- renderUI({
     if(is.null(all.time.ranking.data)) return(NULL)
-    foreach(k=1:dim(all.time.ranking.data)[1], .combine = c)%do%{
-      return(render.all.time.ranking.table.template(all.time.ranking.data[ranking == k]))
-    } -> htmlBlob
-    HTML(paste0("\n",htmlBlob,"\n"))
+    rows.of.three <- round(dim(all.time.ranking.data)[1]/3)
+    
+    foreach(k=1:rows.of.three, .combine = c)%do%{
+      row.item.indexes <- c(3*k-2,3*k-1,3*k)
+      return(render.all.time.ranking.template(all.time.ranking.data[ranking %in% row.item.indexes]))
+    } -> rows.of.three
+    
+    HTML(paste0("\n",rows.of.three, "\n"))
+  })
+  
+  
+  output$all.time.ranking.last.row <- renderUI({
+    if(is.null(all.time.ranking.data)) return(NULL)
+    
+    rows.of.three <- round(dim(all.time.ranking.data)[1]/3)
+    last.row <- dim(all.time.ranking.data)[1] - 3*rows.of.three
+    
+    foreach(k=1:last.row, .combine = c)%do%{
+      return(render.all.time.ranking.template(all.time.ranking.data[ranking ==  rows.of.three*3 + k]))
+    } -> last.row
+    
+    HTML(paste0("<br>","\n",last.row, "\n","<br>"))
   })
   
   
@@ -113,7 +131,7 @@ shinyServer(function(input, output) {
     if(is.null(input$first.movie)) return(NULL)
     if(is.null(input$second.movie)) return(NULL)
     
-    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    database <- dbConnect(RSQLite::SQLite(), "./ETL/DATABASE.db")
     data <- data.table(dbGetQuery(database, 'SELECT title, budget, domestic_BO, foreign_BO FROM summaries'))
     data <- setnames(data, c("budget","domestic_BO","foreign_BO"), c("Budget","Domestic","Foreign"))
     data[, c("Budget","Domestic","Foreign") := list(as.numeric(Budget), as.numeric(Domestic), as.numeric(Foreign))]
@@ -130,8 +148,8 @@ shinyServer(function(input, output) {
       ggtitle("Budget & Revenues (avg accros movies in yellow)")+
       scale_fill_manual(values=c("#73182C","#023373","#E89E01"))+
       geom_text(
-        aes(label=paste0("$", format(round(value/10^6,2), big.mark = ","), "M")),
-        vjust= -1,
+        aes(label=paste0("$", format(round(value/10^6,1), big.mark = ","), "M")),
+        vjust= -0.8,
         color="black", position=position_dodge(.55), size = 3,fontface = "bold") + 
       theme_economist() + 
       theme(
@@ -156,14 +174,14 @@ shinyServer(function(input, output) {
     if(is.null(input$first.movie)) return(NULL)
     if(is.null(input$second.movie)) return(NULL)
     
-    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    database <- dbConnect(RSQLite::SQLite(), "./ETL//DATABASE.db")
     
     data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM critics')), imdbID)
     data <- setnames(data[,c(4,2,3,5,6)], c("imdbRating","score") ,c("IMDB", "Critical Reception"))
     data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data[,IMDB:= 10*IMDB], nomatch = 0]
     data <- setkey(data[, imdbID := NULL ], title)
     average <- data[, lapply(.SD, mean, na.rm = T), .SDcols = c("Metascore","Rotten Tomatoes","IMDB", "Critical Reception")]
-    average <- average[, lapply(.SD, round, 2)][,title:= "Average"][,c(5,1:4)]
+    average <- average[, lapply(.SD, round, 1)][,title:= "Average"][,c(5,1:4)]
     data <- rbindlist(list(data, average))[title %in% c(input$first.movie, input$second.movie, "Average")]; rm(average)
     data <- melt(data, id.vars = "title", variable.name ="source", value.name = "value")
     data[, title := factor(title, levels = c(input$first.movie, input$second.movie, "Average"), ordered = T)]
@@ -176,8 +194,8 @@ shinyServer(function(input, output) {
       ggtitle("Critical Performance")+
       scale_fill_manual(values=c("#73182C","#023373","#E89E01"))+
       geom_text(
-        aes(label=paste0(value,"%")),
-        vjust= -1,
+        aes(label=paste0(round(value,1),"%")),
+        vjust= -0.8,
         color="black", position=position_dodge(.55), size = 3,fontface = "bold") +
       theme_economist() +
       theme(
@@ -203,28 +221,35 @@ shinyServer(function(input, output) {
     if(is.null(input$first.movie)) return(NULL)
     if(is.null(input$second.movie)) return(NULL)
     
-    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    database <- dbConnect(RSQLite::SQLite(), "./ETL//DATABASE.db")
     data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM boMetrics')), imdbID)
     data <- data[, which(names(data) %notin% c("ID","rating_coef","runtime_coef")), with = FALSE]
     data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data, nomatch = 0][!is.infinite(bo_score)]
     average <- data[, lapply(.SD, mean, na.rm = T), .SDcols = names(data)[which(names(data) %notin% c("imdbID","title"))]]
-    average <- average[, lapply(.SD, round, 2)][,title:= "Average"][,c(10,1:9)]
+    average <- average[,title:= "Average"][,c(10,1:9)]
     data <- rbindlist(list(data[, imdbID:= NULL], average))[title %in% c(input$first.movie, input$second.movie, "Average")]; rm(average)
 
-    first.plot.data <- data[,.(title, domestic_over_ow, international_BO_score, bo_score)]
-    second.plot.data <- data[,.(title,ow_over_budget,domestic_over_budget, foreign_over_budget)]
-    third.plot.data <- data[,.(title,weekly_per_theater_gross_avgs_score,
+    first.plot.data <- data[,.(title, 
+                               weekly_ranks_score, 
                                weekly_percent_gross_changes_score,
-                               weekly_ranks_score)]
+                               international_BO_score, 
+                               bo_score
+                            )]
+    
+    
+    
+    second.plot.data <- data[,.(title,
+                                weekly_per_theater_gross_avgs_score,
+                                domestic_over_ow,
+                                ow_over_budget,
+                                domestic_over_budget,
+                                foreign_over_budget
+                            )]
 
     rm(data)
     setnames(first.plot.data,
              names(first.plot.data)[which(names(first.plot.data) %notin% c("title"))],
              new.col.names.for.bo.metrics.data(first.plot.data))
-
-    setnames(third.plot.data,
-             names(third.plot.data)[which(names(third.plot.data) %notin% c("title"))],
-             new.col.names.for.bo.metrics.data(third.plot.data))
 
     setnames(second.plot.data,
              names(second.plot.data)[which(names(second.plot.data) %notin% c("title"))],
@@ -236,34 +261,31 @@ shinyServer(function(input, output) {
     second.plot.data <- melt(second.plot.data, id.vars = "title", variable.name ="index", value.name = "value")
     second.plot.data[, title := factor(title, levels = c(input$first.movie, input$second.movie, "Average"), ordered = T)]
 
-    third.plot.data <- melt(third.plot.data, id.vars = "title", variable.name ="index", value.name = "value")
-    third.plot.data[, title := factor(title, levels = c(input$first.movie, input$second.movie, "Average"), ordered = T)]
-
     dbDisconnect(database); rm(list = c("database"))
     
-    if(is.null(first.plot.data) | is.null(second.plot.data) | is.null(third.plot.data)) return(NULL)
+    if(is.null(first.plot.data) | is.null(second.plot.data)) return(NULL)
     
-    return(list("first" = first.plot.data, "second" = second.plot.data, "third"= third.plot.data))
+    return(list("first" = first.plot.data, "second" = second.plot.data))
   })
   
   output$first.bo.metrics.plot <- renderPlot({
     if(is.null(get.bo.metrics.plots.data())) return(NULL)
     
-    get.bo.metrics.plots.data()$first[, value:=round(value,2)] %>%
+    get.bo.metrics.plots.data()$first[, value:=round(value,1)] %>%
       ggplot(aes(index, value, fill = title)) +
-      geom_bar(position="dodge", width = 0.3, stat="identity") +
+      geom_bar(position="dodge", width = 0.55, stat="identity") +
       scale_fill_manual(values=c("#73182C","#023373","#E89E01"))+
       geom_text(
         aes(label=value),
         vjust= -1,
-        color="black", position=position_dodge(.3), size = 3,fontface = "bold") +
-      theme_classic() +
+        color="black", position=position_dodge(.55), size = 3,fontface = "bold") +
+      theme_economist() +
       theme(
         
         axis.title.x = element_blank(),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
-        axis.text.x = element_text(color ="black", face = "bold", size = 7),
+        axis.text.x = element_text(color ="black", face = "bold", size = 10),
         
         axis.title.y = element_blank(),
         axis.line.y = element_blank(),
@@ -277,49 +299,21 @@ shinyServer(function(input, output) {
   output$second.bo.metrics.plot <- renderPlot({
     if(is.null(get.bo.metrics.plots.data())) return(NULL)
     
-    get.bo.metrics.plots.data()$second[, value:=round(value,2)] %>%
+    get.bo.metrics.plots.data()$second[, value:=round(value,1)] %>%
       ggplot(aes(index, value, fill = title)) +
-      geom_bar(position="dodge", width = 0.3, stat="identity") +
+      geom_bar(position="dodge", width = 0.55, stat="identity") +
       scale_fill_manual(values=c("#73182C","#023373","#E89E01"))+
       geom_text(
         aes(label=value),
         vjust= -1,
-        color="black", position=position_dodge(.3), size = 3,fontface = "bold") +
-      theme_classic() +
+        color="black", position=position_dodge(.55), size = 3,fontface = "bold") +
+      theme_economist() +
       theme(
         
         axis.title.x = element_blank(),
         axis.line.x = element_blank(),
         axis.ticks.x = element_blank(),
-        axis.text.x = element_text(color ="black", face = "bold", size = 7),
-        
-        axis.title.y = element_blank(),
-        axis.line.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        axis.text.y = element_blank(),
-        
-        legend.position="none"
-      )
-  })
-  
-  output$third.bo.metrics.plot <- renderPlot({
-    if(is.null(get.bo.metrics.plots.data())) return(NULL)
-    
-    get.bo.metrics.plots.data()$third[, value:=round(value,2)] %>%
-      ggplot(aes(index, value, fill = title)) +
-      geom_bar(position="dodge", width = 0.3, stat="identity") +
-      scale_fill_manual(values=c("#73182C","#023373","#E89E01"))+
-      geom_text(
-        aes(label=value),
-        vjust= -1,
-        color="black", position=position_dodge(.3), size = 3,fontface = "bold") +
-      theme_classic() +
-      theme(
-        
-        axis.title.x = element_blank(),
-        axis.line.x = element_blank(),
-        axis.ticks.x = element_blank(),
-        axis.text.x = element_text(color ="black", face = "bold", size =7),
+        axis.text.x = element_text(color ="black", face = "bold", size = 10),
         
         axis.title.y = element_blank(),
         axis.line.y = element_blank(),
@@ -335,7 +329,7 @@ shinyServer(function(input, output) {
     if(is.null(input$second.movie)) return(NULL)
     
     
-    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    database <- dbConnect(RSQLite::SQLite(), "./ETL//DATABASE.db")
     data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_ranks')), imdbID)[, ID := NULL]
     data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data, nomatch = 0]
     data <- setkey(data[, imdbID := NULL ], title)[, c(1,8:16,2:7)]
@@ -382,7 +376,7 @@ shinyServer(function(input, output) {
     if(is.null(input$second.movie)) return(NULL)
     
     
-    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    database <- dbConnect(RSQLite::SQLite(), "./ETL//DATABASE.db")
     data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_avgs')), imdbID)[, ID := NULL]
     data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data, nomatch = 0]
     data <- setkey(data[, imdbID := NULL ], title)[, c(1,8:16,2:7)]
@@ -429,7 +423,7 @@ shinyServer(function(input, output) {
     if(is.null(input$first.movie)) return(NULL)
     if(is.null(input$second.movie)) return(NULL)
     
-    database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+    database <- dbConnect(RSQLite::SQLite(), "./ETL//DATABASE.db")
     data <- setkey(data.table(dbGetQuery(database, 'SELECT * FROM weekly_percents')), imdbID)[, ID := NULL]
     data <- setkey(data.table(dbGetQuery(database, 'SELECT imdbID, title FROM summaries')), imdbID)[data, nomatch = 0]
     data <- setkey(data[, imdbID := NULL ], title)[, c(1,8:16,2:7)]

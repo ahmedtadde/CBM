@@ -1,20 +1,19 @@
 libraries <- function(){
-  library(pacman)
-  p_load(Hmisc)
-  p_load(stringi)
-  p_load(data.table)
-  p_load(shiny)
-  p_load(foreach)
-  p_load(DBI)
-  p_load(RSQLite)
-  p_load(ggplot2)
-  p_load(ggthemes)
-  p_load(magrittr)
+  library(Hmisc)
+  library(stringi)
+  library(magrittr)
+  library(data.table)
+  library(shiny)
+  library(foreach)
+  library(DBI)
+  library(RSQLite)
+  library(ggplot2)
+  library(ggthemes)
   
 }
 
 get.all.time.ranking.data <- function(){
-  database <- dbConnect(RSQLite::SQLite(), "../ETL/DATABASE.db")
+  database <- dbConnect(RSQLite::SQLite(), "./ETL/DATABASE.db")
   
   poster <- data.table(dbGetQuery(database, 'SELECT imdbID, Title, Poster, runtime, Released, rating FROM summaries'))
   scores <- data.table(dbGetQuery(database, 'SELECT imdbID,bo_score,critical_score,overall_score FROM scoring'))
@@ -277,14 +276,78 @@ render.filter.rank.template <- function(data,rank.by.metrics){
 }
 
 
-render.all.time.ranking.table.template <- function(data){
-  paste0(shiny::htmlTemplate("./rankingTableTemplate.html", 
-                             ranking = data$ranking,
-                             poster = data$Poster,
-                             Title = data$title,
-                             grade = data$grade,
-                             critics = data$critical_score,
-                             bo = data$bo_score))
+render.all.time.ranking.template <- function(data){
+  blank.poster <- 'http://www.ekik.uni-obuda.hu/sites/default/files/reszlegek/white.jpg'
+  if(dim(data)[1]==1){
+    paste0(shiny::htmlTemplate("./rankingTemplate.html", 
+                               row.item.1.ranking = data$ranking[1],
+                               row.item.1.poster = data$Poster[1],
+                               row.item.1.grade = data$grade[1],
+                               row.item.1.critics = data$critical_score[1],
+                               row.item.1.bo = data$bo_score[1],
+                               
+                               row.item.2.ranking = '',
+                               row.item.2.poster = blank.poster,
+                               row.item.2.grade = '',
+                               row.item.2.critics = '',
+                               row.item.2.bo = '',
+                               
+                               row.item.3.ranking = '',
+                               row.item.3.poster = blank.poster,
+                               row.item.3.grade = '',
+                               row.item.3.critics = '',
+                               row.item.3.bo = ''
+                               )
+    )
+    
+  }else if(dim(data)[1]==2){
+    paste0(shiny::htmlTemplate("./rankingTemplate.html", 
+                               row.item.1.ranking = data$ranking[1],
+                               row.item.1.poster = data$Poster[1],
+                               row.item.1.grade = data$grade[1],
+                               row.item.1.critics = data$critical_score[1],
+                               row.item.1.bo = data$bo_score[1],
+                               
+                               row.item.2.ranking = data$ranking[2],
+                               row.item.2.poster = data$Poster[2],
+                               row.item.2.grade = data$grade[2],
+                               row.item.2.critics = data$critical_score[2],
+                               row.item.2.bo = data$bo_score[2],
+                               
+                               row.item.3.ranking = '',
+                               row.item.3.poster = blank.poster,
+                               row.item.3.grade = '',
+                               row.item.3.critics = '',
+                               row.item.3.bo = ''
+                               )
+    )
+    
+  }else if(dim(data)[1]==3){
+    paste0(shiny::htmlTemplate("./rankingTemplate.html", 
+                               row.item.1.ranking = data$ranking[1],
+                               row.item.1.poster = data$Poster[1],
+                               row.item.1.grade = data$grade[1],
+                               row.item.1.critics = data$critical_score[1],
+                               row.item.1.bo = data$bo_score[1],
+                               
+                               row.item.2.ranking = data$ranking[2],
+                               row.item.2.poster = data$Poster[2],
+                               row.item.2.grade = data$grade[2],
+                               row.item.2.critics = data$critical_score[2],
+                               row.item.2.bo = data$bo_score[2],
+                               
+                               
+                               row.item.3.ranking = data$ranking[3],
+                               row.item.3.poster = data$Poster[3],
+                               row.item.3.grade = data$grade[3],
+                               row.item.3.critics = data$critical_score[3],
+                               row.item.3.bo = data$bo_score[3]
+                               )
+    )
+    
+  }else{
+    
+  }
 }
 
 

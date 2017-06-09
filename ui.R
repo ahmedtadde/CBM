@@ -90,6 +90,7 @@ shinyUI(
     title = "Comics Adaptations",
     tags$header(
       tags$link(rel="stylesheet", type="text/css", href="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.css"),
+      tags$link(rel="stylesheet", type="text/css", href="style.css"),
       tags$script(src="https://cdn.jsdelivr.net/semantic-ui/2.2.10/semantic.min.js"),
       tags$script(
         src="https://code.jquery.com/jquery-3.2.1.min.js",
@@ -116,9 +117,6 @@ shinyUI(
             ),
     
     tabPanel("Compare", htmlTemplate("compare.html", first.movie = first.movie, second.movie = second.movie)),
-    
-    navbarMenu("All-Time Ranking",
-              tabPanel("Table",htmlTemplate("rankingTable.html")),
-              tabPanel("About",htmlTemplate("about.html")))
+    tabPanel("All-Time Ranking",htmlTemplate("ranking.html"))
   )
 )
